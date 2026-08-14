@@ -1,6 +1,7 @@
 import * as store from '../store.js';
 import { sha256, lockNow } from '../gate.js';
 import { el, panel, esc, toast } from '../ui/dom.js';
+import { HUD_FIELDS, DEFAULT_HUD } from '../ui/jet.js';
 
 const THEMES = [
   ['glass',      'Glass Cockpit',     'Bright cabin, dark luminous instruments. The literal modern flight deck.'],
@@ -127,7 +128,36 @@ export function settingsView(mount, ctx) {
     '<p class="mfd-sub">Export first. This wipes every session, capture, score and note.</p>');
   dz.append(wipe);
 
-  mount.append(th, bk, pc, dz);
+  // ── HUD layout ────────────────────────────────────────────
+  const hd = panel('Head-up display', 'what shows on the glass');
+  hd.insertAdjacentHTML('beforeend', `<p class="mfd-sub">
+    Choose what is projected onto the combiner glass when you open the cockpit.
+    Changes apply on reload.</p>`);
+  const chosen = new Set(state.get('settings').hudFields ?? DEFAULT_HUD);
+  for (const [id, f] of Object.entries(HUD_FIELDS)) {
+    const r = el('button', 'node');
+    r.dataset.state = chosen.has(id) ? 'fresh' : 'untouched';
+    r.style.setProperty('--c', 'var(--accent)');
+    r.innerHTML = `<span class="node-pip"></span>
+      <span class="node-code">${esc(f.label)}</span>
+      <span class="node-title">${esc(f.name)}</span>
+      <span class="node-lvl">${chosen.has(id) ? 'on' : 'off'}</span>`;
+    r.onclick = () => {
+      if (chosen.has(id)) chosen.delete(id); else chosen.add(id);
+      state.update('settings', st => { st.hudFields = [...chosen]; });
+      settingsRedraw(mount, ctx);
+    };
+    hd.append(r);
+  }
+  const reset = el('button', 'chip', 'Restore defaults');
+  reset.onclick = () => {
+    state.update('settings', st => { st.hudFields = [...DEFAULT_HUD]; });
+    toast('HUD restored');
+    settingsRedraw(mount, ctx);
+  };
+  hd.append(reset);
+
+  mount.append(hd, th, bk, pc, dz);
 }
 
 function settingsRedraw(mount, ctx) {

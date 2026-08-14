@@ -5,9 +5,9 @@ import * as quests from '../models/quests.js';
 import { courseElapsed, paceRatio } from '../ui/pfd.js';
 import { examinedNodeIds, nodesFor } from '../syllabus.js';
 import { el, esc, subjectColor, toast } from '../ui/dom.js';
-import { createCockpit } from '../ui/cockpit.js';
-import { grouped, byId } from '../ui/controls.js';
-import { mountMCDU, controlButton, open as openMCDU, close as closeMCDU } from '../ui/mcdu.js';
+import { createJet, DEFAULT_HUD } from '../ui/jet.js';
+import { grouped, byId, allControls } from '../ui/controls.js';
+import { mountMCDU, open as openMCDU, close as closeMCDU } from '../ui/mcdu.js';
 import { commitSession } from './log.js';
 import * as quick from './quick.js';
 import { subjectDetailView } from './subject.js';
@@ -86,18 +86,20 @@ export function deckView(mount, ctx, openId = null) {
   const fading = mastery.rescueQueue(ids, records);
 
   disposeDeck();
-  live = createCockpit(mount, {
-    hud: {
-      hoursPerWeek, capturedPct: captured * 100, daysToExam, ratio,
-      level: lvl.level, streak: x.streak.current,
-      nodesLeft: ids.length - capturedNodes, totalHours,
-      session: 'M28', cautionCount: cautions,
-    },
-    masterCaution: ann.masterCaution(captions),
-    annunciators: captions,
-    screens: buildScreens(ctx, { records, captured, fading, x, lvl }),
-    panelBank: buildPanel(ctx, { records, sessions, fading, x, deadlines, ratio }),
-    pedestal: buildPedestal(ctx),
+
+  const hudData = {
+    hoursPerWeek, capturedPct: captured * 100, daysToExam, ratio,
+    level: lvl.level, streak: x.streak.current,
+    nodesLeft: ids.length - capturedNodes, totalHours, cautionCount: cautions,
+  };
+
+  live = createJet(mount, {
+    hud: hudData,
+    hudFields: state.get('settings').hudFields ?? DEFAULT_HUD,
+    screens: jetScreens(ctx, { records, captured, fading, x, lvl, ids, capturedNodes }),
+    controls: allControls(index),
+    status: controlStatus(ctx, { records, sessions, fading, x, deadlines, ratio }),
+    timeOverride: null,
   });
 
   mountMCDU(live.el);
@@ -106,25 +108,6 @@ export function deckView(mount, ctx, openId = null) {
 
 /* ── the control panel ────────────────────────────────────── */
 
-function buildPanel(ctx, s) {
-  const { index } = ctx;
-  const status = controlStatus(ctx, s);
-  const bank = el('div', 'panelbank');
-
-  for (const g of grouped(index)) {
-    const box = el('div', 'pgroup');
-    box.append(el('p', 'pgroup-label', g.group));
-    const row = el('div', 'ctls');
-    for (const c of g.controls) {
-      const b = controlButton(c, status.get(c.id));
-      b.onclick = () => { location.hash = `#/${c.id}`; };
-      row.append(b);
-    }
-    box.append(row);
-    bank.append(box);
-  }
-  return bank;
-}
 
 /** Which controls should have a lit LED, and what it says. */
 function controlStatus(ctx, { records, sessions, fading, x, deadlines, ratio }) {
@@ -176,9 +159,8 @@ export function press(ctx, id) {
   const control = byId(index, id);
   if (!control) { closeMCDU(); return; }
 
-  for (const b of document.querySelectorAll('.ctl')) b.removeAttribute('aria-current');
-  const btn = [...document.querySelectorAll('.ctl')]
-    .find(b => b.getAttribute('aria-label')?.startsWith(control.name + ':'));
+  for (const b of document.querySelectorAll('.jkey')) b.removeAttribute('aria-current');
+  const btn = document.querySelector(`.jkey[data-control="${CSS.escape(id)}"]`);
   if (btn) btn.setAttribute('aria-current', 'page');
 
   if (control.id === 'timer') { openMCDU(control, body => timerScreen(body, ctx)); return; }
@@ -244,87 +226,30 @@ function timerScreen(mount, ctx) {
 
 /* ── the three MFD screens ────────────────────────────────── */
 
-function buildScreens(ctx, { records, captured, fading, x, lvl }) {
+function jetScreens(ctx, { records, captured, fading, x, lvl, ids, capturedNodes }) {
   const { index } = ctx;
-  const rows = index.examined.map(s => {
-    const nodes = nodesFor(index, s.id);
-    const pct = Math.round(mastery.subjectProgress(nodes.map(n => n.id), records) * 100);
-    const cold = ann.lastTouch(s.id, nodes, records, ctx.state.get('sessions'));
-    const isCold = cold === null || (Date.now() - cold) / DAY >= 10;
-    return `<div class="egt-row${isCold ? ' cold' : ''}" style="--c:${subjectColor(s)}">
-      <span class="egt-name">${esc(s.short)}</span>
-      <span class="egt-bar"><span class="egt-fill" style="width:${pct}%"></span></span>
-      <span class="egt-pct">${pct}%</span></div>`;
+
+  const bars = index.examined.map(s2 => {
+    const pct = Math.round(mastery.subjectProgress(
+      nodesFor(index, s2.id).map(n => n.id), records) * 100);
+    return `<div class="bar" style="--c:${subjectColor(s2)}"><i style="width:${pct}%"></i></div>`;
   }).join('');
 
-  const ids = examinedNodeIds(index);
-  const capturedNodes = ids.filter(id => (records[id]?.level ?? 0) > 0).length;
-
   return [
-    { tag: 'ENG', title: 'Engines', href: '#/pace', color: 'var(--s1)',
-      big: index.examined.length, unit: '',
-      sub: `${fading.length} fading · ${capturedNodes} captured`,
-      extra: `<div class="egt">${rows}</div>` },
-    { tag: 'NAV', title: 'Territory', href: '#/map', color: 'var(--accent)',
-      big: Math.round(captured * 100), unit: '%',
-      sub: `${capturedNodes} of ${ids.length} nodes captured`,
-      extra: `<div class="navmap">${navPreview(index, records)}</div>` },
-    { tag: 'SYS', title: 'Systems', href: '#/xp', color: 'var(--s2)',
-      big: lvl.level, unit: 'LV',
-      sub: `${x.total.toLocaleString()} XP · ${x.streak.current}-day streak<br>
-            ${lvl.into.toLocaleString()} / ${lvl.need.toLocaleString()} to next`,
-      extra: `<div class="egt"><div class="egt-row" style="--c:var(--accent-2)">
-        <span class="egt-name">XP</span>
-        <span class="egt-bar"><span class="egt-fill"
-          style="width:${((lvl.into / lvl.need) * 100).toFixed(1)}%"></span></span>
-        <span class="egt-pct">${Math.round((lvl.into / lvl.need) * 100)}%</span></div></div>` },
+    { slot: 'l', tag: 'ENG', title: 'Engines — subject capture', opens: 'pace',
+      big: `${Math.round(captured * 100)}`, unit: '%',
+      sub: `${fading.length} FADING`, bars },
+    { slot: 'c', tag: 'NAV', title: 'Navigation — territory', opens: 'map',
+      big: `${capturedNodes}`, unit: '',
+      sub: `OF ${ids.length} NODES<br>${index.examined.length} SUBJECTS` },
+    { slot: 'r', tag: 'SYS', title: 'Systems — level and streak', opens: 'xp',
+      big: `${lvl.level}`, unit: 'LV',
+      sub: `${x.total.toLocaleString()} XP<br>${x.streak.current}D STREAK`,
+      bars: `<div class="bar" style="--c:#7CFFC4"><i style="width:${
+        ((lvl.into / lvl.need) * 100).toFixed(1)}%"></i></div>` },
   ];
 }
 
-function navPreview(index, records) {
-  const cx = 127, cy = 52, R = 40;
-  const pts = index.examined.map((s, i) => {
-    const a = (i / index.examined.length) * Math.PI * 2 - Math.PI / 2;
-    const pct = mastery.subjectProgress(nodesFor(index, s.id).map(n => n.id), records);
-    return { s, pct, x: cx + Math.cos(a) * R * 1.7, y: cy + Math.sin(a) * R };
-  });
-  const links = pts.map((p, i) => {
-    const q = pts[(i + 1) % pts.length];
-    return `<line x1="${p.x.toFixed(1)}" y1="${p.y.toFixed(1)}" x2="${q.x.toFixed(1)}"
-      y2="${q.y.toFixed(1)}" stroke="#1F2C3A" stroke-width="1"/>`;
-  }).join('');
-  const dots = pts.map(p => {
-    const c = subjectColor(p.s);
-    return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${(3.5 + p.pct * 7).toFixed(1)}"
-      fill="${p.pct > 0 ? c : '#131C26'}" stroke="${c}" stroke-width="1.2"
-      opacity="${(0.35 + p.pct * 0.65).toFixed(2)}"/>`;
-  }).join('');
-  return `<svg viewBox="0 0 254 104" preserveAspectRatio="xMidYMid meet">${links}${dots}
-    <circle cx="${cx}" cy="${cy}" r="2" fill="var(--accent)"/></svg>`;
-}
 
 /* ── pedestal: throttle only; the timer lives on the panel ── */
 
-function buildPedestal(ctx) {
-  const { state } = ctx;
-  const ped = el('div', 'pedestal');
-  const target = 6;
-  const cutoff = Date.now() - 7 * DAY;
-  const week = state.get('sessions').filter(s => Date.parse(s.ts) >= cutoff)
-    .reduce((a, s) => a + s.minutes, 0) / 60;
-
-  const thr = el('div', 'thr');
-  thr.innerHTML = `<span>Throttle</span>
-    <span class="thr-track"><span class="thr-fill"
-      style="width:${Math.min(100, (week / target) * 100).toFixed(0)}%"></span></span>
-    <b>${week.toFixed(1)}h</b><span>/ ${target}h wk</span>`;
-
-  const quickRow = el('div', 'row');
-  for (const [id, label] of [['timer', 'Start timer'], ['log', 'Log session'], ['score', 'Add score']]) {
-    const a = el('a', 'lever' + (id === 'timer' ? ' lever-go' : ''), label);
-    a.href = `#/${id}`;
-    quickRow.append(a);
-  }
-  ped.append(thr, quickRow);
-  return ped;
-}
