@@ -1,4 +1,5 @@
 import * as store from '../store.js';
+import { sha256, lockNow } from '../gate.js';
 import { el, panel, esc, toast } from '../ui/dom.js';
 
 const THEMES = [
@@ -92,6 +93,7 @@ export function settingsView(mount, ctx) {
     const h = await sha256(v);
     state.update('settings', s => { s.passHash = h; });
     pin.value = '';
+    lockNow();
     toast('Passcode set — it applies on next load');
     settingsRedraw(mount, ctx);
   };
@@ -133,7 +135,3 @@ function settingsRedraw(mount, ctx) {
   settingsView(mount, ctx);
 }
 
-export async function sha256(text) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
-}

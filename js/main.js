@@ -16,10 +16,15 @@ import { settingsView } from './views/settings.js';
 import { renderSwitchBank } from './ui/cockpit.js';
 import { switchStatus } from './ui/nav.js';
 import { el } from './ui/dom.js';
+import { requireUnlock } from './gate.js';
 
 const DAY = 86400000;
 
 const state = createState();
+
+// Gate first: nothing renders until the passcode is satisfied (or none is set).
+await requireUnlock(state.get('settings').passHash);
+
 const index = await loadIndex('.');
 
 // Run decay once per boot so a long absence is reflected the moment you return.

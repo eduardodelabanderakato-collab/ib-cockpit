@@ -272,3 +272,41 @@
   border:1px solid var(--edge);border-radius:16px;overflow:hidden;
   box-shadow:var(--elev-sm);
 }
+
+/* ── crew access gate ────────────────────────────────────── */
+.gate{
+  position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:24px;
+  background:radial-gradient(120% 90% at 50% 0%,#101A28 0%,#05080D 70%);
+  transition:opacity .25s ease;
+}
+.gate-open{opacity:0;pointer-events:none}
+.gate-box{
+  width:min(360px,100%);display:grid;gap:12px;padding:30px 28px 24px;
+  background:#0B1119;border:1px solid #22303F;border-radius:18px;
+  box-shadow:0 30px 80px -24px #000;text-align:center;
+}
+.gate-kicker{
+  margin:0;font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.24em;
+  text-transform:uppercase;color:#00C2A8;
+}
+.gate-h{margin:0 0 6px;font-size:22px;letter-spacing:-.02em;color:#E9EFF6;font-weight:650}
+.gate-input{
+  width:100%;padding:13px 14px;border-radius:11px;text-align:center;
+  font-size:22px;letter-spacing:.34em;
+  border:1px solid #22303F;background:#070C13;color:#E9EFF6;
+}
+.gate-input:focus{outline:none;border-color:#00C2A8;box-shadow:0 0 0 3px rgba(0,194,168,.18)}
+.gate-go{
+  width:100%;padding:12px;border-radius:11px;cursor:pointer;font-weight:800;
+  font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;background:#00C2A8;border:1px solid #00C2A8;color:#06101A;
+}
+.gate-go:hover{opacity:.9}
+.gate-err{margin:0;min-height:16px;font-size:12px;color:#FF6B7A}
+.gate-note{margin:4px 0 0;font-size:11px;line-height:1.5;color:#5C6876}
+.shake{animation:shake .34s ease}
+@keyframes shake{
+  10%,90%{transform:translateX(-2px)} 20%,80%{transform:translateX(4px)}
+  30%,50%,70%{transform:translateX(-7px)} 40%,60%{transform:translateX(7px)}
+}
+@media(prefers-reduced-motion:reduce){.shake{animation:none}}
