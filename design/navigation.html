@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IB Cockpit — Navigation Options</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;background:#EDEFF2;color:#101828;
+    font-family:ui-sans-serif,-apple-system,"SF Pro Text",Inter,system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:48px 24px 140px}
+  .kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#7A828C;
+    font-family:ui-monospace,Menlo,monospace;margin:0 0 14px}
+  h1{font-size:clamp(28px,5vw,42px);line-height:1.05;letter-spacing:-.03em;margin:0 0 16px;font-weight:650}
+  .lede{color:#525C69;font-size:16px;line-height:1.65;max-width:72ch;margin:0}
+  .lede b{color:#101828;font-weight:600}
+  .research{margin-top:22px;padding:16px 18px;border:1px solid #D7DBE0;border-radius:12px;
+    background:#F7F8FA;color:#525C69;font-size:13.5px;line-height:1.65;max-width:72ch}
+  .research b{color:#101828}
+
+  .opt{padding:52px 0;border-top:1px solid #D7DBE0;margin-top:44px}
+  .opt-head{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;margin-bottom:8px}
+  .opt-num{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#9AA1AA;letter-spacing:.1em}
+  .opt-name{font-size:23px;font-weight:650;letter-spacing:-.02em;margin:0}
+  .tag{font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:4px 9px;
+    border-radius:999px;border:1px solid;font-family:ui-monospace,Menlo,monospace}
+  .tag-rec{color:#0A7D6B;border-color:#0A7D6B;background:#E4F6F2}
+  .tag-alt{color:#5B6675;border-color:#C7CDD5}
+  .opt-desc{color:#525C69;font-size:14.5px;line-height:1.65;max-width:74ch;margin:0 0 10px}
+  .pc{display:flex;gap:26px;flex-wrap:wrap;margin:0 0 22px;font-size:13px;line-height:1.6}
+  .pc div{max-width:34ch}
+  .pc b{display:block;font-size:10px;letter-spacing:.15em;text-transform:uppercase;
+    font-family:ui-monospace,Menlo,monospace;margin-bottom:4px}
+  .pro b{color:#0A7D6B} .con b{color:#B4462F}
+  .pc ul{margin:0;padding-left:17px;color:#525C69}
+  .try{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;color:#7A828C;margin:0 0 10px}
+
+  /* ── shared cockpit chrome for the demos ── */
+  .deck{--edge:#2C3846;background:linear-gradient(180deg,#0B0F16,#141A24);
+    border:1px solid #2C3846;border-radius:16px;overflow:hidden;color:#E6EDF6;
+    box-shadow:0 24px 60px -22px rgba(8,12,20,.5)}
+  .ws{position:relative;background:linear-gradient(180deg,#1E4FA0 0%,#5B93D6 52%,#BFD8EE 78%,#E4EDF6 100%);
+    transition:height .42s cubic-bezier(.2,.8,.2,1);overflow:hidden}
+  .ws::after{content:"";position:absolute;inset:auto 0 0 0;height:42%;
+    background:linear-gradient(180deg,transparent,rgba(226,238,248,.85))}
+  .sun{position:absolute;right:22%;top:26%;width:34px;height:34px;border-radius:50%;
+    background:#FFF3C4;box-shadow:0 0 40px 14px rgba(255,224,150,.6)}
+  .post{position:absolute;top:-4%;bottom:-4%;width:5%;
+    background:linear-gradient(180deg,#0E141D,#1B232F 45%,#0A0F16)}
+  .hudline{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);
+    font-family:ui-monospace,Menlo,monospace;font-size:9px;letter-spacing:.16em;
+    color:#B7F5E4;text-shadow:0 0 6px rgba(120,255,225,.7);white-space:nowrap}
+  .hudbar{position:absolute;left:0;right:0;top:8px;display:flex;justify-content:space-between;
+    padding:0 14px;font-family:ui-monospace,Menlo,monospace;font-size:8px;letter-spacing:.14em;
+    color:#B7F5E4;text-shadow:0 0 6px rgba(120,255,225,.7)}
+  .glare{display:flex;gap:6px;padding:8px 12px;background:#070A10;border-top:1px solid #000;
+    border-bottom:1px solid #2C3846;flex-wrap:wrap}
+  .cap{font-family:ui-monospace,Menlo,monospace;font-size:8px;letter-spacing:.13em;
+    padding:5px 8px;border-radius:5px;border:1px solid #FFC24D;color:#FFC24D;font-weight:700}
+  .cap.ok{border-color:#2C4A3C;color:#4ADE9A}
+
+  .screen{background:#080D14;min-height:210px;padding:16px 18px;position:relative}
+  .screen-h{font-family:ui-monospace,Menlo,monospace;font-size:9px;letter-spacing:.18em;
+    text-transform:uppercase;color:#7C8B9E;display:flex;align-items:center;gap:8px;margin:0 0 13px}
+  .screen-h b{color:#00C2A8}
+  .screen-h::after{content:"";flex:1;height:1px;background:#1C2733}
+  .rowline{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:12px;color:#C6D3E0;
+    border-bottom:1px solid #131C26}
+  .rowline:last-child{border-bottom:0}
+  .rowline i{width:8px;height:8px;border-radius:50%;background:var(--c,#00C2A8);flex:none;font-style:normal}
+  .rowline span{flex:1}
+  .rowline em{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;color:#7C8B9E;font-style:normal}
+  .fade{animation:fade .28s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+  /* softkeys */
+  .softrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:6px;
+    padding:9px 12px;background:#0A0E15}
+  .softrow.groups{border-top:1px solid #1C2733}
+  .sk{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.1em;font-weight:700;
+    padding:9px 4px;border-radius:7px;border:1px solid #26303D;background:linear-gradient(180deg,#151C26,#0E141C);
+    color:#9FB0C2;cursor:pointer;text-align:center;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05);transition:.12s}
+  .sk:hover{color:#E9EFF6;border-color:#00C2A8;transform:translateY(-1px)}
+  .sk.on{background:#00C2A8;border-color:#00C2A8;color:#06101A}
+  .sk small{display:block;font-size:7.5px;letter-spacing:.05em;font-weight:400;opacity:.8;
+    text-transform:none;margin-top:2px}
+
+  /* side rail */
+  .split{display:grid;grid-template-columns:132px 1fr}
+  @media(max-width:620px){.split{grid-template-columns:104px 1fr}}
+  .rail{background:#0A0E15;border-right:1px solid #1C2733;padding:10px 8px;display:grid;
+    gap:4px;align-content:start}
+  .rail-lab{font-family:ui-monospace,Menlo,monospace;font-size:7.5px;letter-spacing:.2em;
+    color:#4E5B6B;text-transform:uppercase;margin:9px 0 3px 6px}
+  .lsk{display:flex;align-items:center;gap:7px;font-family:ui-monospace,Menlo,monospace;
+    font-size:9.5px;letter-spacing:.06em;color:#9FB0C2;padding:7px 8px;border-radius:6px;
+    cursor:pointer;border:1px solid transparent;transition:.12s}
+  .lsk:hover{background:#111823;color:#E9EFF6}
+  .lsk.on{background:#0F2B2B;border-color:#00C2A8;color:#00C2A8}
+  .lsk b{font-size:9px;width:26px;flex:none}
+
+  /* drawer */
+  .drawerhost{position:relative;overflow:hidden}
+  .drawer{position:absolute;inset:auto 0 0 0;height:0;overflow:hidden;
+    background:rgba(6,11,18,.96);backdrop-filter:blur(8px);border-top:1px solid #00C2A8;
+    transition:height .38s cubic-bezier(.2,.8,.2,1)}
+  .drawer.open{height:74%}
+  .drawer-in{padding:14px 18px}
+  .drawer-x{position:absolute;right:12px;top:10px;font-family:ui-monospace,Menlo,monospace;
+    font-size:9px;letter-spacing:.12em;color:#7C8B9E;cursor:pointer;border:1px solid #26303D;
+    border-radius:6px;padding:5px 9px}
+  .drawer-x:hover{color:#E9EFF6;border-color:#00C2A8}
+
+  /* instrument hotspots */
+  .hot{position:absolute;border:1px dashed rgba(183,245,228,.55);border-radius:8px;cursor:pointer;
+    display:grid;place-items:center;font-family:ui-monospace,Menlo,monospace;font-size:8px;
+    letter-spacing:.12em;color:#B7F5E4;background:rgba(3,20,24,.28);transition:.14s}
+  .hot:hover{background:rgba(0,194,168,.3);border-style:solid}
+
+  .palette{display:flex;gap:6px;padding:9px 12px;background:#0A0E15;border-top:1px solid #1C2733;
+    align-items:center}
+  .palette input{flex:1;background:#070C13;border:1px solid #26303D;border-radius:7px;
+    padding:8px 11px;color:#E9EFF6;font-family:ui-monospace,Menlo,monospace;font-size:10px}
+  .palette input::placeholder{color:#5C6876}
+  .kbd{font-family:ui-monospace,Menlo,monospace;font-size:9px;color:#5C6876;border:1px solid #26303D;
+    border-radius:5px;padding:4px 7px}
+
+  .verdict{margin-top:56px;padding:24px;border:1px solid #D7DBE0;border-radius:14px;background:#fff}
+  .verdict h2{margin:0 0 10px;font-size:19px;letter-spacing:-.02em}
+  .verdict p{margin:0 0 10px;color:#525C69;font-size:14.5px;line-height:1.65;max-width:74ch}
+  .verdict code{font-family:ui-monospace,Menlo,monospace;background:#EEF0F3;padding:1px 6px;
+    border-radius:5px;font-size:12.5px;color:#101828}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="kicker">IB Cockpit · Design Decision 02 · Navigation</p>
+  <h1>One screen. Everything derives from it.</h1>
+  <p class="lede">You were right — leaving the flight deck to open a page breaks the whole premise.
+    Five ways to fix it, <b>all of them actually clickable below</b>. Press the buttons in each
+    demo and feel the difference before you pick.</p>
+
+  <div class="research">
+    <b>What real flight decks do.</b> Both dominant patterns agree with your instinct.
+    The <b>Garmin G1000</b> never moves its display frame: pages live in <i>groups</i>
+    (MAP / WPT / AUX / NRST), and <i>softkeys along the bottom bezel</i> change per page with a
+    BACK key to climb out a level. The <b>Airbus MCDU and Boeing FMC</b> use a fixed-size screen
+    with <i>line-select keys down the edges</i>. Neither ever navigates you away from the cockpit —
+    the bezel stays put and the content swaps underneath it.
+  </div>
+
+  <div id="out"></div>
+
+  <div class="verdict">
+    <h2>My recommendation</h2>
+    <p><b>Option 02, the Collapsing Deck.</b> It is the G1000 model — permanent frame, softkey
+      groups, content swapping in place — with the one fix the pure version needs: the windshield
+      shrinks to a horizon strip when you are working and swells back to full when you return to
+      Command. You get the immersion where it matters and the screen space where you need it.</p>
+    <p>Option 01 is the purist answer and I would happily build it. Option 03 is the fastest to
+      use but the least like being in an aircraft. Option 05 is the most beautiful idea and the
+      one I would advise against on its own — you would forget where things are — but its
+      <code>⌘K</code> palette is worth stealing into whichever you choose.</p>
+    <p>Tell me a number. Mixing is fine: <code>"02, but keep 05's ⌘K"</code> is a good answer.</p>
+  </div>
+</div>
+
+<script>
+const GROUPS = [
+  { code:'FLT',  name:'Flight',      pages:[
+      ['CMD','Command'], ['NAV','Territory'], ['ENG','Subjects'] ] },
+  { code:'MSN',  name:'Mission',     pages:[
+      ['QST','Quests'], ['FPL','Deadlines'], ['TOK','Core'] ] },
+  { code:'PRF',  name:'Performance', pages:[
+      ['GRD','Grades'], ['LOG','Log'], ['PLN','Planner'] ] },
+  { code:'SUP',  name:'Support',     pages:[
+      ['CRW','Crew'], ['LIB','Resources'], ['CFG','Settings'] ] },
+];
+
+const BODY = {
+  Command:   [['#00C2A8','On pace check','NOMINAL'],['#FFC24D','2 topics fading','ACT'],['#5AC8FA','Physics cold 11d','ACT']],
+  Territory: [['#5AC8FA','Math AA — 21% captured','11/52'],['#A78BFA','Physics — 14%','8/58'],['#34D399','Economics — 32%','14/44']],
+  Subjects:  [['#5AC8FA','Math AA HL','LV3'],['#A78BFA','Physics HL','LV2'],['#34D399','Economics HL','LV4'],['#FBBF24','Chemistry SL','LV2']],
+  Quests:    [['#00C2A8','Log 45 min in Physics','+300'],['#00C2A8','Capture 2 nodes','+150'],['#FFC24D','Rescue 2 fading','+200']],
+  Deadlines: [['#FF6B7A','Physics IA draft','3D'],['#FFC24D','TOK exhibition','12D'],['#5AC8FA','Math mock','41D']],
+  Core:      [['#00C2A8','TOK exhibition','DP1'],['#A78BFA','EE research question','DP1'],['#34D399','CAS LO3','DP1']],
+  Grades:    [['#34D399','Physics P2 — 76%','6/7'],['#FBBF24','Math AA P1 — 58%','4/7'],['#5AC8FA','Projected total','38/45']],
+  Log:       [['#00C2A8','Today — 2h14m','3 sess'],['#5AC8FA','This week — 7.5h','THR 94%'],['#A78BFA','Streak','9 days']],
+  Planner:   [['#FFC24D','Physics A.2 — fading fastest','20m'],['#5AC8FA','Math 5.6 — behind calendar','20m'],['#34D399','Econ 2.5 — weakest','20m']],
+  Crew:      [['#5AC8FA','AXIS — Navigation','LINKED'],['#A78BFA','THRUST — Propulsion','LINKED'],['#34D399','YIELD — Systems','—']],
+  Resources: [['#00C2A8','Revision Village — Gold','8'],['#5AC8FA','IB Documents','1'],['#A78BFA','Your links','3']],
+  Settings:  [['#00C2A8','Glass Cockpit','ACTIVE'],['#FFC24D','Backup overdue','9D'],['#5AC8FA','Passcode set','ON']],
+};
+
+const pageName = (g,p) => GROUPS[g].pages[p][1];
+
+function rows(name){
+  return (BODY[name] ?? []).map(([c,t,e]) =>
+    `<div class="rowline"><i style="--c:${c}"></i><span>${t}</span><em>${e}</em></div>`).join('');
+}
+
+function windshield(h, mini){
+  return `<div class="ws" style="height:${h}px">
+    <div class="sun"></div>
+    <div class="post" style="left:24%;transform:skewX(7deg)"></div>
+    <div class="post" style="right:24%;transform:skewX(-7deg)"></div>
+    <div class="hudbar"><span>M28 · LVL 5</span><span>623D · 7.5H/WK</span></div>
+    ${mini ? '' : '<div class="hudline">— ✈ —  19% PACE</div>'}
+  </div>`;
+}
+
+const glare = `<div class="glare">
+  <span class="cap">MASTER CAUTION</span><span class="cap">2 FADING</span>
+  <span class="cap">PHYSICS IA 3D</span></div>`;
+
+/* ── 01 · MFD page groups (pure G1000) ───────────────────── */
+function optGroups(root){
+  let g = 0, p = 0;
+  root.innerHTML = `<div class="deck">
+    ${windshield(120)}${glare}
+    <div class="screen" data-screen></div>
+    <div class="softrow pages" data-pages></div>
+    <div class="softrow groups" data-groups></div>
+  </div>`;
+  const draw = () => {
+    const name = pageName(g,p);
+    root.querySelector('[data-screen]').innerHTML =
+      `<p class="screen-h"><b>${GROUPS[g].pages[p][0]}</b>${name}</p>
+       <div class="fade">${rows(name)}</div>`;
+    root.querySelector('[data-pages]').innerHTML = GROUPS[g].pages
+      .map(([c,n],i)=>`<button class="sk ${i===p?'on':''}" data-p="${i}">${c}<small>${n}</small></button>`).join('');
+    root.querySelector('[data-groups]').innerHTML = GROUPS
+      .map((x,i)=>`<button class="sk ${i===g?'on':''}" data-g="${i}">${x.code}<small>${x.name}</small></button>`).join('');
+    root.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{g=+b.dataset.g;p=0;draw();});
+    root.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{p=+b.dataset.p;draw();});
+  };
+  draw();
+}
+
+/* ── 02 · Collapsing deck ────────────────────────────────── */
+function optCollapse(root){
+  let g = 0, p = 0;
+  root.innerHTML = `<div class="deck">
+    <div data-ws></div>${glare}
+    <div class="screen" data-screen></div>
+    <div class="softrow pages" data-pages></div>
+    <div class="softrow groups" data-groups></div>
+  </div>`;
+  const draw = () => {
+    const home = (g===0 && p===0);
+    root.querySelector('[data-ws]').innerHTML = windshield(home?190:56, !home);
+    const name = pageName(g,p);
+    root.querySelector('[data-screen]').innerHTML =
+      `<p class="screen-h"><b>${GROUPS[g].pages[p][0]}</b>${name}${
+        home?'':' · windshield collapsed for room'}</p>
+       <div class="fade">${rows(name)}</div>`;
+    root.querySelector('[data-pages]').innerHTML = GROUPS[g].pages
+      .map(([c,n],i)=>`<button class="sk ${i===p?'on':''}" data-p="${i}">${c}<small>${n}</small></button>`).join('');
+    root.querySelector('[data-groups]').innerHTML = GROUPS
+      .map((x,i)=>`<button class="sk ${i===g?'on':''}" data-g="${i}">${x.code}<small>${x.name}</small></button>`).join('');
+    root.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{g=+b.dataset.g;p=0;draw();});
+    root.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{p=+b.dataset.p;draw();});
+  };
+  draw();
+}
+
+/* ── 03 · Side rail (MCDU line-select) ───────────────────── */
+function optRail(root){
+  let g=0,p=0;
+  root.innerHTML = `<div class="deck">
+    ${windshield(74,true)}${glare}
+    <div class="split">
+      <div class="rail" data-rail></div>
+      <div class="screen" data-screen></div>
+    </div>
+  </div>`;
+  const draw = () => {
+    root.querySelector('[data-rail]').innerHTML = GROUPS.map((grp,gi)=>
+      `<div class="rail-lab">${grp.name}</div>` + grp.pages.map(([c,n],pi)=>
+        `<div class="lsk ${gi===g&&pi===p?'on':''}" data-g="${gi}" data-p="${pi}">
+          <b>${c}</b>${n}</div>`).join('')).join('');
+    const name = pageName(g,p);
+    root.querySelector('[data-screen]').innerHTML =
+      `<p class="screen-h"><b>${GROUPS[g].pages[p][0]}</b>${name}</p>
+       <div class="fade">${rows(name)}</div>`;
+    root.querySelectorAll('.lsk').forEach(b=>b.onclick=()=>{g=+b.dataset.g;p=+b.dataset.p;draw();});
+  };
+  draw();
+}
+
+/* ── 04 · Overlay drawer ─────────────────────────────────── */
+function optDrawer(root){
+  root.innerHTML = `<div class="deck drawerhost">
+    ${windshield(190)}${glare}
+    <div class="screen" style="min-height:130px">
+      <p class="screen-h"><b>CMD</b>Command · the deck is never replaced</p>
+      ${rows('Command')}
+    </div>
+    <div class="softrow groups" data-groups></div>
+    <div class="drawer" data-drawer>
+      <div class="drawer-x" data-close>ESC ✕</div>
+      <div class="drawer-in" data-in></div>
+    </div>
+  </div>`;
+  const flat = GROUPS.flatMap(g=>g.pages.map(([c,n])=>({c,n})));
+  root.querySelector('[data-groups]').innerHTML = flat.slice(0,6)
+    .map(x=>`<button class="sk" data-n="${x.n}">${x.c}<small>${x.n}</small></button>`).join('');
+  const dr = root.querySelector('[data-drawer]');
+  root.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{
+    root.querySelector('[data-in]').innerHTML =
+      `<p class="screen-h"><b>${b.textContent.slice(0,3)}</b>${b.dataset.n}</p>
+       <div class="fade">${rows(b.dataset.n)}</div>`;
+    dr.classList.add('open');
+  });
+  root.querySelector('[data-close]').onclick = ()=>dr.classList.remove('open');
+}
+
+/* ── 05 · Instrument-driven + palette ────────────────────── */
+function optInstrument(root){
+  root.innerHTML = `<div class="deck">
+    <div style="position:relative">
+      ${windshield(200)}
+      <div class="hot" style="left:6%;top:26%;width:15%;height:46%" data-n="Log">AIRSPEED<br>→ LOG</div>
+      <div class="hot" style="right:6%;top:26%;width:15%;height:46%" data-n="Territory">ALT<br>→ MAP</div>
+      <div class="hot" style="left:41%;top:12%;width:18%;height:15%" data-n="Deadlines">ETA → FPL</div>
+      <div class="hot" style="left:38%;bottom:10%;width:24%;height:16%" data-n="Planner">PACE → PLAN</div>
+    </div>
+    ${glare}
+    <div class="screen" data-screen>
+      <p class="screen-h"><b>CMD</b>Click an instrument, or press ⌘K</p>
+      ${rows('Command')}
+    </div>
+    <div class="palette">
+      <span class="kbd">⌘K</span>
+      <input placeholder="Type a page… quests, grades, physics, crew" data-cmd>
+      <span class="kbd">↵</span>
+    </div>
+  </div>`;
+  const show = n => root.querySelector('[data-screen]').innerHTML =
+    `<p class="screen-h"><b>${n.slice(0,3).toUpperCase()}</b>${n}</p><div class="fade">${rows(n)}</div>`;
+  root.querySelectorAll('.hot').forEach(h=>h.onclick=()=>show(h.dataset.n));
+  const inp = root.querySelector('[data-cmd]');
+  inp.onkeydown = e => {
+    if (e.key !== 'Enter') return;
+    const q = inp.value.trim().toLowerCase();
+    const hit = Object.keys(BODY).find(k=>k.toLowerCase().startsWith(q)) ?? 'Command';
+    show(hit); inp.value='';
+  };
+}
+
+const OPTIONS = [
+  { name:'MFD page groups', tag:'purist', rec:false, build:optGroups,
+    desc:`The literal G1000. Windshield, HUD and annunciators are permanent furniture. One screen
+      sits below them and never moves. The bottom row of softkeys picks the page group, the row
+      above picks the page inside it. Content swaps in place — you never navigate anywhere.`,
+    pro:['Exactly how a real flight deck works','You are always oriented — the frame never moves',
+         'Two taps reaches any of twelve pages','No page loads, ever'],
+    con:['The windshield permanently eats vertical space','Long lists (86 Math nodes) scroll inside a shorter pane'] },
+
+  { name:'Collapsing deck', tag:'recommended', rec:true, build:optCollapse,
+    desc:`Identical mechanics, one addition: the windshield is full-height on Command and shrinks
+      to a horizon strip the moment you open any other page — then swells back when you return.
+      Immersion where it matters, screen space where you need it.`,
+    pro:['Full sky on the home screen, full room to work everywhere else',
+         'The collapse itself tells you you have moved','Same two-tap reach as 01',
+         'Still one screen — nothing is ever replaced'],
+    con:['One more piece of motion to get right','Slightly more code than the pure version'] },
+
+  { name:'Side rail', tag:'fastest', rec:false, build:optRail,
+    desc:`The MCDU idea rotated: a short permanent horizon across the top, then line-select keys
+      down the left edge with content filling everything to the right. All twelve destinations
+      visible at once, grouped and labelled.`,
+    pro:['Every destination visible simultaneously — one tap, never two',
+         'The most usable content area of the five','Scales best on a laptop'],
+    con:['Least like sitting in an aircraft','The rail costs horizontal room on a phone'] },
+
+  { name:'Overlay drawer', tag:'dramatic', rec:false, build:optDrawer,
+    desc:`The deck is never replaced at all. Selecting a system slides a translucent panel up over
+      the lower half, like an MCDU drawer. Escape drops it and the full cockpit is back.`,
+    pro:['The sky is always there behind everything','Closing feels like returning to the controls',
+         'Very strong sense of place'],
+    con:['Content is capped at roughly three quarters height','Layering gets fiddly on a phone',
+         'A drawer over a drawer is a dead end'] },
+
+  { name:'Instrument-driven', tag:'minimal', rec:false, build:optInstrument,
+    desc:`No button bank whatsoever. Click the instruments themselves — the airspeed tape opens the
+      log, the altitude tape opens the map, the ETA block opens deadlines — with a ⌘K command
+      palette for everything else.`,
+    pro:['The cleanest possible cockpit','⌘K is the fastest navigation there is once learned',
+         'Genuinely novel'],
+    con:['You will forget what is clickable','Hover targets are hostile on a phone',
+         'Needs the labels back, which defeats the point'] },
+];
+
+document.getElementById('out').innerHTML = OPTIONS.map((o,i)=>`
+  <section class="opt">
+    <div class="opt-head">
+      <span class="opt-num">0${i+1}</span>
+      <h2 class="opt-name">${o.name}</h2>
+      <span class="tag ${o.rec?'tag-rec':'tag-alt'}">${o.tag}</span>
+    </div>
+    <p class="opt-desc">${o.desc}</p>
+    <div class="pc">
+      <div class="pro"><b>Works because</b><ul>${o.pro.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+      <div class="con"><b>Costs you</b><ul>${o.con.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+    </div>
+    <p class="try">↓ Live — click the buttons</p>
+    <div id="demo${i}"></div>
+  </section>`).join('');
+
+OPTIONS.forEach((o,i)=>o.build(document.getElementById('demo'+i)));
+</script>
+</body>
+</html>
