@@ -1,0 +1,301 @@
+{
+  "subjectId": "economics-hl",
+  "guide": "Economics guide (first assessment 2022) — EDITION UNCONFIRMED for May 2028",
+  "verified": false,
+  "topics": [
+    {
+      "code": "1",
+      "title": "Introduction to economics",
+      "nodes": [
+        {
+          "code": "1.1",
+          "title": "What is economics? Scarcity, choice, opportunity cost, the basic questions",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "1.2",
+          "title": "How do economists approach the world? Models, ceteris paribus, positive vs normative",
+          "tier": "SL",
+          "phase": "DP1"
+        }
+      ]
+    },
+    {
+      "code": "2",
+      "title": "Microeconomics",
+      "nodes": [
+        {
+          "code": "2.1",
+          "title": "Demand",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.2",
+          "title": "Supply",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.3",
+          "title": "Competitive market equilibrium",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.4",
+          "title": "Critique of the maximizing behaviour of consumers and producers",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.5",
+          "title": "Elasticity of demand (PED and YED)",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.6",
+          "title": "Elasticity of supply (PES)",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.7",
+          "title": "Role of government in microeconomics: taxes, subsidies, price controls",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.8",
+          "title": "Market failure — externalities and common pool resources",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.9",
+          "title": "Market failure — public goods",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.10",
+          "title": "Market failure — asymmetric information",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "2.11",
+          "title": "Market failure — market power",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "2.12",
+          "title": "The market’s inability to achieve equity",
+          "tier": "AHL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "3",
+      "title": "Macroeconomics",
+      "nodes": [
+        {
+          "code": "3.1",
+          "title": "Measuring economic activity and illustrating its variations",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "3.2",
+          "title": "Aggregate demand and aggregate supply",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "3.3",
+          "title": "Macroeconomic objectives: growth, low unemployment, low inflation",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "3.4",
+          "title": "Economics of inequality and poverty",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "3.5",
+          "title": "Demand management — monetary policy",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "3.6",
+          "title": "Demand management — fiscal policy",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "3.7",
+          "title": "Supply-side policies",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "4",
+      "title": "The global economy",
+      "nodes": [
+        {
+          "code": "4.1",
+          "title": "Benefits of international trade",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.2",
+          "title": "Types of trade protection",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.3",
+          "title": "Arguments for and against trade control and protection",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.4",
+          "title": "Economic integration",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.5",
+          "title": "Exchange rates",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.6",
+          "title": "Balance of payments",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.7",
+          "title": "Sustainable development",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.8",
+          "title": "Measuring development",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.9",
+          "title": "Barriers to economic growth and development",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.10",
+          "title": "Economic growth and development strategies",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "K",
+      "title": "Key concepts",
+      "nodes": [
+        {
+          "code": "K.1",
+          "title": "Scarcity",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "K.2",
+          "title": "Choice",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "K.3",
+          "title": "Efficiency",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "K.4",
+          "title": "Equity",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "K.5",
+          "title": "Economic well-being",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "K.6",
+          "title": "Sustainability",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "K.7",
+          "title": "Change",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "K.8",
+          "title": "Interdependence",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "K.9",
+          "title": "Intervention",
+          "tier": "SL",
+          "phase": "DP1"
+        }
+      ]
+    },
+    {
+      "code": "IA",
+      "title": "Internal assessment",
+      "nodes": [
+        {
+          "code": "IA.1",
+          "title": "Commentary 1 — microeconomics",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "IA.2",
+          "title": "Commentary 2 — macroeconomics",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "IA.3",
+          "title": "Commentary 3 — the global economy",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    }
+  ]
+}

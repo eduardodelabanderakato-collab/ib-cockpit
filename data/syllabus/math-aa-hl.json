@@ -1,0 +1,559 @@
+{
+  "subjectId": "math-aa-hl",
+  "guide": "Mathematics: Analysis and Approaches guide (first assessment 2021)",
+  "verified": false,
+  "topics": [
+    {
+      "code": "1",
+      "title": "Number and algebra",
+      "nodes": [
+        {
+          "code": "1.1",
+          "title": "Operations with numbers in the form a×10^k; scientific notation",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "1.2",
+          "title": "Arithmetic sequences and series; sigma notation; applications",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "1.3",
+          "title": "Geometric sequences and series; sigma notation; applications",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "1.4",
+          "title": "Financial applications of geometric sequences and series",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "1.5",
+          "title": "Laws of exponents with integer exponents; introduction to logarithms",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "1.6",
+          "title": "Simple deductive proof; numerical and algebraic manipulation",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "1.7",
+          "title": "Laws of exponents with rational exponents; laws of logarithms; change of base",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "1.8",
+          "title": "Sum of infinite convergent geometric sequences",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "1.9",
+          "title": "The binomial theorem; binomial coefficients",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "1.10",
+          "title": "Counting principles; permutations and combinations; extension of the binomial theorem",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "1.11",
+          "title": "Partial fractions",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "1.12",
+          "title": "Complex numbers: Cartesian form, the complex plane, terminology",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "1.13",
+          "title": "Modulus-argument (polar) and exponential (Euler) form",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "1.14",
+          "title": "Complex conjugate roots; De Moivre’s theorem; powers and roots",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "1.15",
+          "title": "Proof by mathematical induction, contradiction, and counterexample",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "1.16",
+          "title": "Solutions of systems of linear equations (up to three unknowns)",
+          "tier": "AHL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "2",
+      "title": "Functions",
+      "nodes": [
+        {
+          "code": "2.1",
+          "title": "Equations of straight lines; gradient; parallel and perpendicular lines",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.2",
+          "title": "Concept of a function; domain, range, graph; inverse and its graph",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.3",
+          "title": "Graphing functions with technology; key features",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.4",
+          "title": "Key features of graphs; intersections; symmetry; asymptotes",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.5",
+          "title": "Composite functions; identity function; finding the inverse",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.6",
+          "title": "The quadratic function and its graph",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.7",
+          "title": "Solution of quadratic equations and inequalities; the discriminant",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.8",
+          "title": "The reciprocal function; rational functions of the form (ax+b)/(cx+d)",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.9",
+          "title": "Exponential and logarithmic functions",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.10",
+          "title": "Solving equations graphically and analytically; applications",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.11",
+          "title": "Transformations of graphs: translations, reflections, stretches",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "2.12",
+          "title": "Polynomial functions; factor and remainder theorems; sum and product of roots",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "2.13",
+          "title": "Rational functions with quadratic terms",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "2.14",
+          "title": "Odd and even functions; self-inverse; inverses with restricted domain",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "2.15",
+          "title": "Solutions of g(x) ≥ f(x), graphically and analytically",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "2.16",
+          "title": "The graphs of |y|=f(x), y=1/f(x), y=f(|x|), y=[f(x)]²",
+          "tier": "AHL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "3",
+      "title": "Geometry and trigonometry",
+      "nodes": [
+        {
+          "code": "3.1",
+          "title": "Distance and midpoint in 3D; volume and surface area of 3D solids; angles in solids",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "3.2",
+          "title": "The sine rule, the cosine rule, and the area of a triangle",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "3.3",
+          "title": "Applications: angles of elevation and depression, bearings",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "3.4",
+          "title": "Radian measure; length of an arc; area of a sector",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "3.5",
+          "title": "Definition of sin, cos, tan from the unit circle; exact values",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "3.6",
+          "title": "The Pythagorean identity; double angle identities for sine and cosine",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "3.7",
+          "title": "Circular functions; amplitude, period, transformations; graphs",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "3.8",
+          "title": "Solving trigonometric equations in a finite interval",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "3.9",
+          "title": "Reciprocal trigonometric ratios; inverse functions and their domains",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "3.10",
+          "title": "Compound angle identities; double angle identity for tangent",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "3.11",
+          "title": "Relationships between trigonometric functions; symmetry properties",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "3.12",
+          "title": "Vectors: displacement, components, magnitude, algebra of vectors",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "3.13",
+          "title": "The scalar (dot) product; angle between two vectors; perpendicularity",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "3.14",
+          "title": "Vector equation of a line in two and three dimensions",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "3.15",
+          "title": "Coincident, parallel, intersecting and skew lines; points of intersection",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "3.16",
+          "title": "The vector (cross) product; geometric interpretation; areas",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "3.17",
+          "title": "Vector equation of a plane; Cartesian and normal forms",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "3.18",
+          "title": "Intersections of lines and planes; angles between lines and planes",
+          "tier": "AHL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "4",
+      "title": "Statistics and probability",
+      "nodes": [
+        {
+          "code": "4.1",
+          "title": "Population, sample, random sample; sampling techniques; reliability of data",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.2",
+          "title": "Presentation of data; histograms; cumulative frequency; box plots; outliers",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.3",
+          "title": "Measures of central tendency and dispersion; effect of constant changes",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.4",
+          "title": "Linear correlation; Pearson’s r; the regression line y on x",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.5",
+          "title": "Trial, outcome, sample space, event; probability; complementary events",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.6",
+          "title": "Combined events; mutually exclusive events; conditional probability; independence",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.7",
+          "title": "Discrete random variables; expected value",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.8",
+          "title": "The binomial distribution; mean and variance",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.9",
+          "title": "The normal distribution and curve; standardization of normal variables",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.10",
+          "title": "Equation of the regression line x on y; predictions",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.11",
+          "title": "Formal definition and use of conditional probability and independence",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.12",
+          "title": "Standardization of normal variables (z-values); inverse normal calculations",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.13",
+          "title": "Use of Bayes’ theorem for a maximum of three events",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "4.14",
+          "title": "Variance of a discrete random variable; continuous random variables and PDFs",
+          "tier": "AHL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "5",
+      "title": "Calculus",
+      "nodes": [
+        {
+          "code": "5.1",
+          "title": "Introduction to the concept of a limit; derivative as gradient and rate of change",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "5.2",
+          "title": "Increasing and decreasing functions; graphical interpretation of the derivative",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "5.3",
+          "title": "Derivative of x^n; differentiation of polynomials",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "5.4",
+          "title": "Tangents and normals at a given point",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "5.5",
+          "title": "Introduction to integration as anti-differentiation; definite integrals; area",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "5.6",
+          "title": "Derivatives of sin, cos, tan, e^x, ln x; chain, product and quotient rules",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "5.7",
+          "title": "The second derivative; graphical behaviour of functions",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "5.8",
+          "title": "Local maximum and minimum points; points of inflexion; optimisation",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "5.9",
+          "title": "Kinematic problems: displacement, velocity, acceleration; total distance",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "5.10",
+          "title": "Indefinite integral; integration by inspection and by substitution",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "5.11",
+          "title": "Definite integrals; area between a curve and the x-axis or between curves",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "5.12",
+          "title": "Continuity and differentiability; derivative from first principles; higher derivatives",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "5.13",
+          "title": "Evaluation of limits using L’Hôpital’s rule or the Maclaurin series",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "5.14",
+          "title": "Implicit differentiation; related rates of change; optimisation problems",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "5.15",
+          "title": "Derivatives and integrals of sec, csc, cot, a^x, log_a x, arcsin, arccos, arctan",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "5.16",
+          "title": "Integration by substitution and by parts; repeated integration by parts",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "5.17",
+          "title": "Area enclosed by a curve and the y-axis; volumes of revolution",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "5.18",
+          "title": "First order differential equations; Euler’s method; separable variables; integrating factor",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "5.19",
+          "title": "Maclaurin series; expansions by substitution, products, differentiation and integration",
+          "tier": "AHL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "IA",
+      "title": "Internal assessment",
+      "nodes": [
+        {
+          "code": "IA.1",
+          "title": "Mathematical exploration: choosing a topic",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "IA.2",
+          "title": "Mathematical exploration: mathematical presentation and rigour",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "IA.3",
+          "title": "Mathematical exploration: personal engagement and reflection",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    }
+  ]
+}

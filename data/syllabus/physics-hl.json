@@ -1,0 +1,235 @@
+{
+  "subjectId": "physics-hl",
+  "guide": "Physics guide (first assessment 2025)",
+  "verified": false,
+  "topics": [
+    {
+      "code": "A",
+      "title": "Space, time and motion",
+      "nodes": [
+        {
+          "code": "A.1",
+          "title": "Kinematics",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "A.2",
+          "title": "Forces and momentum",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "A.3",
+          "title": "Work, energy and power",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "A.4",
+          "title": "Rigid body mechanics",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "A.5",
+          "title": "Galilean and special relativity",
+          "tier": "AHL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "B",
+      "title": "The particulate nature of matter",
+      "nodes": [
+        {
+          "code": "B.1",
+          "title": "Thermal energy transfers",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "B.2",
+          "title": "Greenhouse effect",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "B.3",
+          "title": "Gas laws",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "B.4",
+          "title": "Thermodynamics",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "B.5",
+          "title": "Current and circuits",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "C",
+      "title": "Wave behaviour",
+      "nodes": [
+        {
+          "code": "C.1",
+          "title": "Simple harmonic motion",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "C.2",
+          "title": "Wave model",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "C.3",
+          "title": "Wave phenomena",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "C.4",
+          "title": "Standing waves and resonance",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "C.5",
+          "title": "Doppler effect",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "D",
+      "title": "Fields",
+      "nodes": [
+        {
+          "code": "D.1",
+          "title": "Gravitational fields",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "D.2",
+          "title": "Electric and magnetic fields",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "D.3",
+          "title": "Motion in electromagnetic fields",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "D.4",
+          "title": "Induction",
+          "tier": "AHL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "E",
+      "title": "Nuclear and quantum physics",
+      "nodes": [
+        {
+          "code": "E.1",
+          "title": "Structure of the atom",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "E.2",
+          "title": "Quantum physics",
+          "tier": "AHL",
+          "phase": "DP2"
+        },
+        {
+          "code": "E.3",
+          "title": "Radioactive decay",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "E.4",
+          "title": "Fission",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "E.5",
+          "title": "Fusion and stars",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "T",
+      "title": "Tools and inquiry",
+      "nodes": [
+        {
+          "code": "T.1",
+          "title": "Experimental techniques: safe, ethical, effective measurement",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "T.2",
+          "title": "Technology: data collection, spreadsheets, graphing, simulations",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "T.3",
+          "title": "Mathematics: uncertainties, error propagation, linearisation",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "T.4",
+          "title": "Inquiry: designing, collecting, processing, concluding, evaluating",
+          "tier": "SL",
+          "phase": "DP1"
+        }
+      ]
+    },
+    {
+      "code": "IA",
+      "title": "Internal assessment",
+      "nodes": [
+        {
+          "code": "IA.1",
+          "title": "Scientific investigation: research question and design",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "IA.2",
+          "title": "Scientific investigation: data collection and processing",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "IA.3",
+          "title": "Scientific investigation: analysis, conclusion and evaluation",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    }
+  ]
+}

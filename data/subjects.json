@@ -1,0 +1,61 @@
+{
+  "session": "2028-05",
+  "dpStart": "2026-08",
+  "examStart": "2028-04-28",
+  "subjects": [
+    {
+      "id": "math-aa-hl",
+      "name": "Mathematics: Analysis & Approaches",
+      "short": "Math AA",
+      "level": "HL",
+      "group": 5,
+      "callsign": "AXIS",
+      "colorKey": "s1"
+    },
+    {
+      "id": "physics-hl",
+      "name": "Physics",
+      "short": "Physics",
+      "level": "HL",
+      "group": 4,
+      "callsign": "THRUST",
+      "colorKey": "s2"
+    },
+    {
+      "id": "economics-hl",
+      "name": "Economics",
+      "short": "Economics",
+      "level": "HL",
+      "group": 3,
+      "callsign": "YIELD",
+      "colorKey": "s3"
+    },
+    {
+      "id": "chemistry-sl",
+      "name": "Chemistry",
+      "short": "Chemistry",
+      "level": "SL",
+      "group": 4,
+      "callsign": "CATALYST",
+      "colorKey": "s4"
+    },
+    {
+      "id": "portugues-lal-sl",
+      "name": "Português A: Language & Literature",
+      "short": "Português",
+      "level": "SL",
+      "group": 1,
+      "callsign": "LÉXICO",
+      "colorKey": "s5"
+    },
+    {
+      "id": "english-lal-sl",
+      "name": "English A: Language & Literature",
+      "short": "English",
+      "level": "SL",
+      "group": 1,
+      "callsign": "RHETOR",
+      "colorKey": "s6"
+    }
+  ]
+}

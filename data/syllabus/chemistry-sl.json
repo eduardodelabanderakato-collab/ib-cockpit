@@ -1,0 +1,223 @@
+{
+  "subjectId": "chemistry-sl",
+  "guide": "Chemistry guide (first assessment 2025)",
+  "verified": false,
+  "topics": [
+    {
+      "code": "S1",
+      "title": "Structure 1 — Models of the particulate nature of matter",
+      "nodes": [
+        {
+          "code": "S1.1",
+          "title": "Introduction to the particulate nature of matter",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "S1.2",
+          "title": "The nuclear atom",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "S1.3",
+          "title": "Electron configurations",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "S1.4",
+          "title": "Counting particles by mass: the mole",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "S1.5",
+          "title": "Ideal gases",
+          "tier": "SL",
+          "phase": "DP1"
+        }
+      ]
+    },
+    {
+      "code": "S2",
+      "title": "Structure 2 — Models of bonding and structure",
+      "nodes": [
+        {
+          "code": "S2.1",
+          "title": "The ionic model",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "S2.2",
+          "title": "The covalent model",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "S2.3",
+          "title": "The metallic model",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "S2.4",
+          "title": "From models to materials",
+          "tier": "SL",
+          "phase": "DP1"
+        }
+      ]
+    },
+    {
+      "code": "S3",
+      "title": "Structure 3 — Classification of matter",
+      "nodes": [
+        {
+          "code": "S3.1",
+          "title": "The periodic table: classification of elements",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "S3.2",
+          "title": "Functional groups: classification of organic compounds",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "R1",
+      "title": "Reactivity 1 — What drives chemical reactions?",
+      "nodes": [
+        {
+          "code": "R1.1",
+          "title": "Measuring enthalpy changes",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "R1.2",
+          "title": "Energy cycles in reactions",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "R1.3",
+          "title": "Energy from fuels",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "R2",
+      "title": "Reactivity 2 — How much, how fast and how far?",
+      "nodes": [
+        {
+          "code": "R2.1",
+          "title": "How much? The amount of chemical change",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "R2.2",
+          "title": "How fast? The rate of chemical change",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "R2.3",
+          "title": "How far? The extent of chemical change",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "R3",
+      "title": "Reactivity 3 — What are the mechanisms of chemical change?",
+      "nodes": [
+        {
+          "code": "R3.1",
+          "title": "Proton transfer reactions",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "R3.2",
+          "title": "Electron transfer reactions",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "R3.3",
+          "title": "Electron sharing reactions",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "R3.4",
+          "title": "Electron-pair sharing reactions",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "T",
+      "title": "Tools and inquiry",
+      "nodes": [
+        {
+          "code": "T.1",
+          "title": "Experimental techniques",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "T.2",
+          "title": "Technology: data collection and processing",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "T.3",
+          "title": "Mathematics: uncertainties and graphing",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "T.4",
+          "title": "Inquiry: design, collection, conclusion, evaluation",
+          "tier": "SL",
+          "phase": "DP1"
+        }
+      ]
+    },
+    {
+      "code": "IA",
+      "title": "Internal assessment",
+      "nodes": [
+        {
+          "code": "IA.1",
+          "title": "Scientific investigation: research question and design",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "IA.2",
+          "title": "Scientific investigation: data collection and processing",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "IA.3",
+          "title": "Scientific investigation: analysis, conclusion and evaluation",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    }
+  ]
+}

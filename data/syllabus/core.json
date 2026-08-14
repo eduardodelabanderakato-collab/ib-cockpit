@@ -1,0 +1,229 @@
+{
+  "subjectId": "core",
+  "guide": "Theory of Knowledge guide (first assessment 2022); EE and CAS guides",
+  "verified": false,
+  "topics": [
+    {
+      "code": "TOK",
+      "title": "Theory of Knowledge",
+      "nodes": [
+        {
+          "code": "TOK.1",
+          "title": "Core theme: knowledge and the knower",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "TOK.2",
+          "title": "Optional theme: knowledge and technology",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "TOK.3",
+          "title": "Optional theme: knowledge and language",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "TOK.4",
+          "title": "Optional theme: knowledge and politics",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "TOK.5",
+          "title": "Optional theme: knowledge and religion",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "TOK.6",
+          "title": "Optional theme: knowledge and indigenous societies",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "TOK.7",
+          "title": "Area of knowledge: history",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "TOK.8",
+          "title": "Area of knowledge: the human sciences",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "TOK.9",
+          "title": "Area of knowledge: the natural sciences",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "TOK.10",
+          "title": "Area of knowledge: the arts",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "TOK.11",
+          "title": "Area of knowledge: mathematics",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "TOK.12",
+          "title": "Exhibition: selecting three objects",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "TOK.13",
+          "title": "Exhibition: writing the commentary",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "TOK.14",
+          "title": "Essay: unpacking the prescribed title",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "TOK.15",
+          "title": "Essay: developing and evaluating perspectives",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "TOK.16",
+          "title": "Essay: final submission",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "EE",
+      "title": "Extended Essay",
+      "nodes": [
+        {
+          "code": "EE.1",
+          "title": "Choosing a subject and supervisor",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "EE.2",
+          "title": "Formulating the research question",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "EE.3",
+          "title": "Reflection session 1",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "EE.4",
+          "title": "Research and source gathering",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "EE.5",
+          "title": "Interim reflection session",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "EE.6",
+          "title": "First full draft",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "EE.7",
+          "title": "Revision and referencing",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "EE.8",
+          "title": "Viva voce and final reflection",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "EE.9",
+          "title": "Final submission",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "CAS",
+      "title": "Creativity, Activity, Service",
+      "nodes": [
+        {
+          "code": "CAS.1",
+          "title": "LO1: identify own strengths and areas for growth",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "CAS.2",
+          "title": "LO2: undertake new challenges and develop new skills",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "CAS.3",
+          "title": "LO3: initiate and plan a CAS experience",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "CAS.4",
+          "title": "LO4: show commitment to and perseverance in CAS",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "CAS.5",
+          "title": "LO5: demonstrate the skills and benefits of collaboration",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "CAS.6",
+          "title": "LO6: engage with issues of global significance",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "CAS.7",
+          "title": "LO7: recognize and consider the ethics of choices and actions",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "CAS.8",
+          "title": "CAS project (at least one month, collaborative)",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "CAS.9",
+          "title": "Three formal CAS interviews",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,289 @@
+{
+  "subjectId": "portugues-lal-sl",
+  "guide": "Language A: Language and Literature guide (first assessment 2021)",
+  "verified": false,
+  "topics": [
+    {
+      "code": "AOE",
+      "title": "Areas of exploration",
+      "nodes": [
+        {
+          "code": "AOE.1",
+          "title": "Readers, writers and texts",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "AOE.2",
+          "title": "Time and space",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "AOE.3",
+          "title": "Intertextuality: connecting texts",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "C",
+      "title": "Course concepts",
+      "nodes": [
+        {
+          "code": "C.1",
+          "title": "Identity",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "C.2",
+          "title": "Culture",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "C.3",
+          "title": "Creativity",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "C.4",
+          "title": "Communication",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "C.5",
+          "title": "Perspective",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "C.6",
+          "title": "Transformation",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "C.7",
+          "title": "Representation",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "P1",
+      "title": "Paper 1 — Guided textual analysis (non-literary)",
+      "nodes": [
+        {
+          "code": "P1.1",
+          "title": "Advertisement and appeal",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "P1.2",
+          "title": "Opinion column and editorial",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "P1.3",
+          "title": "Speech and rhetoric",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "P1.4",
+          "title": "News article and report",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "P1.5",
+          "title": "Blog, social media and digital text",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "P1.6",
+          "title": "Cartoon, comic and graphic text",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "P1.7",
+          "title": "Photograph and image analysis",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "P1.8",
+          "title": "Infographic and data visualisation",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "P1.9",
+          "title": "Brochure, pamphlet and public information",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "P1.10",
+          "title": "Travel writing, memoir and diary",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "P1.11",
+          "title": "Interview and transcript",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "P1.12",
+          "title": "Manifesto, propaganda and parody",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "P1.13",
+          "title": "Responding to the guiding question under timed conditions",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "P2",
+      "title": "Paper 2 — Comparative essay",
+      "nodes": [
+        {
+          "code": "P2.1",
+          "title": "Selecting two works for meaningful comparison",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "P2.2",
+          "title": "Structuring a comparative argument",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "P2.3",
+          "title": "Integrating textual evidence from both works",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "P2.4",
+          "title": "Addressing the question under timed conditions",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "IO",
+      "title": "Individual Oral",
+      "nodes": [
+        {
+          "code": "IO.1",
+          "title": "Choosing a global issue",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "IO.2",
+          "title": "Selecting and justifying the two extracts",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "IO.3",
+          "title": "Structuring the 10-minute oral",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "IO.4",
+          "title": "Responding to follow-up questions",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "LP",
+      "title": "Learner portfolio",
+      "nodes": [
+        {
+          "code": "LP.1",
+          "title": "Recording responses to each work and text",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "LP.2",
+          "title": "Connecting works to areas of exploration and concepts",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "LP.3",
+          "title": "Preparing assessment groundwork",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
+      "code": "W",
+      "title": "Works and texts studied",
+      "nodes": [
+        {
+          "code": "W.1",
+          "title": "Literary work 1",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "W.2",
+          "title": "Literary work 2",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "W.3",
+          "title": "Literary work 3",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "W.4",
+          "title": "Literary work 4",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "W.5",
+          "title": "Non-literary body of work 1",
+          "tier": "SL",
+          "phase": "DP1"
+        },
+        {
+          "code": "W.6",
+          "title": "Non-literary body of work 2",
+          "tier": "SL",
+          "phase": "DP2"
+        }
+      ]
+    }
+  ]
+}
