@@ -42,10 +42,10 @@ export function build({
     const days = Math.ceil((Date.parse(d.due) - now) / DAY);
     if (days < 0) {
       out.push({ code: `${short(d.title)} OVERDUE`, level: 'warning',
-        detail: `${d.title} was due ${Math.abs(days)} day(s) ago.`, href: '#/deadlines' });
+        detail: `${d.title} was due ${Math.abs(days)} day(s) ago.`, href: '#/fpln' });
     } else if (days <= 14) {
       out.push({ code: `${short(d.title)} ${days}D`, level: days <= 3 ? 'warning' : 'caution',
-        detail: `${d.title} is due in ${days} day(s).`, href: '#/deadlines' });
+        detail: `${d.title} is due in ${days} day(s).`, href: '#/fpln' });
     }
   }
 
@@ -55,7 +55,7 @@ export function build({
   if (fading.length) {
     out.push({ code: `${fading.length} FADING`, level: 'caution',
       detail: `${fading.length} topic${fading.length > 1 ? 's are' : ' is'} decaying. Oldest: ${
-        Math.round(fading[0].days)} days.`, href: '#/subjects' });
+        Math.round(fading[0].days)} days.`, href: '#/fade' });
   }
 
   // ── CAUTION: neglected subjects ───────────────────────────
@@ -74,7 +74,7 @@ export function build({
     out.push({
       code: `${cold.length} SUBJECTS COLD`, level: 'caution',
       detail: `Untouched for ${COLD_DAYS}+ days: ${cold.map(c => c.s.short).join(', ')}.`,
-      href: '#/subjects',
+      href: '#/pace',
     });
   } else {
     for (const c of cold) {
@@ -83,7 +83,7 @@ export function build({
         detail: c.t === null
           ? `${c.s.name} has never been opened.`
           : `${c.s.name} untouched for ${Math.round(c.days)} days.`,
-        href: `#/subject/${c.s.id}`,
+        href: `#/subject:${c.s.id}`,
       });
     }
   }
@@ -92,7 +92,7 @@ export function build({
   if (paceRatio > 0 && paceRatio < PACE_FLOOR) {
     out.push({ code: 'BEHIND PACE', level: 'caution',
       detail: `Capturing at ${Math.round(paceRatio * 100)}% of the rate the calendar expects.`,
-      href: '#/subjects' });
+      href: '#/pace' });
   }
 
   // ── ADVISORY ──────────────────────────────────────────────
@@ -102,12 +102,12 @@ export function build({
   }
   if (paceRatio >= 1.15) {
     out.push({ code: 'AHEAD OF PLAN', level: 'advisory',
-      detail: `Running at ${Math.round(paceRatio * 100)}% of expected pace.`, href: '#/subjects' });
+      detail: `Running at ${Math.round(paceRatio * 100)}% of expected pace.`, href: '#/pace' });
   }
 
   if (!out.length) {
     return [{ code: 'ALL SYSTEMS NOMINAL', level: 'nominal',
-      detail: 'Nothing fading, nothing overdue, on pace.', href: '#/subjects' }];
+      detail: 'Nothing fading, nothing overdue, on pace.', href: '#/pace' }];
   }
 
   return out.sort((a, b) => LEVELS[b.level] - LEVELS[a.level]);

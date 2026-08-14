@@ -47,3 +47,11 @@ a{color:inherit}
   .topbar nav{margin-left:0;width:100%;order:3}
   .app{padding:16px 14px 120px}
 }
+
+.topbar-hint{
+  margin-left:auto;font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--dim);white-space:nowrap;
+}
+.topbar-hint kbd{font:inherit;border:1px solid var(--chrome-line);border-radius:4px;
+  padding:2px 5px}
+@media(max-width:620px){.topbar-hint{display:none}}

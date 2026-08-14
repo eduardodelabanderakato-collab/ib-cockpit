@@ -53,7 +53,7 @@ test('a neglected subject raises a COLD caution naming it', () => {
   assert.ok(cold);
   assert.equal(cold.level, 'caution');
   assert.match(cold.detail, /30 days/);
-  assert.equal(cold.href, '#/subject/physics-hl');
+  assert.equal(cold.href, '#/subject:physics-hl');
   assert.equal(ann.masterCaution(list), true);
 });
 
