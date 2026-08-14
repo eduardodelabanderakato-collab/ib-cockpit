@@ -1,0 +1,46 @@
+{
+  "groups": [
+    {
+      "name": "Revision Village",
+      "note": "You have Gold. These are the deep links worth bookmarking.",
+      "links": [
+        { "label": "Math AA HL — Questionbank", "url": "https://www.revisionvillage.com/ib-math-analysis-and-approaches-hl/questionbank/", "subjectId": "math-aa-hl" },
+        { "label": "Math AA HL — Past papers", "url": "https://www.revisionvillage.com/ib-math-analysis-and-approaches-hl/past-papers/", "subjectId": "math-aa-hl" },
+        { "label": "Math AA HL — Practice exams", "url": "https://www.revisionvillage.com/ib-math-analysis-and-approaches-hl/practice-exams/", "subjectId": "math-aa-hl" },
+        { "label": "Physics HL — Questionbank", "url": "https://www.revisionvillage.com/ib-physics/questionbank/", "subjectId": "physics-hl" },
+        { "label": "Physics HL — Past papers", "url": "https://www.revisionvillage.com/ib-physics/past-papers/", "subjectId": "physics-hl" },
+        { "label": "Chemistry — Questionbank", "url": "https://www.revisionvillage.com/ib-chemistry/questionbank/", "subjectId": "chemistry-sl" },
+        { "label": "Chemistry — Past papers", "url": "https://www.revisionvillage.com/ib-chemistry/past-papers/", "subjectId": "chemistry-sl" },
+        { "label": "Economics — Questionbank", "url": "https://www.revisionvillage.com/ib-economics/questionbank/", "subjectId": "economics-hl" }
+      ]
+    },
+    {
+      "name": "Past papers and question banks",
+      "note": "Free. Verify the syllabus edition before trusting an old paper.",
+      "links": [
+        { "label": "IB Documents — past papers archive", "url": "https://ibdocuments.com/", "subjectId": null },
+        { "label": "Physics & Maths Tutor — IB section", "url": "https://www.physicsandmathstutor.com/ib/", "subjectId": null },
+        { "label": "Save My Exams — IB", "url": "https://www.savemyexams.com/ib/", "subjectId": null }
+      ]
+    },
+    {
+      "name": "Tools",
+      "note": "The things you actually open mid-question.",
+      "links": [
+        { "label": "Desmos graphing calculator", "url": "https://www.desmos.com/calculator", "subjectId": "math-aa-hl" },
+        { "label": "GeoGebra classic", "url": "https://www.geogebra.org/classic", "subjectId": "math-aa-hl" },
+        { "label": "IB Physics data booklet (search)", "url": "https://www.google.com/search?q=IB+physics+data+booklet+2023+guide+pdf", "subjectId": "physics-hl" },
+        { "label": "IB Chemistry data booklet (search)", "url": "https://www.google.com/search?q=IB+chemistry+data+booklet+2023+guide+pdf", "subjectId": "chemistry-sl" }
+      ]
+    },
+    {
+      "name": "Official",
+      "note": "The source of truth. Guides live behind My IB.",
+      "links": [
+        { "label": "My IB", "url": "https://internationalbaccalaureate.force.com/", "subjectId": null },
+        { "label": "IB Programme Resource Centre", "url": "https://resources.ibo.org/", "subjectId": null },
+        { "label": "ManageBac", "url": "https://managebac.com/login", "subjectId": null }
+      ]
+    }
+  ]
+}

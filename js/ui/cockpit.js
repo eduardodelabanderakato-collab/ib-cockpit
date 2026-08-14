@@ -1,6 +1,40 @@
-import { el, esc, subjectColor } from './dom.js';
+import { el, esc } from './dom.js';
 import { createWindshield } from './windshield.js';
 import { bankAngle, pitchOffset } from './pfd.js';
+import { BANKS, currentPath } from './nav.js';
+
+/**
+ * The switch bank: every destination as a labelled cockpit switch, grouped
+ * like an overhead panel, each with a hover tooltip and a status LED.
+ */
+export function renderSwitchBank(status = new Map()) {
+  const bank = el('div', 'bank');
+  const here = currentPath();
+
+  for (const g of BANKS) {
+    const group = el('div', 'bank-group');
+    group.append(el('p', 'bank-label', g.group));
+    const row = el('div', 'switches');
+
+    for (const sw of g.switches) {
+      const st = status.get(sw.code);
+      const a = el('a', 'switch');
+      a.href = sw.href;
+      a.dataset.tip = st ? `${sw.tip} — ${st.note}` : sw.tip;
+      a.setAttribute('aria-label', `${sw.name}: ${sw.tip}`);
+      if (sw.href.replace(/^#/, '') === here) a.setAttribute('aria-current', 'page');
+      a.innerHTML = `
+        <span class="switch-led${st ? ' ' + st.level : ''}"></span>
+        <span class="switch-code">${esc(sw.code)}</span>
+        <span class="switch-name">${esc(sw.name)}</span>
+        ${st ? `<span class="switch-note ${st.level}">${esc(st.note)}</span>` : ''}`;
+      row.append(a);
+    }
+    group.append(row);
+    bank.append(group);
+  }
+  return bank;
+}
 
 const MID = 196;   // horizon line, vertical centre of the HUD
 const TAPE_H = 176;
@@ -143,6 +177,9 @@ export function createCockpit(mount, model) {
     mfds.append(a);
   }
   deck.append(mfds);
+
+  // ── switch bank ───────────────────────────────────────────
+  deck.append(renderSwitchBank(model.switchStatus));
 
   // ── pedestal ──────────────────────────────────────────────
   deck.append(model.pedestal);

@@ -192,3 +192,31 @@
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast b{color:var(--accent);font-family:ui-monospace,Menlo,monospace}
+
+/* ── territory map ───────────────────────────────────────── */
+.terr-scroll{overflow-x:auto;padding-bottom:8px}
+.terr-svg{display:block;min-width:100%}
+.terr-topic{font-family:ui-monospace,Menlo,monospace;font-size:10px;font-weight:700;
+  letter-spacing:.1em;fill:var(--c)}
+.terr-topic-t{font-family:ui-sans-serif,system-ui,sans-serif;font-size:9.5px;
+  fill:var(--panel-dim)}
+.terr-code{font-family:ui-monospace,Menlo,monospace;font-size:9px;fill:var(--panel-dim)}
+.terr-svg a{cursor:pointer}
+.terr-svg a:hover circle{stroke-width:3}
+
+/* ── notes pane ──────────────────────────────────────────── */
+.notes{margin-top:12px;display:grid;gap:9px}
+.notes textarea{
+  width:100%;min-height:120px;resize:vertical;font:inherit;font-size:13px;line-height:1.55;
+  padding:11px 13px;border-radius:10px;border:1px solid var(--panel-line);
+  background:var(--track);color:var(--panel-text);font-family:ui-monospace,Menlo,monospace;
+}
+.notes-render{
+  font-size:13.5px;line-height:1.6;color:var(--panel-text);
+  padding:2px 0;
+}
+.notes-render h3{font-size:14px;margin:12px 0 6px}
+.notes-render code{font-family:ui-monospace,Menlo,monospace;font-size:12px;
+  background:var(--track);padding:1px 5px;border-radius:4px}
+.notes-render ul{margin:6px 0;padding-left:20px}
+.notes-render a{color:var(--accent)}

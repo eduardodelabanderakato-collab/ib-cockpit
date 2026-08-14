@@ -5,6 +5,7 @@ import { courseElapsed, paceRatio } from '../ui/pfd.js';
 import { examinedNodeIds, nodesFor } from '../syllabus.js';
 import { el, panel, esc, subjectColor, heatmap } from '../ui/dom.js';
 import { createCockpit } from '../ui/cockpit.js';
+import { switchStatus } from '../ui/nav.js';
 import { commitSession } from './log.js';
 import { toast } from '../ui/dom.js';
 
@@ -59,6 +60,7 @@ export function commandView(mount, ctx) {
     masterCaution: ann.masterCaution(captions),
     annunciators: captions,
     screens: buildScreens(ctx, { records, captured, fading, x, lvl }),
+    switchStatus: switchStatus({ index, state }),
     pedestal: buildPedestal(ctx),
   });
 
