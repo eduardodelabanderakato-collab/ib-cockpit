@@ -1,0 +1,63 @@
+/* IB Cockpit — theme tokens.
+   Five flight decks. `glass` is the default: bright cabin, dark instrument screens.
+   Switch with document.documentElement.dataset.theme. */
+
+:root,
+:root[data-theme="glass"] {
+  --bg:#EFF2F6; --panel:#0E1520; --panel-text:#E9EFF6; --panel-dim:#7C8B9E;
+  --chrome:#FFFFFF; --chrome-text:#0F172A; --chrome-line:#E1E6EC;
+  --line:#DFE4EA; --panel-line:#22303F; --track:#1A2431; --track-light:#E3E8EE;
+  --text:#0F172A; --dim:#5B6675;
+  --accent:#00C2A8; --accent-2:#7AA2FF; --ok:#34D399; --warn:#FFB020; --bad:#FB7185;
+  --gs:12px;
+  --elev:0 1px 2px rgba(16,24,40,.05), 0 12px 32px -10px rgba(16,24,40,.18);
+  --elev-sm:0 2px 10px -4px rgba(16,24,40,.28);
+  --s1:#5AC8FA; --s2:#A78BFA; --s3:#34D399; --s4:#FBBF24; --s5:#FB7185; --s6:#22D3EE;
+}
+
+:root[data-theme="daylight"] {
+  --bg:#F4F6F9; --panel:#FFFFFF; --panel-text:#0F172A; --panel-dim:#64748B;
+  --chrome:#FFFFFF; --chrome-text:#0F172A; --chrome-line:#E4E9EF;
+  --line:#E4E9EF; --panel-line:#E7EBF0; --track:#EDF1F6; --track-light:#EDF1F6;
+  --text:#0F172A; --dim:#64748B;
+  --accent:#0A84FF; --accent-2:#5E5CE6; --ok:#30D158; --warn:#FF9F0A; --bad:#FF375F;
+  --gs:0px;
+  --elev:0 1px 2px rgba(16,24,40,.05), 0 8px 24px -8px rgba(16,24,40,.12);
+  --elev-sm:0 1px 2px rgba(16,24,40,.04);
+  --s1:#0A84FF; --s2:#5E5CE6; --s3:#30D158; --s4:#FF9F0A; --s5:#FF375F; --s6:#00C7BE;
+}
+
+:root[data-theme="cabin"] {
+  --bg:#F7F5F1; --panel:#FFFFFF; --panel-text:#1C1A17; --panel-dim:#7A736A;
+  --chrome:#FFFDFA; --chrome-text:#1C1A17; --chrome-line:#E9E3DA;
+  --line:#E9E3DA; --panel-line:#EDE8E0; --track:#F0ECE5; --track-light:#F0ECE5;
+  --text:#1C1A17; --dim:#7A736A;
+  --accent:#0B6BCB; --accent-2:#7A5AF8; --ok:#2E9E5B; --warn:#D97706; --bad:#DC2F55;
+  --gs:0px;
+  --elev:0 1px 2px rgba(16,24,40,.05), 0 8px 24px -8px rgba(16,24,40,.12);
+  --elev-sm:0 1px 2px rgba(16,24,40,.04);
+  --s1:#0B6BCB; --s2:#7A5AF8; --s3:#2E9E5B; --s4:#D97706; --s5:#DC2F55; --s6:#0E9AA7;
+}
+
+:root[data-theme="horizon"] {
+  --bg:#EDF3FB; --panel:#FFFFFF; --panel-text:#0B1B2B; --panel-dim:#5C7186;
+  --chrome:#FFFFFF; --chrome-text:#0B1B2B; --chrome-line:#DCE7F5;
+  --line:#DCE7F5; --panel-line:#E3EBF6; --track:#E8F0FA; --track-light:#E8F0FA;
+  --text:#0B1B2B; --dim:#5C7186;
+  --accent:#1273EA; --accent-2:#7C4DFF; --ok:#17B26A; --warn:#F79009; --bad:#F04438;
+  --gs:0px;
+  --elev:0 1px 2px rgba(16,24,40,.05), 0 8px 24px -8px rgba(16,24,40,.12);
+  --elev-sm:0 1px 2px rgba(16,24,40,.04);
+  --s1:#1273EA; --s2:#7C4DFF; --s3:#17B26A; --s4:#F79009; --s5:#F04438; --s6:#06AED4;
+}
+
+:root[data-theme="instrument"] {
+  --bg:#FFFFFF; --panel:#FFFFFF; --panel-text:#000000; --panel-dim:#6B7684;
+  --chrome:#FAFBFC; --chrome-text:#000000; --chrome-line:#D5DBE3;
+  --line:#D5DBE3; --panel-line:#DDE2E9; --track:#EFF2F6; --track-light:#EFF2F6;
+  --text:#000000; --dim:#6B7684;
+  --accent:#0057FF; --accent-2:#6E00FF; --ok:#00A650; --warn:#FF8A00; --bad:#E5002B;
+  --gs:0px;
+  --elev:0 0 0 1px rgba(16,24,40,.06); --elev-sm:0 0 0 1px rgba(16,24,40,.05);
+  --s1:#0057FF; --s2:#6E00FF; --s3:#00A650; --s4:#FF8A00; --s5:#E5002B; --s6:#00A3AD;
+}

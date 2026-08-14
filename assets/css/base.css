@@ -1,0 +1,49 @@
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:ui-sans-serif,-apple-system,"SF Pro Text",Inter,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  font-size:14px;line-height:1.5;
+}
+h1,h2,h3{margin:0;letter-spacing:-.02em;line-height:1.15}
+h1{font-size:26px;font-weight:650}
+h2{font-size:18px;font-weight:640}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:inherit}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.hidden{display:none!important}
+.app{max-width:1240px;margin:0 auto;padding:24px 20px 120px;display:grid;gap:16px}
+
+/* ── glareshield ─────────────────────────────────────────────── */
+.topbar{
+  display:flex;align-items:center;gap:14px;padding:0 20px;height:56px;
+  background:var(--chrome);color:var(--chrome-text);
+  border-bottom:1px solid var(--chrome-line);
+  position:sticky;top:0;z-index:20;
+}
+.brand{display:flex;align-items:center;gap:9px;font-weight:660;letter-spacing:-.01em}
+.brand .lamp{
+  width:8px;height:8px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 var(--gs) var(--accent),0 0 calc(var(--gs)*2) var(--accent);
+}
+.countdown{
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+  padding:5px 10px;border:1px solid var(--chrome-line);border-radius:7px;white-space:nowrap;
+}
+.countdown b{color:var(--accent)}
+.topbar nav{display:flex;gap:2px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.topbar nav::-webkit-scrollbar{display:none}
+.topbar nav a{
+  font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;text-decoration:none;color:var(--dim);
+  padding:8px 11px;border-radius:8px;white-space:nowrap;transition:color .12s,background .12s;
+}
+.topbar nav a:hover{color:var(--text)}
+.topbar nav a[aria-current="page"]{background:var(--track-light);color:var(--accent);font-weight:700}
+
+@media(max-width:640px){
+  .topbar{height:auto;flex-wrap:wrap;padding:10px 14px;gap:8px}
+  .topbar nav{margin-left:0;width:100%;order:3}
+  .app{padding:16px 14px 120px}
+}

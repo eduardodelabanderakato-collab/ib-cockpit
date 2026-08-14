@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="glass">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IB Cockpit</title>
+<meta name="description" content="Private mission control for the IB Diploma Programme.">
+<meta name="theme-color" content="#EFF2F6">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<script>
+  // Apply the saved theme before first paint so there is no flash.
+  try {
+    const s = JSON.parse(localStorage.getItem('ibc:settings') || '{}');
+    if (s.theme) document.documentElement.dataset.theme = s.theme;
+  } catch {}
+</script>
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand"><span class="lamp"></span>IB Cockpit</span>
+    <span class="countdown mono" id="countdown">M28</span>
+    <nav>
+      <a href="#/">Command</a>
+      <a href="#/subjects">Subjects</a>
+      <a href="#/log">Log</a>
+    </nav>
+  </header>
+  <main class="app" id="view"></main>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
