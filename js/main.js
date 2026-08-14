@@ -2,7 +2,7 @@ import { loadIndex } from './syllabus.js';
 import { createState } from './state.js';
 import { createRouter } from './router.js';
 import * as mastery from './models/mastery.js';
-import { commandView } from './views/command.js';
+import { commandView, disposeCommand } from './views/command.js';
 import { subjectListView, subjectDetailView } from './views/subject.js';
 import { logView } from './views/log.js';
 import { el } from './ui/dom.js';
@@ -24,10 +24,10 @@ const ctx = { index, state };
 
 const router = createRouter({
   '/':            m => commandView(m, ctx),
-  '/subjects':    m => subjectListView(m, ctx),
-  '/subject/:id': (m, p) => subjectDetailView(m, ctx, p),
-  '/log':         m => logView(m, ctx),
-  '*':            m => m.append(el('p', 'empty', 'No such instrument.')),
+  '/subjects':    m => { disposeCommand(); subjectListView(m, ctx); },
+  '/subject/:id': (m, p) => { disposeCommand(); subjectDetailView(m, ctx, p); },
+  '/log':         m => { disposeCommand(); logView(m, ctx); },
+  '*':            m => { disposeCommand(); m.append(el('p', 'empty', 'No such instrument.')); },
 }, document.getElementById('view'));
 
 router.render();

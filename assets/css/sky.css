@@ -1,0 +1,125 @@
+/* The windshield: layered parallax sky driven by js/ui/windshield.js.
+   Every drifting layer is a doubled tile moved with translate3d so the
+   compositor does the work and the CPU stays free. */
+
+.wsky{
+  position:absolute;inset:0;overflow:hidden;
+  background:var(--sky-zenith,#0B1430);
+  --sky-zenith:#0B1430; --sky-upper:#20356B; --sky-horizon:#7FA6D8;
+  --sky-glow:#FFE0A8; --sky-cloud:#FFFFFF; --sky-shade:#8FA6C0; --sky-haze:#CFE0F2;
+}
+
+/* base gradient — zenith to horizon, with the sun's glow washing the lower sky */
+.wsky-grad{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(120% 70% at 50% 108%,
+      color-mix(in srgb,var(--sky-glow) 55%,transparent) 0%, transparent 62%),
+    linear-gradient(to bottom,
+      var(--sky-zenith) 0%, var(--sky-upper) 38%, var(--sky-horizon) 78%,
+      color-mix(in srgb,var(--sky-horizon) 80%,var(--sky-haze)) 100%);
+  transition:background 3s linear;
+}
+
+.wsky-stars{
+  position:absolute;inset:0 0 34% 0;
+  background-repeat:repeat;background-size:420px 260px;
+  transition:opacity 4s linear;pointer-events:none;
+}
+
+/* sun / moon */
+.wsky-body{
+  position:absolute;width:0;height:0;transition:opacity 4s linear;pointer-events:none;
+}
+.wsky-glow{
+  position:absolute;left:50%;top:50%;width:420px;height:420px;transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:radial-gradient(circle,
+    color-mix(in srgb,var(--body-light,var(--sky-glow)) 78%,transparent) 0%,
+    color-mix(in srgb,var(--body-light,var(--sky-glow)) 26%,transparent) 34%,
+    transparent 68%);
+  transition:width .8s ease,height .8s ease;
+}
+.wsky-disc{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  border-radius:50%;filter:blur(.5px);
+  box-shadow:0 0 60px 18px color-mix(in srgb,var(--body-light,var(--sky-glow)) 55%,transparent);
+  transition:width .8s ease,height .8s ease;
+}
+
+/* drifting layers */
+.drift{
+  position:absolute;left:0;width:200%;height:100%;
+  background-repeat:repeat-x;background-size:50% 100%;
+  will-change:transform;
+  animation:drift var(--drift,120s) linear infinite;
+}
+@keyframes drift{ from{transform:translate3d(0,0,0)} to{transform:translate3d(-50%,0,0)} }
+.drift-slowest{--drift:520s}
+.drift-slow{--drift:260s}
+.drift-mid{--drift:104s}
+.drift-fast{--drift:42s}
+
+.wsky-cities{
+  top:auto;bottom:0;height:26%;
+  background-size:520px 150px;background-repeat:repeat;
+  transition:opacity 4s linear;mix-blend-mode:screen;
+  filter:blur(.4px);
+}
+
+/* the photographic cloud deck sits on the horizon line */
+.wsky-deck{
+  top:auto;bottom:0;height:58%;
+  background-image:url("../img/clouddeck.jpg");
+  background-size:50% 100%;
+  transition:filter 3s linear;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 16%,#000 100%);
+          mask-image:linear-gradient(to bottom,transparent 0%,#000 16%,#000 100%);
+}
+
+.wsky-mid{ top:auto;bottom:6%;height:34%;opacity:.55;transition:filter 3s linear }
+.wsky-near{ top:auto;bottom:-6%;height:40%;opacity:.4;background-size:70% 100%;
+  transition:filter 3s linear }
+
+/* haze band that ties the layers together at the horizon */
+.wsky-haze{
+  position:absolute;inset:auto 0 0 0;height:42%;pointer-events:none;
+  background:linear-gradient(to bottom,
+    transparent 0%,
+    color-mix(in srgb,var(--sky-haze) 32%,transparent) 52%,
+    color-mix(in srgb,var(--sky-haze) 62%,transparent) 100%);
+  transition:background 3s linear;
+}
+
+/* ── traffic ─────────────────────────────────────────────── */
+.wsky-traffic{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.flyby{position:absolute;left:-14%;animation:flyby var(--dur,18s) linear forwards}
+@keyframes flyby{
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(128vw,var(--rise,0),0)}
+}
+.bird{color:rgba(20,26,38,.62);width:110px;transform-origin:center}
+.bird svg{width:100%;height:auto;display:block;transform:scale(var(--scale,.6))}
+.bird .w1{animation:flap 1.05s ease-in-out infinite}
+.bird .w2{animation:flap .92s ease-in-out infinite .14s}
+.bird .w3{animation:flap 1.18s ease-in-out infinite .3s}
+@keyframes flap{
+  0%,100%{transform:scaleY(1)}
+  50%{transform:scaleY(.34)}
+}
+.bird path{transform-box:fill-box;transform-origin:center}
+
+.jet{
+  width:min(34vw,420px);height:2px;border-radius:2px;
+  background:linear-gradient(to right,
+    transparent 0%, rgba(255,255,255,.42) 55%, rgba(255,255,255,.78) 97%, #fff 100%);
+  filter:blur(.6px);opacity:.55;
+}
+
+/* respect the OS switch */
+.wsky.is-still .drift,
+.wsky.is-still .flyby,
+.wsky.is-still .bird path{animation:none}
+@media(prefers-reduced-motion:reduce){
+  .drift,.flyby,.bird path{animation:none}
+}
