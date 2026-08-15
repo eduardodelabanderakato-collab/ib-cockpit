@@ -76,9 +76,29 @@ export function phaseFilter(nodes, phase) {
   return phase ? nodes.filter(n => n.phase === phase) : nodes;
 }
 
-/** Subjects whose tree has not been checked against the official guide. */
+/** Subjects whose tree has not been read from the official guide. */
 export function unverifiedSubjects(index) {
   return index.subjects.filter(s => treeFor(index, s.id)?.verified === false);
+}
+
+/**
+ * How much a tree can be trusted, and why.
+ *   guide            — read verbatim from the official subject guide
+ *   official-partial — cross-checked against another official IB document
+ *   public           — reconstructed from public sources
+ */
+export const SOURCE_LEVELS = {
+  guide:              { label: 'Verified',  tone: 'ok' },
+  'official-partial': { label: 'Corroborated', tone: 'warn' },
+  public:             { label: 'Unverified', tone: 'warn' },
+};
+
+export function provenance(index, subjectId) {
+  const tree = treeFor(index, subjectId);
+  if (!tree) return null;
+  const level = tree.sourceLevel ?? 'public';
+  return { level, note: tree.sourceNote ?? '', guide: tree.guide ?? '',
+           ...SOURCE_LEVELS[level] };
 }
 
 /** Browser-side loader. Node tests build the index from disk instead. */

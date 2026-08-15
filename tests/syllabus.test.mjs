@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   buildIndex, nodeId, nodesFor, allNodeIds, examinedNodeIds,
-  phaseFilter, subject, unverifiedSubjects, treeFor,
+  phaseFilter, subject, unverifiedSubjects, treeFor, provenance, SOURCE_LEVELS,
 } from '../js/syllabus.js';
 
 function load() {
@@ -124,4 +124,42 @@ test('the verified Economics tree matches the guide it claims', () => {
 
   // The nine key concepts.
   assert.equal(nodes.filter(n => n.code.startsWith('K.')).length, 9);
+});
+
+
+test('every tree declares where it came from', () => {
+  const idx = load();
+  for (const s of idx.subjects) {
+    const p = provenance(idx, s.id);
+    assert.ok(p, `${s.id} has no provenance`);
+    assert.ok(SOURCE_LEVELS[p.level], `${s.id} has an unknown level ${p.level}`);
+    assert.ok(p.note.length > 20, `${s.id} does not explain its provenance`);
+  }
+});
+
+test('provenance is claimed honestly — only the guide-read tree says verified', () => {
+  const idx = load();
+  assert.equal(provenance(idx, 'economics-hl').level, 'guide');
+  assert.equal(provenance(idx, 'physics-hl').level, 'official-partial');
+  for (const id of ['chemistry-sl', 'math-aa-hl', 'portugues-lal-sl',
+                    'english-lal-sl', 'core']) {
+    assert.equal(provenance(idx, id).level, 'public', `${id} overclaims`);
+  }
+});
+
+test('the corroborated Physics tree carries the themes the data booklet lists', () => {
+  const idx = load();
+  const themes = Object.fromEntries(
+    treeFor(idx, 'physics-hl').topics.map(t => [t.code, t.title]));
+  assert.equal(themes.A, 'Space, time and motion');
+  assert.equal(themes.B, 'The particulate nature of matter');
+  assert.equal(themes.C, 'Wave behaviour');
+  assert.equal(themes.D, 'Fields');
+  assert.equal(themes.E, 'Nuclear and quantum physics');
+
+  const byCode = Object.fromEntries(
+    nodesFor(idx, 'physics-hl').map(n => [n.code, n.title]));
+  assert.equal(byCode['A.2'], 'Forces and momentum');
+  assert.equal(byCode['B.5'], 'Current and circuits');
+  assert.equal(byCode['E.1'], 'Structure of the atom');
 });

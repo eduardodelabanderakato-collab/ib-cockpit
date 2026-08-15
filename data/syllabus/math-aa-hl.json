@@ -2,6 +2,8 @@
   "subjectId": "math-aa-hl",
   "guide": "Mathematics: Analysis and Approaches guide (first assessment 2021). CONFIRMED current for May 2028 — the new AA guide is first taught Aug 2027, first assessed May 2029.",
   "verified": false,
+  "sourceLevel": "public",
+  "sourceNote": "Edition confirmed from IB curriculum updates; topic wording is from public sources, not the guide.",
   "topics": [
     {
       "code": "1",

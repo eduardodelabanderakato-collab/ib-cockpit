@@ -27,6 +27,8 @@ const SUBJECTS = [
 const MATH_AA_HL = {
   guide: 'Mathematics: Analysis and Approaches guide (first assessment 2021). CONFIRMED current for May 2028 — the new AA guide is first taught Aug 2027, first assessed May 2029.',
   verified: false,
+  sourceLevel: 'public',
+  sourceNote: 'Edition confirmed from IB curriculum updates; topic wording is from public sources, not the guide.',
   topics: [
     ['1', 'Number and algebra', [
       '1.1|Operations with numbers in the form a×10^k; scientific notation|SL|1',
@@ -133,8 +135,13 @@ const MATH_AA_HL = {
 // Physics HL — 2023 guide (first assessment 2025), Themes A–E
 // ─────────────────────────────────────────────────────────────────────────────
 const PHYSICS_HL = {
-  guide: 'Physics guide (first assessment 2025)',
+  guide: 'Physics guide (first assessment 2025).',
   verified: false,
+  sourceLevel: 'official-partial',
+  sourceNote: 'Themes and sub-topics cross-checked against the official IB Physics data booklet: '
+    + 'all five theme titles and all twenty-one sub-topics it lists match exactly. '
+    + 'An equations booklet cannot confirm the content within each sub-topic, nor which '
+    + 'material is HL-only — those still need the guide itself.',
   topics: [
     ['A', 'Space, time and motion', [
       'A.1|Kinematics|SL|1',
@@ -190,6 +197,8 @@ const PHYSICS_HL = {
 const CHEMISTRY_SL = {
   guide: 'Chemistry guide (first assessment 2025)',
   verified: false,
+  sourceLevel: 'public',
+  sourceNote: 'No official IB document available to check against. Structure follows the 2023 Structure/Reactivity framework from public sources.',
   topics: [
     ['S1', 'Structure 1 — Models of the particulate nature of matter', [
       'S1.1|Introduction to the particulate nature of matter|SL|1',
@@ -242,8 +251,10 @@ const CHEMISTRY_SL = {
 // Economics HL — 2020 guide (first assessment 2022)
 // ─────────────────────────────────────────────────────────────────────────────
 const ECONOMICS_HL = {
-  guide: 'Economics guide, first assessment 2024 (update Oct 2022). VERIFIED verbatim against the official PDF — this is the correct edition for May 2028.',
+  guide: 'Economics guide, first assessment 2024 (update Oct 2022).',
   verified: true,
+  sourceLevel: 'guide',
+  sourceNote: 'Every topic read verbatim from the official guide PDF. Correct edition for May 2028.',
   topics: [
     ['1', 'Unit 1: Introduction to economics', [
       '1.1|What is economics?|SL|1',
@@ -317,6 +328,8 @@ function langAndLit(lang) {
   return {
     guide: 'Language A: Language and Literature guide (first assessment 2021). No published revision found affecting May 2028.',
     verified: false,
+    sourceLevel: 'public',
+    sourceNote: 'Built from public sources. The Paper 1 text-type list in particular is a reconstruction, not the guide\'s own list.',
     topics: [
       ['AOE', 'Areas of exploration', [
         'AOE.1|Readers, writers and texts|SL|1',
@@ -383,6 +396,8 @@ function langAndLit(lang) {
 const CORE = {
   guide: 'TOK guide (first assessment 2022); Extended Essay guide (first assessment 2027 — this is your edition); CAS guide',
   verified: false,
+  sourceLevel: 'public',
+  sourceNote: 'Built from public sources. The Paper 1 text-type list in particular is a reconstruction, not the guide\'s own list.',
   topics: [
     ['TOK', 'Theory of Knowledge', [
       'TOK.1|Core theme: knowledge and the knower|SL|1',
@@ -438,6 +453,8 @@ function expand(subjectId, src) {
     subjectId,
     guide: src.guide,
     verified: src.verified,
+    sourceLevel: src.sourceLevel ?? 'public',
+    sourceNote: src.sourceNote ?? '',
     topics: src.topics.map(([code, title, nodes]) => ({
       code,
       title,

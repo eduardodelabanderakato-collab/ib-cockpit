@@ -1,7 +1,9 @@
 {
   "subjectId": "physics-hl",
-  "guide": "Physics guide (first assessment 2025)",
+  "guide": "Physics guide (first assessment 2025).",
   "verified": false,
+  "sourceLevel": "official-partial",
+  "sourceNote": "Themes and sub-topics cross-checked against the official IB Physics data booklet: all five theme titles and all twenty-one sub-topics it lists match exactly. An equations booklet cannot confirm the content within each sub-topic, nor which material is HL-only — those still need the guide itself.",
   "topics": [
     {
       "code": "A",

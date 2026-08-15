@@ -1,7 +1,9 @@
 {
   "subjectId": "economics-hl",
-  "guide": "Economics guide, first assessment 2024 (update Oct 2022). VERIFIED verbatim against the official PDF — this is the correct edition for May 2028.",
+  "guide": "Economics guide, first assessment 2024 (update Oct 2022).",
   "verified": true,
+  "sourceLevel": "guide",
+  "sourceNote": "Every topic read verbatim from the official guide PDF. Correct edition for May 2028.",
   "topics": [
     {
       "code": "1",

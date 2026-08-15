@@ -1,6 +1,6 @@
 import * as mastery from '../models/mastery.js';
 import * as xp from '../models/xp.js';
-import { nodesFor, topicsFor, subject as findSubject, phaseFilter, treeFor } from '../syllabus.js';
+import { nodesFor, topicsFor, subject as findSubject, phaseFilter, provenance } from '../syllabus.js';
 import { el, panel, esc, toast, subjectColor } from '../ui/dom.js';
 
 /** Six engine gauges plus the core. */
@@ -47,7 +47,6 @@ export function subjectDetailView(mount, ctx, { id }) {
   if (!s) { mount.append(el('p', 'empty', 'Unknown subject.')); return; }
 
   const color = subjectColor(s);
-  const tree = treeFor(index, s.id);
   const allNodes = nodesFor(index, s.id);
   const ids = allNodes.map(n => n.id);
 
@@ -80,12 +79,16 @@ export function subjectDetailView(mount, ctx, { id }) {
 
   mount.append(head, bar, wrap);
 
-  if (tree && tree.verified === false) {
-    const warn = el('div', 'banner');
-    warn.innerHTML = `<b>Unverified tree.</b> Built from public sources, not the official
-      ${esc(tree.guide)}. Check it against your guide and correct
-      <code>data/syllabus/${esc(s.id)}.json</code> — no code changes needed.`;
-    mount.insertBefore(warn, bar);
+  const prov = provenance(index, s.id);
+  if (prov) {
+    const box = el('div', 'banner');
+    if (prov.level === 'guide') box.classList.add('banner-ok');
+    box.innerHTML = `<b>${esc(prov.label)}${prov.level === 'guide' ? '' : ' tree'}.</b>
+      ${esc(prov.note)}
+      ${prov.level === 'guide' ? '' : `<span style="display:block;margin-top:6px">
+        Correct it in <code>data/syllabus/${esc(s.id)}.json</code> and re-run
+        <code>node tools/build-syllabus.mjs</code> — no code changes needed.</span>`}`;
+    mount.insertBefore(box, bar);
   }
 
   function draw() {

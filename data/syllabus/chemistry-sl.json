@@ -2,6 +2,8 @@
   "subjectId": "chemistry-sl",
   "guide": "Chemistry guide (first assessment 2025)",
   "verified": false,
+  "sourceLevel": "public",
+  "sourceNote": "No official IB document available to check against. Structure follows the 2023 Structure/Reactivity framework from public sources.",
   "topics": [
     {
       "code": "S1",

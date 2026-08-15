@@ -2,6 +2,8 @@
   "subjectId": "english-lal-sl",
   "guide": "Language A: Language and Literature guide (first assessment 2021). No published revision found affecting May 2028.",
   "verified": false,
+  "sourceLevel": "public",
+  "sourceNote": "Built from public sources. The Paper 1 text-type list in particular is a reconstruction, not the guide's own list.",
   "topics": [
     {
       "code": "AOE",

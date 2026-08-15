@@ -2,6 +2,8 @@
   "subjectId": "core",
   "guide": "TOK guide (first assessment 2022); Extended Essay guide (first assessment 2027 — this is your edition); CAS guide",
   "verified": false,
+  "sourceLevel": "public",
+  "sourceNote": "Built from public sources. The Paper 1 text-type list in particular is a reconstruction, not the guide's own list.",
   "topics": [
     {
       "code": "TOK",
