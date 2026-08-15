@@ -84,3 +84,16 @@ test('rescueQueue returns fading nodes worst-first', () => {
   };
   assert.deepEqual(m.rescueQueue(['a', 'b', 'c'], records, T0).map(x => x.id), ['a', 'b']);
 });
+
+test('the rescue queue includes lapsed nodes, not just fading ones', () => {
+  const records = {
+    'fading': { level: 3, lastTouched: ago(60), touches: 1 },   // f = 0.25
+    'lapsed': { level: 3, lastTouched: ago(150), touches: 1 },  // f = 0.03
+    'fresh':  { level: 3, lastTouched: ago(1), touches: 1 },
+  };
+  const q = m.rescueQueue(['fading', 'lapsed', 'fresh'], records, T0);
+  assert.deepEqual(q.map(x => x.id), ['lapsed', 'fading'],
+    'the most forgotten thing must lead, not disappear');
+  assert.equal(q[0].state, 'lapsed');
+  assert.equal(q[1].state, 'fading');
+});

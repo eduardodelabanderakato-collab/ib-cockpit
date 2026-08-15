@@ -10,6 +10,7 @@ import { halfLivesFor } from '../models/curve.js';
 import { HUD_FIELDS, DEFAULT_HUD } from '../ui/jet.js';
 import * as R from '../models/recall.js';
 import { curveFor } from '../models/curve.js';
+import { brief } from '../models/today.js';
 
 const DAY = 86400000;
 
@@ -714,4 +715,131 @@ export function hudEntry(mount, ctx) {
 
   mount.append(own, inst);
   setTimeout(() => input.focus(), 60);
+}
+
+/* ─────────────────── today ─────────────────── */
+
+/**
+ * The only screen that answers "what do I do now". Everything else reports.
+ */
+export function todayView(mount, ctx) {
+  const { index, state } = ctx;
+  let budget = state.get('settings').dailyBudget ?? 60;
+
+  const wrap = el('div');
+  wrap.style.display = 'grid';
+  wrap.style.gap = '14px';
+
+  const bar = el('div', 'row');
+  const buttons = [];
+  for (const m of [30, 60, 90, 120]) {
+    const b = el('button', 'chip', `${m} min`);
+    b.setAttribute('aria-pressed', String(m === budget));
+    b.onclick = () => {
+      budget = m;
+      state.update('settings', s => { s.dailyBudget = m; });
+      buttons.forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      draw();
+    };
+    buttons.push(b);
+    bar.append(b);
+  }
+  mount.append(bar, wrap);
+
+  function draw() {
+    wrap.innerHTML = '';
+    const curve = curveFor(state.get('checks'));
+    const b = brief({
+      index,
+      records: state.get('mastery'),
+      sessions: state.get('sessions'),
+      deadlines: state.get('deadlines'),
+      questState: state.get('quests'),
+      checks: state.get('checks'),
+      halfLives: curve.halfLives,
+      expected: courseElapsed(index.dpStart, index.examStart),
+      budget,
+    });
+
+    const head = panel('Today', b.done ? 'clear' : `${b.minutes} min`);
+    head.insertAdjacentHTML('beforeend', `
+      <div class="mfd-big" style="color:var(--panel-text);font-size:22px;line-height:1.25">${
+        esc(b.headline)}</div>
+      <p class="mfd-sub">${esc(b.detail)}</p>`);
+    head.append(stat([
+      ['Planned', `${b.minutes}m`],
+      ['Logged today', `${b.loggedToday}m`, b.loggedToday ? 'good' : 'hot'],
+      ['Items', `${b.items.length}`],
+    ]));
+    wrap.append(head);
+
+    if (b.done) {
+      const p = panel('Clear');
+      p.append(el('p', 'empty',
+        'Nothing is fading, nothing is due, and today is logged. Take new ground or stop.'));
+      wrap.append(p);
+      return;
+    }
+
+    const list = panel('In order', 'most consequential first');
+    b.items.forEach((item, i) => {
+      const a = el('a', 'node');
+      a.href = item.href;
+      a.style.textDecoration = 'none';
+      a.style.setProperty('--c', item.subject ? subjectColor(item.subject) : 'var(--accent)');
+      a.dataset.state = item.critical ? 'lapsed'
+        : item.kind === 'recall' ? 'fading'
+        : item.kind === 'deadline' ? 'fading' : 'dimming';
+      a.innerHTML = `
+        <span class="node-pip"></span>
+        <span class="node-code">${i + 1}</span>
+        <span class="node-title"><b>${esc(item.title)}</b>
+          <span style="display:block;color:var(--panel-dim);font-size:11.5px;margin-top:2px">
+            ${esc(item.detail)}</span></span>
+        <span class="node-lvl">${item.minutes ? `${item.minutes}m` : '—'}</span>`;
+      list.append(a);
+    });
+    wrap.append(list);
+  }
+
+  draw();
+}
+
+/* ─────────────────── command terms ─────────────────── */
+
+/**
+ * What a question is actually asking for. The assessment-objective grouping is
+ * verbatim from the official guide; misreading a command term is one of the
+ * cheapest marks there is to lose.
+ */
+export async function termsReadout(mount) {
+  let data;
+  try {
+    data = await (await fetch('data/command-terms.json')).json();
+  } catch {
+    mount.append(el('p', 'empty', 'Could not load data/command-terms.json.'));
+    return;
+  }
+
+  const head = panel('Command terms', 'by assessment objective');
+  head.insertAdjacentHTML('beforeend', `<p class="mfd-sub">${esc(data.source)}</p>`);
+  mount.append(head);
+
+  for (const o of data.objectives) {
+    const p = panel(o.ao, `${o.terms.length} terms`);
+    p.insertAdjacentHTML('beforeend', `
+      <p class="mfd-sub" style="margin-bottom:10px">${esc(o.demand)}</p>`);
+
+    const row = el('div', 'row');
+    for (const t of o.terms) {
+      const chip = el('span', 'chip');
+      chip.textContent = t;
+      chip.style.cursor = 'default';
+      row.append(chip);
+    }
+    p.append(row);
+    p.insertAdjacentHTML('beforeend',
+      `<p class="mfd-sub" style="margin-top:12px"><b>${esc(o.note)}</b></p>`);
+    mount.append(p);
+  }
 }

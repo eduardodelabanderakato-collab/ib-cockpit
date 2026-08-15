@@ -21,6 +21,7 @@ import { resourcesView } from './resources.js';
 import { settingsView } from './settings.js';
 import { gradesView } from './grades.js';
 import * as nudge from '../models/nudge.js';
+import { brief } from '../models/today.js';
 import * as store from '../store.js';
 import { notebookView } from './notebook.js';
 
@@ -45,6 +46,8 @@ const RENDERERS = {
   tests:  quick.testsReadout,
   assign: quick.assignReadout,
   fade:   quick.fadeReadout,
+  today:  quick.todayView,
+  terms:  quick.termsReadout,
   xp:     quick.xpReadout,
   pace:   quick.paceReadout,
   map:    territoryView,
@@ -104,7 +107,8 @@ export function deckView(mount, ctx, openId = null) {
     hud: hudData,
     hudFields: state.get('settings').hudFields ?? DEFAULT_HUD,
     hudCustom: state.get('settings').hudCustom ?? [],
-    screens: jetScreens(ctx, { records, captured, fading, x, lvl, ids, capturedNodes }),
+    screens: jetScreens(ctx, { records, captured, fading, x, lvl, ids, capturedNodes,
+                               sessions, deadlines, hl, expected }),
     groups: grouped(index),
     status: controlStatus(ctx, { records, sessions, fading, x, deadlines, ratio }),
     timeOverride: null,
@@ -308,8 +312,15 @@ function timerScreen(mount, ctx) {
 
 /* ── the three MFD screens ────────────────────────────────── */
 
-function jetScreens(ctx, { records, captured, fading, x, lvl, ids, capturedNodes }) {
+/** Upper-case and truncate for the small MFD screens. */
+function clip(v, n) {
+  const t = String(v ?? '').toUpperCase();
+  return t.length > n ? t.slice(0, n - 1) + '\u2026' : t;
+}
+
+function jetScreens(ctx, extra) {
   const { index } = ctx;
+  const { records, captured, fading, x, lvl, ids, capturedNodes } = extra;
 
   const bars = index.examined.map(s2 => {
     const pct = Math.round(mastery.subjectProgress(
@@ -317,13 +328,22 @@ function jetScreens(ctx, { records, captured, fading, x, lvl, ids, capturedNodes
     return `<div class="bar" style="--c:${subjectColor(s2)}"><i style="width:${pct}%"></i></div>`;
   }).join('');
 
+  // The centre screen answers the only question that changes behaviour.
+  const today = brief({
+    index, records, sessions: extra.sessions, deadlines: extra.deadlines,
+    questState: ctx.state.get('quests'), checks: ctx.state.get('checks'),
+    halfLives: extra.hl, expected: extra.expected,
+    budget: ctx.state.get('settings').dailyBudget ?? 60,
+  });
+
   return [
     { slot: 'l', tag: 'ENG', title: 'Engines — subject capture', opens: 'pace',
       big: `${Math.round(captured * 100)}`, unit: '%',
       sub: `${fading.length} FADING`, bars },
-    { slot: 'c', tag: 'NAV', title: 'Navigation — territory', opens: 'map',
-      big: `${capturedNodes}`, unit: '',
-      sub: `OF ${ids.length} NODES<br>${index.examined.length} SUBJECTS` },
+    { slot: 'c', tag: 'TODAY', title: today.headline, opens: 'today',
+      big: today.done ? '\u2713' : `${today.items.length}`,
+      unit: today.done ? '' : 'TO DO',
+      sub: `${clip(today.headline, 32)}<br>${today.minutes} MIN PLANNED` },
     { slot: 'r', tag: 'SYS', title: 'Systems — level and streak', opens: 'xp',
       big: `${lvl.level}`, unit: 'LV',
       sub: `${x.total.toLocaleString()} XP<br>${x.streak.current}D STREAK`,

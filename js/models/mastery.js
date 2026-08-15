@@ -83,15 +83,24 @@ export function subjectProgress(nodeIds, records, now = Date.now(), halfLives = 
   return sum / (MAX_LEVEL * nodeIds.length);
 }
 
-/** Fading nodes, worst freshness first — the "rescue" work queue. */
+/**
+ * The rescue queue, worst freshness first.
+ *
+ * Includes lapsed nodes as well as fading ones. Excluding them was a real bug:
+ * something you have forgotten completely would drop out of the queue and stop
+ * being mentioned, which is exactly backwards — it is the most urgent thing
+ * there is.
+ */
 export function rescueQueue(nodeIds, records, now = Date.now(), halfLives = HALF_LIVES) {
   return nodeIds
     .map(id => {
       const r = records[id];
       if (!r || r.level <= 0) return null;
       const d = daysSince(r.lastTouched, now);
-      if (stateOf(r.level, d, halfLives) !== 'fading') return null;
-      return { id, level: r.level, days: d, freshness: freshness(r.level, d, halfLives) };
+      const state = stateOf(r.level, d, halfLives);
+      if (state !== 'fading' && state !== 'lapsed') return null;
+      return { id, level: r.level, days: d, state,
+               freshness: freshness(r.level, d, halfLives) };
     })
     .filter(Boolean)
     .sort((a, b) => a.freshness - b.freshness);

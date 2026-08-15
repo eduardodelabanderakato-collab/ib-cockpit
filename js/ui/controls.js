@@ -24,6 +24,8 @@ export const CONTROLS = [
     tip: 'Write a note against any syllabus topic' },
   { id: 'book',   code: 'BOOK',  name: 'Notebook',     group: 'Data entry', kind: 'entry',
     tip: 'Everything you have written, searchable and in one place' },
+  { id: 'today',  code: 'TODAY', name: 'Today',        group: 'Data entry', kind: 'read',
+    tip: 'Exactly what to do today, in order, with times' },
 
   // ── READOUTS ───────────────────────────────────────────────
   { id: 'heat',   code: 'HEAT',  name: 'Heat map',      group: 'Readouts', kind: 'read',
@@ -42,6 +44,8 @@ export const CONTROLS = [
     tip: 'Your level, XP to the next one, and XP per subject' },
   { id: 'pace',   code: 'PACE',  name: 'Pace',          group: 'Readouts', kind: 'read',
     tip: 'Syllabus captured against where the calendar says you should be' },
+  { id: 'terms',  code: 'TERMS', name: 'Command terms', group: 'Readouts', kind: 'read',
+    tip: 'What a question is actually asking for, by assessment objective' },
 
   // ── ENGINES (subjects) ─────────────────────────────────────
   // Filled in at runtime from the subject registry.

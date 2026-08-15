@@ -1,0 +1,29 @@
+{
+  "source": "Glossary of command terms, IB Economics guide (first assessment 2024). The assessment-objective grouping is verbatim from the guide; it is shared across DP subjects.",
+  "objectives": [
+    {
+      "ao": "AO1",
+      "demand": "These terms require students to learn and comprehend the meaning of information.",
+      "terms": ["Define", "Describe", "List", "Outline", "State"],
+      "note": "Recall. No argument, no evaluation — say the thing accurately and stop."
+    },
+    {
+      "ao": "AO2",
+      "demand": "These terms require students to use their knowledge and skills to break down ideas into simpler parts and to see how the parts relate.",
+      "terms": ["Analyse", "Apply", "Comment", "Distinguish", "Explain", "Suggest"],
+      "note": "Show the mechanism. Every claim needs a because."
+    },
+    {
+      "ao": "AO3",
+      "demand": "These terms require students to demonstrate the selection and use of subject-specific skills and techniques.",
+      "terms": ["Calculate", "Construct", "Derive", "Determine", "Draw", "Identify", "Label", "Measure", "Plot", "Show", "Show that", "Sketch", "Solve"],
+      "note": "Method marks live here. Show working, label axes, state units."
+    },
+    {
+      "ao": "AO4",
+      "demand": "These terms require students to synthesise into a new whole and make judgments based on evidence or a set of criteria.",
+      "terms": ["Contrast", "Discuss", "Evaluate", "Examine", "Justify", "Recommend", "To what extent"],
+      "note": "The marks are in the judgment, not the summary. Weigh both sides, then commit to a position and say why."
+    }
+  ]
+}

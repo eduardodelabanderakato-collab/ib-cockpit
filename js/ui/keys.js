@@ -8,10 +8,11 @@ import { allControls } from './controls.js';
  * are actually typing into something.
  */
 export const SHORTCUTS = {
-  l: 'log',    t: 'timer',  s: 'score',  d: 'due',
+  y: 'today',  l: 'log',    t: 'timer',  s: 'score',  d: 'due',
   n: 'note',   b: 'book',   f: 'fade',   h: 'heat',
   a: 'avg',    p: 'plan',   m: 'map',    q: 'quests',
   g: 'proj',   c: 'crew',   r: 'lib',    ',': 'cfg',
+  k: 'terms',
 };
 
 /** Digits 1-7 open the engines in registry order. */
