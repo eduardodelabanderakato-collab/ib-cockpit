@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   buildIndex, nodeId, nodesFor, allNodeIds, examinedNodeIds,
-  phaseFilter, subject, unverifiedSubjects,
+  phaseFilter, subject, unverifiedSubjects, treeFor,
 } from '../js/syllabus.js';
 
 function load() {
@@ -91,7 +91,37 @@ test('every node carries a resolved id, subjectId and parent topic', () => {
   }
 });
 
-test('unverified trees are reported so the UI can warn', () => {
+test('trees checked against the official guide are no longer flagged', () => {
   const idx = load();
-  assert.equal(unverifiedSubjects(idx).length, 7);
+  const unverified = unverifiedSubjects(idx).map(s => s.id);
+
+  // Economics has been verified verbatim against the official PDF.
+  assert.ok(!unverified.includes('economics-hl'),
+    'economics should no longer warn');
+  assert.equal(treeFor(idx, 'economics-hl').verified, true);
+
+  // Everything still built from public sources must keep warning.
+  for (const id of ['math-aa-hl', 'physics-hl', 'chemistry-sl',
+                    'portugues-lal-sl', 'english-lal-sl', 'core']) {
+    assert.ok(unverified.includes(id), `${id} should still warn`);
+  }
+});
+
+test('the verified Economics tree matches the guide it claims', () => {
+  const idx = load();
+  const tree = treeFor(idx, 'economics-hl');
+  assert.match(tree.guide, /first assessment 2024/);
+
+  const nodes = nodesFor(idx, 'economics-hl');
+  // The four HL-only microeconomics topics, per the guide.
+  const hlOnly = nodes.filter(n => n.tier === 'AHL' && n.code.startsWith('2.'))
+    .map(n => n.code).sort();
+  assert.deepEqual(hlOnly, ['2.10', '2.11', '2.12', '2.4']);
+
+  // Units 1-4 carry exactly the guide's 31 numbered topics.
+  const numbered = nodes.filter(n => /^[1-4]\./.test(n.code));
+  assert.equal(numbered.length, 31);
+
+  // The nine key concepts.
+  assert.equal(nodes.filter(n => n.code.startsWith('K.')).length, 9);
 });

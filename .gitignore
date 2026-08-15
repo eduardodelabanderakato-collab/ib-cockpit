@@ -2,3 +2,7 @@
 node_modules/
 *.log
 .vercel
+
+# Never commit copyrighted IB subject guides to a public repo.
+docs/guides/
+*.pdf

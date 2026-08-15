@@ -1,21 +1,21 @@
 {
   "subjectId": "economics-hl",
-  "guide": "Economics guide (first assessment 2022). No published revision found for May 2028, so this is most likely your edition — still worth confirming with your teacher.",
-  "verified": false,
+  "guide": "Economics guide, first assessment 2024 (update Oct 2022). VERIFIED verbatim against the official PDF — this is the correct edition for May 2028.",
+  "verified": true,
   "topics": [
     {
       "code": "1",
-      "title": "Introduction to economics",
+      "title": "Unit 1: Introduction to economics",
       "nodes": [
         {
           "code": "1.1",
-          "title": "What is economics? Scarcity, choice, opportunity cost, the basic questions",
+          "title": "What is economics?",
           "tier": "SL",
           "phase": "DP1"
         },
         {
           "code": "1.2",
-          "title": "How do economists approach the world? Models, ceteris paribus, positive vs normative",
+          "title": "How do economists approach the world?",
           "tier": "SL",
           "phase": "DP1"
         }
@@ -23,7 +23,7 @@
     },
     {
       "code": "2",
-      "title": "Microeconomics",
+      "title": "Unit 2: Microeconomics",
       "nodes": [
         {
           "code": "2.1",
@@ -46,48 +46,48 @@
         {
           "code": "2.4",
           "title": "Critique of the maximizing behaviour of consumers and producers",
-          "tier": "SL",
+          "tier": "AHL",
           "phase": "DP1"
         },
         {
           "code": "2.5",
-          "title": "Elasticity of demand (PED and YED)",
+          "title": "Elasticities of demand",
           "tier": "SL",
           "phase": "DP1"
         },
         {
           "code": "2.6",
-          "title": "Elasticity of supply (PES)",
+          "title": "Elasticity of supply",
           "tier": "SL",
           "phase": "DP1"
         },
         {
           "code": "2.7",
-          "title": "Role of government in microeconomics: taxes, subsidies, price controls",
+          "title": "Role of government in microeconomics",
           "tier": "SL",
           "phase": "DP1"
         },
         {
           "code": "2.8",
-          "title": "Market failure — externalities and common pool resources",
+          "title": "Market failure—externalities and common pool or common access resources",
           "tier": "SL",
           "phase": "DP1"
         },
         {
           "code": "2.9",
-          "title": "Market failure — public goods",
+          "title": "Market failure—public goods",
           "tier": "SL",
           "phase": "DP1"
         },
         {
           "code": "2.10",
-          "title": "Market failure — asymmetric information",
+          "title": "Market failure—asymmetric information",
           "tier": "AHL",
           "phase": "DP2"
         },
         {
           "code": "2.11",
-          "title": "Market failure — market power",
+          "title": "Market failure—market power",
           "tier": "AHL",
           "phase": "DP2"
         },
@@ -101,7 +101,7 @@
     },
     {
       "code": "3",
-      "title": "Macroeconomics",
+      "title": "Unit 3: Macroeconomics",
       "nodes": [
         {
           "code": "3.1",
@@ -111,13 +111,13 @@
         },
         {
           "code": "3.2",
-          "title": "Aggregate demand and aggregate supply",
+          "title": "Variations in economic activity—aggregate demand and aggregate supply",
           "tier": "SL",
           "phase": "DP1"
         },
         {
           "code": "3.3",
-          "title": "Macroeconomic objectives: growth, low unemployment, low inflation",
+          "title": "Macroeconomic objectives",
           "tier": "SL",
           "phase": "DP2"
         },
@@ -129,13 +129,13 @@
         },
         {
           "code": "3.5",
-          "title": "Demand management — monetary policy",
+          "title": "Demand management (demand-side policies)—monetary policy",
           "tier": "SL",
           "phase": "DP2"
         },
         {
           "code": "3.6",
-          "title": "Demand management — fiscal policy",
+          "title": "Demand management—fiscal policy",
           "tier": "SL",
           "phase": "DP2"
         },
@@ -149,7 +149,7 @@
     },
     {
       "code": "4",
-      "title": "The global economy",
+      "title": "Unit 4: The global economy",
       "nodes": [
         {
           "code": "4.1",
@@ -165,7 +165,7 @@
         },
         {
           "code": "4.3",
-          "title": "Arguments for and against trade control and protection",
+          "title": "Arguments for and against trade control/protection",
           "tier": "SL",
           "phase": "DP2"
         },
@@ -201,13 +201,13 @@
         },
         {
           "code": "4.9",
-          "title": "Barriers to economic growth and development",
+          "title": "Barriers to economic growth and/or economic development",
           "tier": "SL",
           "phase": "DP2"
         },
         {
           "code": "4.10",
-          "title": "Economic growth and development strategies",
+          "title": "Economic growth and/or economic development strategies",
           "tier": "SL",
           "phase": "DP2"
         }
@@ -274,24 +274,54 @@
       ]
     },
     {
+      "code": "A",
+      "title": "External assessment",
+      "nodes": [
+        {
+          "code": "A.1",
+          "title": "Paper 1 — extended response, one question from three (25 marks, 30%)",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "A.2",
+          "title": "Paper 2 — data response (40 marks, SL 40% / HL 30%)",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "A.3",
+          "title": "Paper 3 — HL policy paper (60 marks, 30%)",
+          "tier": "AHL",
+          "phase": "DP2"
+        }
+      ]
+    },
+    {
       "code": "IA",
-      "title": "Internal assessment",
+      "title": "Internal assessment — portfolio of three commentaries",
       "nodes": [
         {
           "code": "IA.1",
-          "title": "Commentary 1 — microeconomics",
+          "title": "Commentary 1 — a different unit, a different key concept (max 800 words)",
           "tier": "SL",
           "phase": "DP1"
         },
         {
           "code": "IA.2",
-          "title": "Commentary 2 — macroeconomics",
+          "title": "Commentary 2 — a different unit, a different key concept (max 800 words)",
           "tier": "SL",
           "phase": "DP2"
         },
         {
           "code": "IA.3",
-          "title": "Commentary 3 — the global economy",
+          "title": "Commentary 3 — a different unit, a different key concept (max 800 words)",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "IA.4",
+          "title": "Portfolio assembly and moderation (45 marks, 20%)",
           "tier": "SL",
           "phase": "DP2"
         }

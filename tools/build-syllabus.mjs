@@ -242,47 +242,47 @@ const CHEMISTRY_SL = {
 // Economics HL — 2020 guide (first assessment 2022)
 // ─────────────────────────────────────────────────────────────────────────────
 const ECONOMICS_HL = {
-  guide: 'Economics guide (first assessment 2022). No published revision found for May 2028, so this is most likely your edition — still worth confirming with your teacher.',
-  verified: false,
+  guide: 'Economics guide, first assessment 2024 (update Oct 2022). VERIFIED verbatim against the official PDF — this is the correct edition for May 2028.',
+  verified: true,
   topics: [
-    ['1', 'Introduction to economics', [
-      '1.1|What is economics? Scarcity, choice, opportunity cost, the basic questions|SL|1',
-      '1.2|How do economists approach the world? Models, ceteris paribus, positive vs normative|SL|1',
+    ['1', 'Unit 1: Introduction to economics', [
+      '1.1|What is economics?|SL|1',
+      '1.2|How do economists approach the world?|SL|1',
     ]],
-    ['2', 'Microeconomics', [
+    ['2', 'Unit 2: Microeconomics', [
       '2.1|Demand|SL|1',
       '2.2|Supply|SL|1',
       '2.3|Competitive market equilibrium|SL|1',
-      '2.4|Critique of the maximizing behaviour of consumers and producers|SL|1',
-      '2.5|Elasticity of demand (PED and YED)|SL|1',
-      '2.6|Elasticity of supply (PES)|SL|1',
-      '2.7|Role of government in microeconomics: taxes, subsidies, price controls|SL|1',
-      '2.8|Market failure — externalities and common pool resources|SL|1',
-      '2.9|Market failure — public goods|SL|1',
-      '2.10|Market failure — asymmetric information|AHL|2',
-      '2.11|Market failure — market power|AHL|2',
+      '2.4|Critique of the maximizing behaviour of consumers and producers|AHL|1',
+      '2.5|Elasticities of demand|SL|1',
+      '2.6|Elasticity of supply|SL|1',
+      '2.7|Role of government in microeconomics|SL|1',
+      '2.8|Market failure—externalities and common pool or common access resources|SL|1',
+      '2.9|Market failure—public goods|SL|1',
+      '2.10|Market failure—asymmetric information|AHL|2',
+      '2.11|Market failure—market power|AHL|2',
       '2.12|The market’s inability to achieve equity|AHL|2',
     ]],
-    ['3', 'Macroeconomics', [
+    ['3', 'Unit 3: Macroeconomics', [
       '3.1|Measuring economic activity and illustrating its variations|SL|1',
-      '3.2|Aggregate demand and aggregate supply|SL|1',
-      '3.3|Macroeconomic objectives: growth, low unemployment, low inflation|SL|2',
+      '3.2|Variations in economic activity—aggregate demand and aggregate supply|SL|1',
+      '3.3|Macroeconomic objectives|SL|2',
       '3.4|Economics of inequality and poverty|SL|2',
-      '3.5|Demand management — monetary policy|SL|2',
-      '3.6|Demand management — fiscal policy|SL|2',
+      '3.5|Demand management (demand-side policies)—monetary policy|SL|2',
+      '3.6|Demand management—fiscal policy|SL|2',
       '3.7|Supply-side policies|SL|2',
     ]],
-    ['4', 'The global economy', [
+    ['4', 'Unit 4: The global economy', [
       '4.1|Benefits of international trade|SL|2',
       '4.2|Types of trade protection|SL|2',
-      '4.3|Arguments for and against trade control and protection|SL|2',
+      '4.3|Arguments for and against trade control/protection|SL|2',
       '4.4|Economic integration|SL|2',
       '4.5|Exchange rates|SL|2',
       '4.6|Balance of payments|SL|2',
       '4.7|Sustainable development|SL|2',
       '4.8|Measuring development|SL|2',
-      '4.9|Barriers to economic growth and development|SL|2',
-      '4.10|Economic growth and development strategies|SL|2',
+      '4.9|Barriers to economic growth and/or economic development|SL|2',
+      '4.10|Economic growth and/or economic development strategies|SL|2',
     ]],
     ['K', 'Key concepts', [
       'K.1|Scarcity|SL|1',
@@ -295,10 +295,16 @@ const ECONOMICS_HL = {
       'K.8|Interdependence|SL|1',
       'K.9|Intervention|SL|1',
     ]],
-    ['IA', 'Internal assessment', [
-      'IA.1|Commentary 1 — microeconomics|SL|1',
-      'IA.2|Commentary 2 — macroeconomics|SL|2',
-      'IA.3|Commentary 3 — the global economy|SL|2',
+    ['A', 'External assessment', [
+      'A.1|Paper 1 — extended response, one question from three (25 marks, 30%)|SL|2',
+      'A.2|Paper 2 — data response (40 marks, SL 40% / HL 30%)|SL|2',
+      'A.3|Paper 3 — HL policy paper (60 marks, 30%)|AHL|2',
+    ]],
+    ['IA', 'Internal assessment — portfolio of three commentaries', [
+      'IA.1|Commentary 1 — a different unit, a different key concept (max 800 words)|SL|1',
+      'IA.2|Commentary 2 — a different unit, a different key concept (max 800 words)|SL|2',
+      'IA.3|Commentary 3 — a different unit, a different key concept (max 800 words)|SL|2',
+      'IA.4|Portfolio assembly and moderation (45 marks, 20%)|SL|2',
     ]],
   ],
 };
