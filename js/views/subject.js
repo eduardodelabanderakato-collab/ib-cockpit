@@ -2,6 +2,10 @@ import * as mastery from '../models/mastery.js';
 import * as xp from '../models/xp.js';
 import { nodesFor, topicsFor, subject as findSubject, phaseFilter, provenance } from '../syllabus.js';
 import { el, panel, esc, toast, subjectColor } from '../ui/dom.js';
+import { boardFor } from '../board.js';
+import { rankUp } from '../ui/celebrate.js';
+import { RANKS, rankFor } from '../models/road.js';
+import { shouldCelebrate } from '../ui/celebrate.js';
 
 
 
@@ -97,7 +101,7 @@ export function subjectDetailView(mount, ctx, { id }) {
         b.onclick = e => {
           // Clicking the row captures; the notes toggle is handled separately.
           if (e.target.closest('.node-notes-btn')) return;
-          captureNode(n, state, mastery.stateOf(rec.level, days));
+          captureNode(n, state, mastery.stateOf(rec.level, days), ctx);
           draw();
         };
 
@@ -188,10 +192,22 @@ function notesPane(node, state, subject) {
   return box;
 }
 
-/** Advance a node one mastery level and pay out XP. */
-export function captureNode(node, state, priorState) {
+/**
+ * Advance a node one mastery level, and report what it did to the board.
+ *
+ * A capture used to pay XP and nothing else, which is why the map felt
+ * disconnected from the score: you could take fifty nodes and the 45 would not
+ * flinch. It still cannot move `held` — only a real mark does that, and faking
+ * it would make the projection a lie. What it moves is `backed`: the grade your
+ * coverage actually supports. That number is on the same board, and now the
+ * capture says out loud when it shifts.
+ *
+ * @param ctx  the app context; omit to skip the board update entirely.
+ */
+export function captureNode(node, state, priorState, ctx = null) {
   const now = Date.now();
   const streak = state.get('xp').streak.current;
+  const before = ctx ? boardFor(ctx) : null;
   let earned = 0;
   let label = '';
 
@@ -216,6 +232,40 @@ export function captureNode(node, state, priorState) {
     x.bySubject[node.subjectId] = (x.bySubject[node.subjectId] ?? 0) + earned;
   });
 
-  toast(`${esc(label)} — ${esc(node.code)} <b>+${earned} XP</b>`);
+  const moved = before ? boardMove(before, boardFor(ctx), node, state) : null;
+  toast(moved ?? `${esc(label)} — ${esc(node.code)} <b>+${earned} XP</b>`);
   return earned;
 }
+
+/**
+ * What that capture did to the board, in the loudest true terms available.
+ *
+ * Ordered by how much it matters: a rank is worth interrupting for, a whole
+ * point of backing is worth a headline, and one step closer is still worth
+ * saying — silence after a capture is what made the map feel pointless.
+ */
+function boardMove(before, after, node, state) {
+  if (after.backed > before.backed) {
+    const seg = after.segments.find(s => s.subject.id === node.subjectId);
+    const rank = rankFor(after.backed);
+    const was = state.get('settings').lastBackedRank ?? null;
+    state.update('settings', st => { st.lastBackedRank = rank.name; });
+    // Read `was` before storing the new one, or the card congratulates you on
+    // arriving where you already are.
+    if (shouldCelebrate({ rank, lastRank: was, ranks: RANKS })) {
+      rankUp({ rank, held: after.backed, from: was });
+      return null;
+    }
+    return `<b>${esc(node.code)} taken</b> — ${esc(seg?.subject.short ?? '')} now backs a
+      ${seg?.backs}. Ground held: <b>${after.backed}/45</b>`;
+  }
+
+  const b = before.segments.find(s => s.subject.id === node.subjectId);
+  const a = after.segments.find(s => s.subject.id === node.subjectId);
+  if (a && b && a.captures < b.captures) {
+    return `<b>${esc(node.code)} taken</b> — ${a.captures} more to back a ${a.aiming}
+      in ${esc(a.subject.short)}`;
+  }
+  return null;
+}
+

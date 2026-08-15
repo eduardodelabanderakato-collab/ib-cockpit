@@ -12,6 +12,7 @@ import * as R from '../models/recall.js';
 import { curveFor } from '../models/curve.js';
 import { brief } from '../models/today.js';
 import * as R45 from '../models/road.js';
+import { boardFor } from '../board.js';
 
 const DAY = 86400000;
 
@@ -872,16 +873,7 @@ export async function termsReadout(mount) {
  * costs. This is the game — rank moves only when the diploma score moves.
  */
 export function roadView(mount, ctx) {
-  const { index, state } = ctx;
-  const settings = state.get('settings');
-  const r = R45.road({
-    subjects: index.examined,
-    grades: state.get('grades'),
-    tok: settings.tokGrade ?? null,
-    ee: settings.eeGrade ?? null,
-    boundaries: B.table(settings, index.examined),
-    target: state.get('meta').targetPoints ?? 45,
-  });
+  const r = boardFor(ctx);
 
   // ── the score ───────────────────────────────────────────
   const head = panel(r.rank.name.toUpperCase(), `${r.held} / 45`);
@@ -895,10 +887,21 @@ export function roadView(mount, ctx) {
     </div>`);
   head.append(stat([
     ['Held', `${r.held}`, r.held >= r.target ? 'good' : ''],
+    ['Backed', `${r.backed}`, r.backed >= r.held ? 'good' : 'hot'],
     ['Missing', `${r.missing}`, r.missing ? 'hot' : 'good'],
     ['Target', `${r.target}`],
-    ['Not on the board', `${r.unknown}`, r.unknown ? 'hot' : 'good'],
   ]));
+  head.insertAdjacentHTML('beforeend', `<p class="mfd-sub">
+    <b>Held</b> is what your logged marks say you would score today.
+    <b>Backed</b> is the score your syllabus coverage actually supports — sitting
+    a paper moves the first, taking ground on the <a href="#/map">map</a> moves
+    the second. ${r.exposed
+      ? `<b>${r.exposed} point${r.exposed === 1 ? '' : 's'} are exposed:</b> you are
+         marking above the ground you hold.`
+      : r.unconverted
+        ? `<b>${r.unconverted} point${r.unconverted === 1 ? '' : 's'} unconverted:</b>
+           you know more than your marks show.`
+        : 'The two agree.'}</p>`);
   mount.append(head);
 
   // ── the cheapest point available ────────────────────────
@@ -912,6 +915,19 @@ export function roadView(mount, ctx) {
         off the next grade here. That is the least work any single point on this
         board costs you right now.</p>`);
     mount.append(c);
+  }
+
+  if (r.front) {
+    const f = panel('Shortest advance on the map', `${r.front.captures} captures`);
+    f.style.setProperty('--c', subjectColor(r.front.subject));
+    f.insertAdjacentHTML('beforeend', `
+      <div style="font-size:16px;font-weight:640;margin-bottom:4px">${
+        esc(r.front.subject.short)} — ${r.front.captures} capture${
+        r.front.captures === 1 ? '' : 's'} to back a ${r.front.aiming}</div>
+      <p class="mfd-sub">The cheapest point above comes from a paper. This one
+        comes from the syllabus, and you can take it right now on the
+        <a href="#/map">map</a>.</p>`);
+    mount.append(f);
   }
 
   // ── where every point lives ─────────────────────────────
@@ -930,7 +946,9 @@ export function roadView(mount, ctx) {
         <span class="road-pips">${Array.from({ length: 7 }, (_, i) =>
           `<i class="${i < s.held ? 'on' : ''}"></i>`).join('')}</span>
         <span style="display:block;color:var(--panel-dim);font-size:11.5px;margin-top:3px">
-          ${esc(s.next)}</span></span>
+          ${esc(s.next)} · covered ${Math.round(s.coverage * 100)}%, backs a ${
+            s.backs || '—'}${s.captures ? ` · ${s.captures} captures to back a ${s.aiming}` : ''}
+        </span></span>
       <span class="node-lvl">${s.known ? `${s.grade}/7` : '—'}</span>`;
     board.append(row);
   }

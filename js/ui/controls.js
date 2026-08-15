@@ -55,8 +55,8 @@ export const CONTROLS = [
   // ── SYSTEMS ────────────────────────────────────────────────
   { id: 'hud',    code: 'HUD',   name: 'Windshield',  group: 'Systems', kind: 'sys',
     tip: 'Choose what is projected onto the glass, and add your own lines' },
-  { id: 'map',    code: 'MAP',   name: 'Territory',   group: 'Systems', kind: 'sys',
-    tip: 'The whole IB as terrain you capture, subject by subject' },
+  { id: 'map',    code: 'MAP',   name: 'Take ground',  group: 'Systems', kind: 'sys',
+    tip: 'Every syllabus node as ground. Click a tile to take it and watch the board move' },
   { id: 'quests', code: 'QST',   name: 'Missions',    group: 'Systems', kind: 'sys',
     tip: 'Today’s quests and this week’s objectives, worth XP' },
   { id: 'plan',   code: 'PLAN',  name: 'Planner',     group: 'Systems', kind: 'sys',

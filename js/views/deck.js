@@ -22,9 +22,9 @@ import { settingsView } from './settings.js';
 import { gradesView } from './grades.js';
 import * as nudge from '../models/nudge.js';
 import { brief } from '../models/today.js';
-import { road, RANKS } from '../models/road.js';
+import { RANKS } from '../models/road.js';
+import { boardFor } from '../board.js';
 import { checkRank } from '../ui/celebrate.js';
-import * as B from '../models/boundaries.js';
 import * as store from '../store.js';
 import { notebookView } from './notebook.js';
 
@@ -350,15 +350,7 @@ function jetScreens(ctx, extra) {
   }).join('');
 
   // The centre screen answers the only question that changes behaviour.
-  const settings = ctx.state.get('settings');
-  const r45 = road({
-    subjects: index.examined,
-    grades: ctx.state.get('grades'),
-    tok: settings.tokGrade ?? null,
-    ee: settings.eeGrade ?? null,
-    boundaries: B.table(settings, index.examined),
-    target: ctx.state.get('meta').targetPoints ?? 45,
-  });
+  const r45 = boardFor(ctx);
 
   const today = brief({
     index, records, sessions: extra.sessions, deadlines: extra.deadlines,
@@ -378,11 +370,12 @@ function jetScreens(ctx, extra) {
     // The right screen is the game board: the score, and the rank it earns.
     { slot: 'r', tag: 'ROAD', title: `Road to 45 — ${r45.rank.name}`, opens: 'road',
       big: `${r45.held}`, unit: '/45',
-      sub: `${r45.rank.name.toUpperCase()}<br>${r45.rank.next
-        ? `+${r45.rank.toNext} FOR ${r45.rank.next.name.toUpperCase()}`
-        : `${x.streak.current}D STREAK`}`,
+      sub: `${r45.rank.name.toUpperCase()}<br>${r45.backed} BACKED${r45.front
+        ? ` · ${r45.front.captures} TO TAKE` : ''}`,
       bars: `<div class="bar" style="--c:#7CFFC4"><i style="width:${
-        ((r45.held / 45) * 100).toFixed(1)}%"></i></div>` },
+        ((r45.held / 45) * 100).toFixed(1)}%"></i></div>
+        <div class="bar" style="--c:var(--accent)"><i style="width:${
+        ((r45.backed / 45) * 100).toFixed(1)}%"></i></div>` },
   ];
   screens.board = r45;
   return screens;

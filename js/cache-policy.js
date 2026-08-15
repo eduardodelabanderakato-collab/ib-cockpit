@@ -11,7 +11,7 @@
  * they never change without also changing name.
  */
 
-export const CACHE_VERSION = 'ibc-v1';
+export const CACHE_VERSION = 'ibc-v2';
 
 /** Assets fetched on first load so the app opens with no network at all. */
 export const PRECACHE = [
@@ -39,6 +39,7 @@ export const PRECACHE = [
   './data/syllabus/math-aa-hl.json',
   './data/syllabus/physics-hl.json',
   './data/syllabus/portugues-lal-sl.json',
+  './js/board.js',
   './js/cache-policy.js',
   './js/gate.js',
   './js/main.js',
