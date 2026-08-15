@@ -53,22 +53,53 @@ export function pctOf(entry) {
   return (entry.raw / entry.max) * 100;
 }
 
+/** How much an assessment counts. A mock is worth more than a quiz. */
+export const DEFAULT_WEIGHT = 1;
+
+export function weightOf(entry) {
+  const w = Number(entry?.weight);
+  return Number.isFinite(w) && w >= 0 ? w : DEFAULT_WEIGHT;
+}
+
+/**
+ * Weighted, recency-decayed mean. Each assessment carries two weights: how
+ * recent it is, and how much it counts. A mock sat last term should outrank a
+ * quiz sat yesterday, and only an explicit weight can say so.
+ */
+export function weightedMean(points, alpha = ALPHA) {
+  if (!points.length) return null;
+  let num = 0, den = 0, recency = alpha;
+  for (let i = points.length - 1; i >= 0; i--) {
+    const w = recency * points[i].weight;
+    num += points[i].pct * w;
+    den += w;
+    recency *= (1 - alpha);
+  }
+  // Everything weighted zero carries no information; fall back to recency alone.
+  return den > 0 ? num / den : ewma(points.map(p => p.pct), alpha);
+}
+
 /**
  * Predicted grade for one subject from its logged assessments.
- * @returns {{pct:number, grade:number, count:number, trend:number}|null}
+ * @returns {{pct:number, grade:number, count:number, trend:number,
+ *            weighted:boolean}|null}
  */
 export function predict(entries, boundaries = DEFAULT_BOUNDARIES) {
-  const sorted = [...entries].sort((a, b) => Date.parse(a.ts) - Date.parse(b.ts));
-  const pcts = sorted.map(pctOf).filter(v => v !== null);
-  if (!pcts.length) return null;
-  const pct = ewma(pcts);
-  const half = Math.max(1, Math.floor(pcts.length / 2));
-  const early = ewma(pcts.slice(0, half));
+  const points = [...entries]
+    .sort((a, b) => Date.parse(a.ts) - Date.parse(b.ts))
+    .map(e => ({ pct: pctOf(e), weight: weightOf(e) }))
+    .filter(p => p.pct !== null);
+  if (!points.length) return null;
+
+  const pct = weightedMean(points);
+  const half = Math.max(1, Math.floor(points.length / 2));
+  const early = weightedMean(points.slice(0, half));
   return {
     pct: +pct.toFixed(1),
     grade: gradeFor(pct, boundaries),
-    count: pcts.length,
+    count: points.length,
     trend: +(pct - early).toFixed(1),
+    weighted: points.some(p => p.weight !== DEFAULT_WEIGHT),
   };
 }
 

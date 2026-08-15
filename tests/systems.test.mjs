@@ -316,3 +316,74 @@ test('grades entered as 1-7 and as raw marks predict together', () => {
   assert.equal(p.count, 2);
   assert.ok(p.trend > 0);
 });
+
+// ── assessment weight ────────────────────────────────────────
+test('an unweighted entry behaves exactly as before', () => {
+  const e = [
+    { ts: '2027-01-01', raw: 40, max: 100 },
+    { ts: '2027-02-01', raw: 60, max: 100 },
+    { ts: '2027-03-01', raw: 90, max: 100 },
+  ];
+  assert.equal(grades.predict(e).pct, 71.6);
+  assert.equal(grades.predict(e).weighted, false);
+});
+
+test('a heavier assessment pulls the prediction toward itself', () => {
+  const light = grades.predict([
+    { ts: '2027-01-01', raw: 90, max: 100 },
+    { ts: '2027-02-01', raw: 40, max: 100 },
+  ]);
+  const heavy = grades.predict([
+    { ts: '2027-01-01', raw: 90, max: 100, weight: 5 },
+    { ts: '2027-02-01', raw: 40, max: 100, weight: 1 },
+  ]);
+  assert.ok(heavy.pct > light.pct, 'the weighted 90 must count for more');
+  assert.equal(heavy.weighted, true);
+});
+
+test('weight cannot invert recency on its own — both still apply', () => {
+  const p = grades.predict([
+    { ts: '2027-01-01', raw: 100, max: 100, weight: 1 },
+    { ts: '2027-03-01', raw: 50, max: 100, weight: 1 },
+  ]);
+  assert.ok(p.pct < 75, 'the recent 50 still dominates equal weights');
+});
+
+test('a zero-weighted assessment is excluded from the prediction', () => {
+  const withZero = grades.predict([
+    { ts: '2027-01-01', raw: 90, max: 100, weight: 1 },
+    { ts: '2027-02-01', raw: 10, max: 100, weight: 0 },
+  ]);
+  const without = grades.predict([{ ts: '2027-01-01', raw: 90, max: 100 }]);
+  assert.equal(withZero.pct, without.pct);
+  assert.equal(withZero.count, 2, 'it is still logged, just not counted');
+});
+
+test('everything weighted zero falls back rather than dividing by zero', () => {
+  const p = grades.predict([
+    { ts: '2027-01-01', raw: 40, max: 100, weight: 0 },
+    { ts: '2027-02-01', raw: 80, max: 100, weight: 0 },
+  ]);
+  assert.ok(Number.isFinite(p.pct));
+  assert.ok(!Number.isNaN(p.grade));
+});
+
+test('a nonsense weight is ignored, not trusted', () => {
+  assert.equal(grades.weightOf({ weight: -3 }), 1);
+  assert.equal(grades.weightOf({ weight: 'heavy' }), 1);
+  assert.equal(grades.weightOf({}), 1);
+  assert.equal(grades.weightOf({ weight: 2.5 }), 2.5);
+});
+
+test('weights flow through to the projection out of 45', () => {
+  const subjects = [{ id: 'physics-hl', short: 'Phys' }];
+  const light = grades.project({ subjects, grades: [
+    { subjectId: 'physics-hl', ts: '2027-01-01', raw: 90, max: 100 },
+    { subjectId: 'physics-hl', ts: '2027-02-01', raw: 30, max: 100 },
+  ]});
+  const heavy = grades.project({ subjects, grades: [
+    { subjectId: 'physics-hl', ts: '2027-01-01', raw: 90, max: 100, weight: 8 },
+    { subjectId: 'physics-hl', ts: '2027-02-01', raw: 30, max: 100, weight: 1 },
+  ]});
+  assert.ok(heavy.total > light.total);
+});

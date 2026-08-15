@@ -66,7 +66,8 @@ export function avgReadout(mount, { index, state }) {
       : pred.trend < -0.5 ? `▼ ${Math.abs(pred.trend)}%` : 'flat';
     r.innerHTML = `<span class="node-pip"></span>
       <span class="node-code">${esc(s.short)}</span>
-      <span class="node-title">${pred ? `${pred.pct}% over ${pred.count} · ${trend}`
+      <span class="node-title">${pred ? `${pred.pct}% over ${pred.count}${
+        pred.weighted ? ' weighted' : ''} · ${trend}`
         : '<span style="color:var(--panel-dim)">nothing logged</span>'}</span>
       <span class="node-lvl">${pred ? pred.grade + '/7' : '—'}</span>`;
     p.append(r);
@@ -364,6 +365,38 @@ export function scoreEntry(mount, ctx) {
   ibBtn.onclick = () => setMode('ib');
   setMode('raw');
 
+  // ── how much this one counts ────────────────────────────
+  let weight = 1;
+  const wRow = el('div', 'row');
+  const wBtns = [];
+  const PRESETS = [
+    ['Quiz', 0.5, 'A short in-class check'],
+    ['Test', 1, 'A normal unit test'],
+    ['Major', 2, 'End of unit, or a long paper'],
+    ['Mock', 3, 'A full mock — the closest thing to the real grade'],
+    ['Ignore', 0, 'Keep the record but leave it out of the prediction'],
+  ];
+  for (const [label, w, tip] of PRESETS) {
+    const b = el('button', 'chip', label);
+    b.title = `${tip} · counts ×${w}`;
+    b.setAttribute('aria-pressed', String(w === weight));
+    b.onclick = () => {
+      weight = w;
+      custom.value = String(w);
+      wBtns.forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    };
+    wBtns.push(b);
+    wRow.append(b);
+  }
+  const custom = numField('1', 74, '×');
+  custom.step = '0.5';
+  custom.title = 'Or set the weight yourself';
+  custom.oninput = () => {
+    weight = Math.max(0, Number(custom.value) || 0);
+    wBtns.forEach(x => x.removeAttribute('aria-pressed'));
+  };
+  wRow.append(custom);
+
   const go = el('button', 'chip chip-primary', 'Add score');
   go.onclick = () => {
     let entry;
@@ -383,7 +416,7 @@ export function scoreEntry(mount, ctx) {
       list.push({ id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         ts: new Date().toISOString(), subjectId: pick.value,
         label: label.value.trim() || 'Assessment', paper: paper.value.trim() || 'Overall',
-        ...entry });
+        weight, ...entry });
     });
     const earned = xp.award('gradeLog', {}, state.get('xp').streak.current);
     state.update('xp', v => { v.total += earned; });
@@ -397,10 +430,12 @@ export function scoreEntry(mount, ctx) {
 
   const row = el('div', 'row');
   row.append(pick, paper, label);
-  p.append(row, modeRow, rawWrap, gradeWrap, go);
+  p.append(row, modeRow, rawWrap, gradeWrap,
+    el('p', 'mfd-sub', 'How much does this one count?'), wRow, go);
   p.insertAdjacentHTML('beforeend', `<p class="mfd-sub">
     A raw mark is more precise; an IB grade is what your teacher actually reports.
-    Either one feeds the prediction and the projection out of 45.</p>`);
+    Weight decides how hard it pulls the prediction — a mock should outweigh a quiz,
+    and Ignore keeps the record without letting it count.</p>`);
   mount.append(p);
 
   // recent scores, so you can see what you have logged
@@ -419,7 +454,8 @@ export function scoreEntry(mount, ctx) {
       <span class="node-code">${esc(sub?.short ?? g.subjectId)}</span>
       <span class="node-title">${esc(g.paper)} — ${esc(g.label)}
         <span style="color:var(--panel-dim)">${g.reported
-          ? ' · reported grade' : ` · ${g.raw}/${g.max}`}</span></span>
+          ? ' · reported grade' : ` · ${g.raw}/${g.max}`}${
+          G.weightOf(g) !== 1 ? ` · ×${G.weightOf(g)}` : ''}</span></span>
       <span class="node-lvl">${shown}/7</span>`;
     const del = el('button', 'node-lvl', '×');
     del.style.cursor = 'pointer';
