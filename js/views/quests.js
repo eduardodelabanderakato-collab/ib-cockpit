@@ -1,5 +1,4 @@
 import * as quests from '../models/quests.js';
-import * as xp from '../models/xp.js';
 import { nodesFor } from '../syllabus.js';
 import { el, panel, esc, toast } from '../ui/dom.js';
 
@@ -33,14 +32,15 @@ export function questsView(mount, ctx) {
 
     const head = panel('Mission board', q.date);
     const done = [...q.daily, ...q.weekly].filter(x => quests.isComplete(x, evalCtx)).length;
-    const totalXp = [...q.daily, ...q.weekly]
-      .filter(x => quests.isComplete(x, evalCtx) && !x.claimed)
-      .reduce((a, x) => a + x.xp, 0);
+    const unclaimed = [...q.daily, ...q.weekly]
+      .filter(x => quests.isComplete(x, evalCtx) && !x.claimed).length;
     head.insertAdjacentHTML('beforeend', `
       <div class="mfd-big" style="color:var(--panel-text)">${done}<small>/ ${
         q.daily.length + q.weekly.length} complete</small></div>
-      <p class="mfd-sub">${totalXp ? `${totalXp.toLocaleString()} XP waiting to be claimed.`
-        : 'Missions refresh at midnight, seeded by the date — they never reroll.'}</p>`);
+      <p class="mfd-sub">${unclaimed
+        ? `${unclaimed} done and not yet ticked off.`
+        : 'Missions refresh at midnight, seeded by the date — they never reroll.'}
+        They carry no points: what they are worth is the ground they make you take.</p>`);
     wrap.append(head);
 
     wrap.append(board('Today', q.daily, evalCtx, draw, state));
@@ -69,20 +69,18 @@ function board(title, list, evalCtx, redraw, state) {
           </span>
         </span>
       </span>
-      <span class="qxp">${q.claimed ? 'CLAIMED' : `+${q.xp}`}</span>`;
+      <span class="qxp">${q.claimed ? 'DONE' : complete ? 'TICK OFF' : ''}</span>`;
 
     if (complete && !q.claimed) {
       row.onclick = () => {
-        const streak = state.get('xp').streak.current;
-        const earned = xp.award('quest', { value: q.xp }, streak);
-        state.update('xp', v => { v.total += earned; });
+
         state.update('quests', v => {
           for (const bucket of ['daily', 'weekly']) {
             const hit = v[bucket].find(z => z.id === q.id);
             if (hit) hit.claimed = true;
           }
         });
-        toast(`Mission complete <b>+${earned} XP</b>`);
+        toast('<b>Mission complete</b>');
         redraw();
       };
     }

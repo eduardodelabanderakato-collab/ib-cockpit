@@ -1,6 +1,5 @@
 import * as G from '../models/grades.js';
 import * as B from '../models/boundaries.js';
-import * as xp from '../models/xp.js';
 import { el, panel, esc, toast, subjectColor } from '../ui/dom.js';
 
 const GRADES = ['A', 'B', 'C', 'D', 'E'];
@@ -234,9 +233,7 @@ function logForm(ctx, draw) {
         raw: r, max: m, pct: (r / m) * 100,
       });
     });
-    const earned = xp.award('gradeLog', {}, state.get('xp').streak.current);
-    state.update('xp', v => { v.total += earned; });
-    toast(`Score logged <b>+${earned} XP</b>`);
+    toast('<b>Score logged</b>');
     raw.value = ''; label.value = '';
     draw();
   };

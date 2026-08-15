@@ -1,5 +1,5 @@
 import * as mastery from './mastery.js';
-import { localDay } from './xp.js';
+import { localDay } from './streak.js';
 
 /**
  * Daily and weekly missions.
@@ -27,12 +27,17 @@ function prng(seed) {
   return () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296);
 }
 
+/**
+ * Missions carry no reward. They used to be priced in XP, which made them look
+ * like the thing worth doing rather than a prompt towards it — the only score
+ * here is the road, and a mission is worth exactly the ground it makes you take.
+ */
 export const TEMPLATES = {
-  study:   { xp: 300, verb: 'Log' },
-  capture: { xp: 150, verb: 'Capture' },
-  rescue:  { xp: 200, verb: 'Rescue' },
-  visit:   { xp: 120, verb: 'Open' },
-  spread:  { xp: 260, verb: 'Touch' },
+  study:   { verb: 'Log' },
+  capture: { verb: 'Capture' },
+  rescue:  { verb: 'Rescue' },
+  visit:   { verb: 'Open' },
+  spread:  { verb: 'Touch' },
 };
 
 /**
@@ -102,7 +107,6 @@ export function generate({ date = localDay(), subjects, nodesBySubject, records 
     return {
       id: `${date}-${type}-${subjectId ?? 'any'}-${target}${weekly ? '-w' : ''}`,
       type, subjectId, target, weekly,
-      xp: Math.round(TEMPLATES[type].xp * (weekly ? 2.4 : 1)),
       label: label(target),
       claimed: false,
     };

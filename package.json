@@ -1,0 +1,9 @@
+{
+  "name": "ib-cockpit",
+  "private": true,
+  "type": "module",
+  "description": "No dependencies and no build step — this exists only so the test flags live somewhere other than my memory.",
+  "scripts": {
+    "test": "node --experimental-vm-modules --test \"tests/*.test.mjs\""
+  }
+}

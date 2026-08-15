@@ -120,7 +120,7 @@ export function settingsView(mount, ctx) {
       return;
     }
     for (const k of ['meta', 'mastery', 'sessions', 'notes', 'deadlines', 'grades',
-                     'quests', 'xp', 'crew', 'settings']) store.remove(k);
+                     'quests', 'xp', 'streak', 'crew', 'settings']) store.remove(k);
     location.reload();
   };
   dz.insertAdjacentHTML('beforeend',

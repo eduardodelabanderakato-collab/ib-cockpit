@@ -1,5 +1,5 @@
 import * as mastery from '../models/mastery.js';
-import * as xp from '../models/xp.js';
+import * as streak from '../models/streak.js';
 import * as G from '../models/grades.js';
 import * as B from '../models/boundaries.js';
 import { courseElapsed, paceRatio } from '../ui/pfd.js';
@@ -20,19 +20,19 @@ const DAY = 86400000;
 
 export function heatReadout(mount, { state }) {
   const sessions = state.get('sessions');
-  const x = state.get('xp');
+  const stk = state.get('streak');
   const p = panel('Study heat map', '45 weeks');
   p.insertAdjacentHTML('beforeend', heatmap(sessions, 45));
 
   const total = sessions.reduce((a, s) => a + s.minutes, 0);
-  const today = sessions.filter(s => xp.localDay(new Date(s.ts)) === xp.localDay())
+  const today = sessions.filter(s => streak.localDay(new Date(s.ts)) === streak.localDay())
     .reduce((a, s) => a + s.minutes, 0);
   const week = sessions.filter(s => Date.now() - Date.parse(s.ts) <= 7 * DAY)
     .reduce((a, s) => a + s.minutes, 0);
 
   p.append(stat([
-    ['Current streak', `${x.streak.current}d`, x.streak.current ? 'good' : 'hot'],
-    ['Longest streak', `${x.streak.longest}d`],
+    ['Current streak', `${stk.current}d`, stk.current ? 'good' : 'hot'],
+    ['Longest streak', `${stk.longest}d`],
     ['This week', `${(week / 60).toFixed(1)}h`],
     ['Today', `${today}m`],
     ['All time', `${(total / 60).toFixed(1)}h`],
@@ -110,35 +110,6 @@ export function paceReadout(mount, { index, state }) {
   mount.append(p);
 }
 
-export function xpReadout(mount, { index, state }) {
-  const x = state.get('xp');
-  const lvl = xp.levelFromXp(x.total);
-  const p = panel('Level and XP', `level ${lvl.level}`);
-  p.insertAdjacentHTML('beforeend', `
-    <div class="xp"><span class="xp-lvl">LEVEL<b>${lvl.level}</b></span>
-      <div class="xp-track"><div class="xp-fill" style="width:${(lvl.into / lvl.need) * 100}%"></div></div>
-      <span class="xp-num">${lvl.into.toLocaleString()} / ${lvl.need.toLocaleString()}</span></div>`);
-  p.append(stat([
-    ['Total XP', x.total.toLocaleString()],
-    ['To next level', (lvl.need - lvl.into).toLocaleString()],
-    ['Streak bonus', `${xp.streakMultiplier(x.streak.current).toFixed(2)}×`],
-  ]));
-  for (const s of index.subjects) {
-    const v = x.bySubject[s.id] ?? 0;
-    const sl = xp.levelFromXp(v);
-    const r = el('div', 'node');
-    r.style.setProperty('--c', subjectColor(s));
-    r.dataset.state = v ? 'fresh' : 'untouched';
-    r.style.cursor = 'default';
-    r.innerHTML = `<span class="node-pip"></span>
-      <span class="node-code">${esc(s.callsign)}</span>
-      <span class="node-title">${esc(s.short)}</span>
-      <span class="node-lvl">LV${sl.level} · ${v.toLocaleString()} XP</span>`;
-    p.append(r);
-  }
-  mount.append(p);
-}
-
 export function fadeReadout(mount, ctx) {
   const { index, state } = ctx;
 
@@ -211,12 +182,7 @@ export function fadeReadout(mount, ctx) {
                          touches: (mm[n.id]?.touches ?? 0) + 1 };
           });
           if (key !== 'no') {
-            const earned = xp.award('rescue', {}, state.get('xp').streak.current);
-            state.update('xp', v => {
-              v.total += earned;
-              v.bySubject[n.subjectId] = (v.bySubject[n.subjectId] ?? 0) + earned;
-            });
-            toast(`${esc(o.note)} <b>+${earned} XP</b>`);
+            toast(esc(o.note));
           } else {
             toast(esc(o.note));
           }
@@ -282,10 +248,10 @@ export function logEntry(mount, ctx) {
 
   const submit = () => {
     const m = Math.max(1, Math.min(600, Number(mins.value) || 0));
-    const { earned, streak } = commitSession(state, {
+    const { streak: after } = commitSession(state, {
       subjectId: pick.value, minutes: m, note: note.value.trim(), source: 'manual',
     });
-    toast(`Logged ${m} min <b>+${earned} XP</b> · ${streak.current}-day streak`);
+    toast(`Logged <b>${m} min</b> · ${after.current}-day streak`);
     note.value = '';
     recent(p, state, index);
   };
@@ -420,10 +386,9 @@ export function scoreEntry(mount, ctx) {
         label: label.value.trim() || 'Assessment', paper: paper.value.trim() || 'Overall',
         weight, ...entry });
     });
-    const earned = xp.award('gradeLog', {}, state.get('xp').streak.current);
-    state.update('xp', v => { v.total += earned; });
+
     const g = entry.reported ?? G.gradeFor(entry.pct);
-    toast(`Grade ${g}/7 logged <b>+${earned} XP</b>`);
+    toast(`Grade <b>${g}/7</b> logged`);
     raw.value = ''; max.value = ''; label.value = '';
     grade = null; gradeBtns.forEach(x => x.removeAttribute('aria-pressed'));
     mount.innerHTML = '';
@@ -580,9 +545,7 @@ export function noteEntry(mount, ctx) {
         updatedAt: new Date().toISOString() };
     });
     if (first) {
-      const earned = xp.award('firstNote', {}, state.get('xp').streak.current);
-      state.update('xp', v => { v.total += earned; });
-      toast(`Note saved <b>+${earned} XP</b>`);
+      toast('Note saved');
     } else toast('Note saved');
   };
 

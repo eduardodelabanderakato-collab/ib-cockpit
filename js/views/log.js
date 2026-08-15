@@ -1,4 +1,4 @@
-import * as xp from '../models/xp.js';
+import * as streak from '../models/streak.js';
 import { el, panel, esc, toast, subjectColor, heatmap } from '../ui/dom.js';
 
 const pad = n => String(n).padStart(2, '0');
@@ -13,10 +13,15 @@ function subjectPicker(index, cls = 'chip field') {
   return sel;
 }
 
+/**
+ * Record a study session.
+ *
+ * It used to pay XP as well. It does not any more — logging that you sat down
+ * is a fact about your day, not a score, and the only score here is the road.
+ * The streak is the one thing a session legitimately moves.
+ */
 export function commitSession(state, { subjectId, minutes, note, source }) {
-  const today = xp.localDay();
-  const streak = xp.updateStreak(state.get('xp').streak, today);
-  const earned = xp.award('study', { minutes }, streak.current);
+  const next = streak.updateStreak(state.get('streak'), streak.localDay());
 
   state.update('sessions', list => {
     list.push({
@@ -25,13 +30,8 @@ export function commitSession(state, { subjectId, minutes, note, source }) {
       subjectId, minutes, note, source, nodeIds: [],
     });
   });
+  state.set('streak', next);
 
-  state.update('xp', x => {
-    x.total += earned;
-    x.bySubject[subjectId] = (x.bySubject[subjectId] ?? 0) + earned;
-    x.streak = streak;
-  });
-
-  return { earned, streak };
+  return { streak: next };
 }
 

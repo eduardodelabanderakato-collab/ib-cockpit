@@ -1,6 +1,6 @@
 import * as mastery from '../models/mastery.js';
 import { halfLivesFor } from '../models/curve.js';
-import * as xp from '../models/xp.js';
+import * as streak from '../models/streak.js';
 import * as ann from '../models/annunciators.js';
 import * as quests from '../models/quests.js';
 import { courseElapsed, paceRatio } from '../ui/pfd.js';
@@ -52,7 +52,6 @@ const RENDERERS = {
   fade:   quick.fadeReadout,
   today:  quick.todayView,
   terms:  quick.termsReadout,
-  xp:     quick.xpReadout,
   pace:   quick.paceReadout,
   map:    territoryView,
   quests: questsView,
@@ -73,7 +72,7 @@ export function deckView(mount, ctx, openId = null) {
   const records = state.get('mastery');
   const sessions = state.get('sessions');
   const deadlines = state.get('deadlines');
-  const x = state.get('xp');
+  const stk = state.get('streak');
 
   const hl = halfLivesFor(state.get('checks'));
   const ids = examinedNodeIds(index);
@@ -92,23 +91,27 @@ export function deckView(mount, ctx, openId = null) {
 
   const captions = ann.build({
     subjects: index.examined, nodesBySubject, records, sessions, deadlines,
-    paceRatio: ratio, streak: x.streak,
+    paceRatio: ratio, streak: stk,
   });
   const cautions = captions.filter(a => a.level === 'warning' || a.level === 'caution').length;
-  const lvl = xp.levelFromXp(x.total);
   const capturedNodes = ids.filter(id => (records[id]?.level ?? 0) > 0).length;
   const fading = mastery.rescueQueue(ids, records, Date.now(), hl);
 
   disposeDeck();
 
+  // One board for the glass, the screens and the key annunciators, so they
+  // cannot disagree about the score.
+  const board = boardFor(ctx);
+
   const hudData = {
     hoursPerWeek, capturedPct: captured * 100, daysToExam, ratio,
-    level: lvl.level, streak: x.streak.current,
+    streak: stk.current, points: board.held, backed: board.backed,
+    rank: board.rank.name,
     nodesLeft: ids.length - capturedNodes, totalHours, cautionCount: cautions,
   };
 
-  const screens = jetScreens(ctx, { records, captured, fading, x, ids, capturedNodes,
-                                    sessions, deadlines, hl, expected });
+  const screens = jetScreens(ctx, { records, captured, fading, stk, ids, capturedNodes,
+                                    sessions, deadlines, hl, expected, board });
 
   live = createJet(mount, {
     hud: hudData,
@@ -118,20 +121,19 @@ export function deckView(mount, ctx, openId = null) {
     groups: grouped(index),
     annunciators: captions,
     masterCaution: ann.masterCaution(captions),
-    status: controlStatus(ctx, { records, sessions, fading, x, deadlines, ratio }),
+    status: controlStatus(ctx, { records, sessions, fading, board, deadlines, ratio }),
     timeOverride: null,
   });
 
   // Below the cockpit, a real control surface for narrow screens. The bezel
   // keys are 8mm on a phone; hiding them left no way to log after a lesson.
   mount.append(buildTouchPanel(ctx,
-    controlStatus(ctx, { records, sessions, fading, x, deadlines, ratio })));
+    controlStatus(ctx, { records, sessions, fading, board, deadlines, ratio })));
 
   mountMCDU(live.el);
 
   // A rank is the only thing here worth interrupting for, and only on the way
   // up. Deferred a beat so it lands on a drawn cockpit, not a blank one.
-  const board = screens.board;
   if (board) setTimeout(() => {
     const name = checkRank({
       rank: board.rank, held: board.held, ranks: RANKS,
@@ -154,7 +156,7 @@ function offerBackup(ctx, sessions) {
   const settings = state.get('settings');
   if (!nudge.backupDue({ backupLastAt: settings.backupLastAt,
                          sessionCount: sessions.length })) return;
-  if (settings.backupDismissedDay === xp.localDay()) return;
+  if (settings.backupDismissedDay === streak.localDay()) return;
 
   const age = nudge.backupAge({ backupLastAt: settings.backupLastAt });
   const bar = el('div', 'backup-offer');
@@ -177,7 +179,7 @@ function offerBackup(ctx, sessions) {
   };
   const later = el('button', 'chip', 'Not now');
   later.onclick = () => {
-    state.update('settings', st => { st.backupDismissedDay = xp.localDay(); });
+    state.update('settings', st => { st.backupDismissedDay = streak.localDay(); });
     bar.remove();
   };
   bar.append(go, later);
@@ -217,7 +219,7 @@ function buildTouchPanel(ctx, status) {
 
 
 /** Which controls should have a lit LED, and what it says. */
-function controlStatus(ctx, { records, sessions, fading, x, deadlines, ratio }) {
+function controlStatus(ctx, { records, sessions, fading, board, deadlines, ratio }) {
   const { index, state } = ctx;
   const now = Date.now();
   const m = new Map();
@@ -238,6 +240,8 @@ function controlStatus(ctx, { records, sessions, fading, x, deadlines, ratio }) 
   if (openQ.length) m.set('quests', { level: 'advisory', note: `${openQ.length} open` });
 
   if (!state.get('grades').length) m.set('avg', { level: 'advisory', note: 'no data' });
+  if (board?.front) m.set('map', { level: 'advisory', note: `${board.front.captures} to take` });
+  if (board?.exposed) m.set('road', { level: 'caution', note: `${board.exposed} exposed` });
   if (ratio > 0 && ratio < 0.85) m.set('pace', { level: 'caution', note: 'behind' });
 
   const last = sessions.at(-1);
@@ -316,10 +320,10 @@ function timerScreen(mount, ctx) {
   stop.onclick = () => {
     clearInterval(ticking);
     const minutes = Math.max(1, Math.round((Date.now() - startedAt) / 60000));
-    const { earned, streak } = commitSession(state, {
+    const { streak: after } = commitSession(state, {
       subjectId: pick.value, minutes, note: note.value.trim(), source: 'timer',
     });
-    toast(`Logged ${minutes} min <b>+${earned} XP</b> · ${streak.current}-day streak`);
+    toast(`Logged <b>${minutes} min</b> · ${after.current}-day streak`);
     clock.classList.remove('running'); clock.textContent = '00:00';
     stop.style.display = 'none'; go.style.display = '';
     note.value = '';
@@ -341,7 +345,7 @@ function clip(v, n) {
 
 function jetScreens(ctx, extra) {
   const { index } = ctx;
-  const { records, captured, fading, x, ids, capturedNodes } = extra;
+  const { records, captured, fading, stk, ids, capturedNodes } = extra;
 
   const bars = index.examined.map(s2 => {
     const pct = Math.round(mastery.subjectProgress(
@@ -350,7 +354,7 @@ function jetScreens(ctx, extra) {
   }).join('');
 
   // The centre screen answers the only question that changes behaviour.
-  const r45 = boardFor(ctx);
+  const r45 = extra.board;
 
   const today = brief({
     index, records, sessions: extra.sessions, deadlines: extra.deadlines,
@@ -377,7 +381,6 @@ function jetScreens(ctx, extra) {
         <div class="bar" style="--c:var(--accent)"><i style="width:${
         ((r45.backed / 45) * 100).toFixed(1)}%"></i></div>` },
   ];
-  screens.board = r45;
   return screens;
 }
 

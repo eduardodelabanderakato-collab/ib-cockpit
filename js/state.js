@@ -10,7 +10,7 @@ export const DEFAULTS = {
   deadlines: [],
   grades:    [],
   quests:    { date: null, seed: 0, daily: [], weekly: [] },
-  xp:        { total: 0, bySubject: {}, streak: { current: 0, longest: 0, lastDay: null } },
+  streak:    { current: 0, longest: 0, lastDay: null },
   crew:      {},
   settings:  { theme: 'glass', colorOverrides: {}, coachTone: 'honest', backupLastAt: null, phase: null },
 };
@@ -22,6 +22,7 @@ export function createState() {
   for (const [k, v] of Object.entries(DEFAULTS)) {
     cache[k] = store.read(k, structuredClone(v));
   }
+  migrate(cache);
 
   function get(key) { return cache[key]; }
 
@@ -46,4 +47,29 @@ export function createState() {
   }
 
   return { get, set, update, subscribe };
+}
+
+/**
+ * Carry old saves forward.
+ *
+ * XP lived at `xp: { total, bySubject, streak }`. Killing it must not cost
+ * anyone the streak that was nested inside it, so the streak is lifted out to
+ * its own key and the rest is dropped. Runs before anything reads state, and is
+ * a no-op once the old key is gone.
+ */
+export function migrate(cache) {
+  const legacy = store.read('xp', null);
+  if (!legacy) return cache;
+  const s = legacy.streak;
+  const blank = c => !c || (!c.current && !c.longest && !c.lastDay);
+  if (s && blank(cache.streak)) {
+    cache.streak = {
+      current: Number(s.current) || 0,
+      longest: Number(s.longest) || 0,
+      lastDay: s.lastDay ?? null,
+    };
+    store.write('streak', cache.streak);
+  }
+  store.remove('xp');
+  return cache;
 }

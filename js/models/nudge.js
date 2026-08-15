@@ -1,4 +1,4 @@
-import { localDay } from './xp.js';
+import { localDay } from './streak.js';
 
 /**
  * The backup offer.

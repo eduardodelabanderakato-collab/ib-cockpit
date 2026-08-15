@@ -35,12 +35,13 @@ test('quests are deterministic for a given day and differ across days', () => {
   assert.notEqual(a.seed, c.seed);
 });
 
-test('a day always yields three daily quests and two weekly, each worth XP', () => {
+test('a day always yields three daily quests and two weekly, none priced', () => {
   const q = quests.generate({ date: '2027-03-01', subjects: SUBJECTS, nodesBySubject: NODES, now: NOW });
   assert.equal(q.daily.length, 3);
   assert.equal(q.weekly.length, 2);
   for (const x of [...q.daily, ...q.weekly]) {
-    assert.ok(x.xp > 0 && x.target > 0 && x.label.length > 4, JSON.stringify(x));
+    assert.ok(x.target > 0 && x.label.length > 4, JSON.stringify(x));
+    assert.equal(x.xp, undefined, 'missions carry no points');
   }
 });
 

@@ -1,7 +1,7 @@
 import * as mastery from './mastery.js';
 import * as quests from './quests.js';
 import { rank } from './recommend.js';
-import { localDay } from './xp.js';
+import { localDay } from './streak.js';
 import * as pb from './playbook.js';
 import { gradeFor } from './grades.js';
 

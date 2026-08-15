@@ -1,5 +1,4 @@
 import * as mastery from '../models/mastery.js';
-import * as xp from '../models/xp.js';
 import { nodesFor, topicsFor, subject as findSubject, phaseFilter, provenance } from '../syllabus.js';
 import { el, panel, esc, toast, subjectColor } from '../ui/dom.js';
 import { boardFor } from '../board.js';
@@ -62,18 +61,23 @@ export function subjectDetailView(mount, ctx, { id }) {
     const records = state.get('mastery');
     const pct = Math.round(mastery.subjectProgress(ids, records) * 100);
     const fading = mastery.rescueQueue(ids, records);
-    const lvl = xp.levelFromXp(state.get('xp').bySubject[s.id] ?? 0);
+    const seg = boardFor(ctx).segments.find(v => v.subject.id === s.id);
 
     summary.innerHTML = `
       <p class="panel-h">${esc(s.callsign)}<span class="tag mono" style="color:${color}">
         ${esc(s.level)}</span></p>
       <h1>${esc(s.name)}</h1>
-      <div class="xp" style="margin-top:16px">
-        <span class="xp-lvl">LEVEL<b>${lvl.level}</b></span>
-        <div class="xp-track"><div class="xp-fill" style="width:${(lvl.into / lvl.need) * 100}%"></div></div>
-        <span class="xp-num">${pct}% captured · ${ids.length} nodes${
-          fading.length ? ` · ${fading.length} fading` : ''}</span>
-      </div>`;
+      <div class="subj-standing">
+        <span class="terr-chip">Scoring <b>${seg?.known ? seg.grade : '—'}</b></span>
+        <span class="terr-chip">Coverage backs <b>${seg?.backs || '—'}</b></span>
+        ${seg?.captures
+          ? `<span class="terr-chip hot">${seg.captures} to back a ${seg.aiming}</span>`
+          : '<span class="terr-chip ok">Ground held — the next point is on the paper</span>'}
+      </div>
+      <div class="terr-cov" style="--c:${color}"><i style="width:${
+        Math.min(100, (seg?.coverage ?? 0) * 100).toFixed(1)}%"></i></div>
+      <p class="mfd-sub">${pct}% captured · ${ids.length} nodes${
+        fading.length ? ` · <b>${fading.length} fading</b>` : ''}</p>`;
 
     wrap.innerHTML = '';
     for (const topic of topicsFor(index, s.id)) {
@@ -114,7 +118,7 @@ export function subjectDetailView(mount, ctx, { id }) {
           const open = p.querySelector(`[data-notes-for="${n.id}"]`);
           if (open) { open.remove(); return; }
           for (const x of p.querySelectorAll('[data-notes-for]')) x.remove();
-          b.after(notesPane(n, state, s));
+          b.after(notesPane(n, state));
         };
         b.append(noteBtn);
         p.append(b);
@@ -133,7 +137,7 @@ export function subjectDetailView(mount, ctx, { id }) {
  * is a share link per topic: paste it once and the topic opens straight into
  * that notebook forever after.
  */
-function notesPane(node, state, subject) {
+function notesPane(node, state) {
   const box = el('div', 'notes');
   box.dataset.notesFor = node.id;
   const saved = state.get('notes')[node.id] ?? { md: '', goodnotes: '' };
@@ -172,16 +176,7 @@ function notesPane(node, state, subject) {
         updatedAt: new Date().toISOString(),
       };
     });
-    if (first) {
-      const earned = xp.award('firstNote', {}, state.get('xp').streak.current);
-      state.update('xp', v => {
-        v.total += earned;
-        v.bySubject[subject.id] = (v.bySubject[subject.id] ?? 0) + earned;
-      });
-      toast(`Notes saved <b>+${earned} XP</b>`);
-    } else {
-      toast('Notes saved');
-    }
+    toast(first ? 'Notes saved — first note on this topic' : 'Notes saved');
     syncOpen();
   };
 
@@ -206,35 +201,21 @@ function notesPane(node, state, subject) {
  */
 export function captureNode(node, state, priorState, ctx = null) {
   const now = Date.now();
-  const streak = state.get('xp').streak.current;
   const before = ctx ? boardFor(ctx) : null;
-  let earned = 0;
   let label = '';
 
   state.update('mastery', m => {
     const before = m[node.id] ?? mastery.emptyRecord();
     const after = mastery.capture(before, now);
-    if (priorState === 'fading' || priorState === 'lapsed') {
-      earned = xp.award('rescue', {}, streak);
-      label = 'Rescued';
-    } else if (after.level > before.level) {
-      earned = xp.award('capture', { level: after.level }, streak);
-      label = mastery.LEVELS[after.level];
-    } else {
-      earned = xp.award('rescue', {}, streak);
-      label = 'Reinforced';
-    }
+    if (priorState === 'fading' || priorState === 'lapsed') label = 'Rescued';
+    else if (after.level > before.level) label = mastery.LEVELS[after.level];
+    else label = 'Reinforced';
     m[node.id] = after;
   });
 
-  state.update('xp', x => {
-    x.total += earned;
-    x.bySubject[node.subjectId] = (x.bySubject[node.subjectId] ?? 0) + earned;
-  });
-
   const moved = before ? boardMove(before, boardFor(ctx), node, state) : null;
-  toast(moved ?? `${esc(label)} — ${esc(node.code)} <b>+${earned} XP</b>`);
-  return earned;
+  toast(moved ?? `<b>${esc(label)}</b> — ${esc(node.code)}`);
+  return label;
 }
 
 /**

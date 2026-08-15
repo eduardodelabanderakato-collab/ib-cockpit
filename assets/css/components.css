@@ -35,16 +35,8 @@
 .pfd-readouts .hot b{color:var(--warn)}
 .pfd-readouts .good b{color:var(--ok)}
 
-/* ── xp rail ─────────────────────────────────────────────────── */
-.xp{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.xp-lvl{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.14em;
-  color:var(--panel-dim);white-space:nowrap;text-transform:uppercase}
-.xp-lvl b{color:var(--panel-text);font-size:20px;letter-spacing:-.03em;margin-left:5px}
-.xp-track{flex:1;min-width:120px;height:8px;border-radius:99px;background:var(--track);overflow:hidden}
-.xp-fill{height:100%;border-radius:99px;
-  background:linear-gradient(90deg,var(--accent),var(--accent-2));
-  box-shadow:0 0 var(--gs) var(--accent);transition:width .5s cubic-bezier(.2,.8,.2,1)}
-.xp-num{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--panel-dim);white-space:nowrap}
+/* ── a subject's standing on the board ───────────────────────── */
+.subj-standing{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 8px}
 
 /* ── engine gauges (subjects) ────────────────────────────────── */
 .subs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}

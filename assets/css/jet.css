@@ -336,36 +336,44 @@ body.jet-mode .topbar-hint kbd{border-color:rgba(180,210,230,.28)}
    The airframe photo is graded in JS (filter on .jet-shell); everything here
    is the part that has to sit *over* it. */
 
-/* Sky wash + stars, clipped to the canopy aperture so they stay outside the
-   aircraft. Same polygon as .jet-glass — if one moves, both move. */
+/* Sky wash + stars over the canopy.
+   NOT clip-path. A polygon has hard edges, and a flat colour cut to a
+   rectangle-with-a-notch draws exactly that: a bright box across the canopy
+   with visible corners. Everything here is feathered with a mask instead, so
+   the light falls off the way light does and there is no edge to see. */
 .jet-sky{
   pointer-events:none;z-index:2;
-  clip-path:polygon(0% 0%, 100% 0%, 100% 62%, 74% 62%, 71% 40%, 29% 40%, 26% 62%, 0% 62%);
   background:var(--wash,transparent);
   opacity:var(--wash-a,0);
   mix-blend-mode:soft-light;
-  transition:opacity 2s linear,background-color 2s linear;
+  -webkit-mask-image:var(--canopy-mask);
+  mask-image:var(--canopy-mask);
+  transition:opacity 2.4s ease,background-color 2.4s ease;
 }
-/* Faded off towards the canopy frame. The clip-path is a rectangle with a
-   notch, so on its own it puts stars on the metal of the bow as well as on the
-   glass; the mask keeps them in the middle of the bubble where the sky is. */
 .jet-stars{
   position:absolute;inset:0;background-repeat:repeat;
-  opacity:0;transition:opacity 2s linear;mix-blend-mode:screen;
-  -webkit-mask-image:radial-gradient(ellipse 42% 52% at 50% 30%,
-    #000 46%, rgba(0,0,0,.45) 72%, transparent 92%);
-  mask-image:radial-gradient(ellipse 42% 52% at 50% 30%,
-    #000 46%, rgba(0,0,0,.45) 72%, transparent 92%);
+  opacity:0;transition:opacity 2.4s ease;mix-blend-mode:screen;
+  -webkit-mask-image:var(--star-mask);
+  mask-image:var(--star-mask);
+}
+/* One definition for the aperture, so the wash and the stars can never drift
+   apart. Wide and very soft: the canopy is a bubble, not a window. */
+.stage{
+  --canopy-mask:radial-gradient(115% 82% at 50% 8%,
+    rgba(0,0,0,.95) 0%, rgba(0,0,0,.85) 38%, rgba(0,0,0,.45) 62%,
+    rgba(0,0,0,.12) 78%, transparent 90%);
+  --star-mask:radial-gradient(58% 62% at 50% 24%,
+    #000 0%, rgba(0,0,0,.8) 42%, rgba(0,0,0,.3) 68%, transparent 88%);
 }
 
 /* Instrument flood. A dark cockpit is not a black one — the panel throws warm
    light back onto the coaming, and the screens read brighter against it. */
 .stage::after{
   content:"";position:absolute;inset:0;pointer-events:none;z-index:4;
-  opacity:var(--flood,0);transition:opacity 2s linear;
+  opacity:var(--flood,0);transition:opacity 2.4s ease;
   background:
-    radial-gradient(52% 30% at 50% 74%, rgba(255,176,86,.20), transparent 70%),
-    radial-gradient(80% 44% at 50% 96%, rgba(255,140,60,.14), transparent 72%);
+    radial-gradient(54% 32% at 50% 74%, rgba(255,176,86,.22), transparent 72%),
+    radial-gradient(84% 46% at 50% 97%, rgba(255,140,60,.15), transparent 74%);
   mix-blend-mode:screen;
 }
 .stage.is-night .jet-mfd{filter:brightness(1.16) saturate(1.06)}

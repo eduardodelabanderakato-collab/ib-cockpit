@@ -22,7 +22,7 @@ export const RAILS = {
   sysB:     { x: 54.55, y: 57.6, w: 1.9,  h: 3.8, gap: 0.5, n: 3, dir: 'v' },
   sysC:     { x: 66.15, y: 57.6, w: 2.05, h: 3.8, gap: 0.5, n: 3, dir: 'v',
               legend: 'SYS',    lx: 66.15, ly: 56.4 },
-  readouts: { x: 34.15, y: 53.5, w: 2.83, h: 2.5, gap: 0.36, n: 10, dir: 'h',
+  readouts: { x: 34.15, y: 53.5, w: 3.19, h: 2.5, gap: 0.4, n: 9, dir: 'h',
               legend: 'READOUTS', lx: 34.15, ly: 52.3 },
   engines:  { x: 34.15, y: 80.0, w: 3.64, h: 2.5, gap: 0.4, n: 8, dir: 'h',
               legend: 'ENGINES',  lx: 34.15, ly: 83.4 },
@@ -247,7 +247,9 @@ export const HUD_FIELDS = {
   airspeed:   { label: 'AIRSPEED', name: 'Airspeed — study hours per week' },
   altitude:   { label: 'ALTITUDE', name: 'Altitude — syllabus captured' },
   eta:        { label: 'ETA',      name: 'ETA — days to first exam' },
-  level:      { label: 'LEVEL',    name: 'Level' },
+  points:     { label: 'POINTS',   name: 'Points held — your projected diploma score' },
+  backed:     { label: 'BACKED',   name: 'Backed — the score your coverage supports' },
+  rank:       { label: 'RANK',     name: 'Rank on the road to 45' },
   streak:     { label: 'STREAK',   name: 'Day streak' },
   pace:       { label: 'PACE',     name: 'Pace against the calendar' },
   range:      { label: 'RANGE',    name: 'Range — syllabus nodes left' },
@@ -294,13 +296,15 @@ export function renderHUD(d, fields = DEFAULT_HUD, custom = []) {
   const left = [];
   if (on.has('airspeed')) left.push([d.hoursPerWeek.toFixed(1), 'H/WK']);
   if (on.has('flightTime')) left.push([`${d.totalHours}`, 'HOURS']);
-  if (on.has('level')) left.push([`${d.level}`, 'LEVEL']);
+  if (on.has('points')) left.push([`${d.points}`, 'POINTS']);
+  if (on.has('backed')) left.push([`${d.backed}`, 'BACKED']);
   col(left, 4, 'start');
 
   const right = [];
   if (on.has('altitude')) right.push([`${Math.round(d.capturedPct)}%`, 'CAPT']);
   if (on.has('range')) right.push([`${d.nodesLeft}`, 'RANGE']);
   if (on.has('streak')) right.push([`${d.streak}D`, 'STREAK']);
+  if (on.has('rank')) right.push([`${(d.rank ?? '').toUpperCase()}`, 'RANK']);
   col(right, W - 4, 'end');
 
   const bottom = [];
