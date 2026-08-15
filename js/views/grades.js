@@ -1,4 +1,5 @@
 import * as G from '../models/grades.js';
+import * as B from '../models/boundaries.js';
 import * as xp from '../models/xp.js';
 import { el, panel, esc, toast, subjectColor } from '../ui/dom.js';
 
@@ -25,10 +26,12 @@ export function gradesView(mount, ctx) {
       tok: settings.tokGrade ?? null,
       ee: settings.eeGrade ?? null,
       target,
+      boundaries: B.table(settings, index.examined),
     });
 
     wrap.append(projectionPanel(p, target, state, draw));
     wrap.append(subjectsPanel(p));
+    wrap.append(boundariesPanel(ctx, settings, draw));
     wrap.append(corePanel(settings, state, draw, p));
     wrap.append(historyPanel(index, entries, state, draw));
   }
@@ -93,6 +96,78 @@ function subjectsPanel(p) {
             s.weakest ? ` · weakest ${esc(s.weakest.paper)} ${s.weakest.pct}%` : ''}`}</span>
       <span class="node-lvl">${s.grade === null ? '—' : s.grade + '/7'}</span>`;
     box.append(r);
+  }
+  return box;
+}
+
+/**
+ * Per-subject grade boundaries.
+ *
+ * These decide every predicted grade and the whole projection, and they are not
+ * the same across subjects. Nothing here is guessed: the app ships a generic
+ * placeholder and shows plainly which subjects are still on it.
+ */
+function boundariesPanel(ctx, settings, draw) {
+  const { index, state } = ctx;
+  const custom = index.examined.filter(s => B.isCustom(settings, s.id)).length;
+  const box = panel('Grade boundaries', `${custom}/${index.examined.length} set`);
+
+  box.insertAdjacentHTML('beforeend', `<p class="mfd-sub">
+    Boundaries decide every grade above, and they differ a lot by subject — a 7 in
+    Mathematics AA HL has historically sat far lower than a 7 in a Language A course.
+    Until you enter the real ones, every subject is on the same placeholder table and
+    the projection is only indicative. Your school receives the real boundaries after
+    each session; ask a teacher for your subjects.</p>`);
+
+  for (const s of index.examined) {
+    const b = B.forSubject(settings, s.id);
+    const mine = B.isCustom(settings, s.id);
+
+    const row = el('div', 'node');
+    row.style.setProperty('--c', subjectColor(s));
+    row.dataset.state = mine ? 'fresh' : 'untouched';
+    row.innerHTML = `<span class="node-pip"></span>
+      <span class="node-code">${esc(s.short)}</span>
+      <span class="node-title mono" style="font-size:11.5px">${
+        b.slice(1).map((v, i) => `${i + 2}:${v}`).join('  ')}</span>
+      <span class="node-lvl">${mine ? 'yours' : 'placeholder'}</span>`;
+
+    const edit = el('div', 'row');
+    edit.style.display = 'none';
+    const fields = [];
+    for (let g = 2; g <= 7; g++) {
+      const f = el('input', 'chip field');
+      f.type = 'number'; f.min = '1'; f.max = '100'; f.step = '0.1';
+      f.value = String(b[g - 1]);
+      f.style.width = '68px';
+      f.title = `Minimum percentage for a ${g}`;
+      fields.push(f);
+      edit.append(f);
+    }
+    const save = el('button', 'chip chip-primary', 'Save');
+    save.onclick = () => {
+      const r = B.parse([0, ...fields.map(f => f.value)]);
+      if (!r.ok) { toast(esc(r.error)); return; }
+      state.update('settings', st => {
+        st.boundaries = { ...(st.boundaries ?? {}), [s.id]: r.boundaries };
+      });
+      toast(`${esc(s.short)} boundaries saved`);
+      draw();
+    };
+    const reset = el('button', 'chip', 'Reset');
+    reset.onclick = () => {
+      state.update('settings', st => {
+        if (st.boundaries) delete st.boundaries[s.id];
+      });
+      draw();
+    };
+    edit.append(save, reset);
+
+    row.onclick = () => {
+      edit.style.display = edit.style.display === 'none' ? '' : 'none';
+    };
+    row.style.cursor = 'pointer';
+    box.append(row, edit);
   }
   return box;
 }

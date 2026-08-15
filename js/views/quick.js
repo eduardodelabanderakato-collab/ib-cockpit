@@ -1,6 +1,7 @@
 import * as mastery from '../models/mastery.js';
 import * as xp from '../models/xp.js';
 import * as G from '../models/grades.js';
+import * as B from '../models/boundaries.js';
 import { courseElapsed, paceRatio } from '../ui/pfd.js';
 import { examinedNodeIds, nodesFor } from '../syllabus.js';
 import { el, panel, esc, toast, subjectColor, heatmap } from '../ui/dom.js';
@@ -35,7 +36,10 @@ export function heatReadout(mount, { state }) {
 
 export function avgReadout(mount, { index, state }) {
   const entries = state.get('grades');
-  const rows = index.examined.map(s => ({ s, p: G.predict(entries.filter(g => g.subjectId === s.id)) }));
+  const settings = state.get('settings');
+  const rows = index.examined.map(s => ({
+    s, p: G.predict(entries.filter(g => g.subjectId === s.id), B.forSubject(settings, s.id)),
+  }));
   const known = rows.filter(r => r.p);
   const avg = known.length ? known.reduce((a, r) => a + r.p.grade, 0) / known.length : null;
 
@@ -72,6 +76,7 @@ export function projReadout(mount, { index, state }) {
   const proj = G.project({
     subjects: index.examined, grades: state.get('grades'),
     tok: settings.tokGrade ?? null, ee: settings.eeGrade ?? null, target,
+    boundaries: B.table(settings, index.examined),
   });
   const p = panel('Projection', `target ${target}`);
   p.append(stat([
