@@ -1,6 +1,7 @@
 import { el, esc } from './dom.js';
 import { createStage } from './stage.js';
-import { hoursOf, birdsActive } from './sky.js';
+import { hoursOf, birdsActive, sceneGrade, starField, starOpacity,
+         clockText, STAR_TILE } from './sky.js';
 import { bankAngle, pitchOffset } from './pfd.js';
 
 /**
@@ -68,8 +69,20 @@ export function createJet(mount, model) {
   shell.dataset.depth = 'shell';
   stage.append(shell);
 
-  // 2 · canopy glass. Deliberately no tint, no stars, no drifting bands —
-  //     the windshield is glass and symbology, nothing else.
+  // 2 · the hour. The airframe is one photograph with its own daylight baked
+  //     in, so the scene is graded rather than re-lit: exposure comes down
+  //     after sunset and a wash in the hour's sky colour carries the hue. The
+  //     stars sit inside the canopy aperture only — they are outside the
+  //     aircraft, so they must not wash over the coaming or the panel.
+  const sky = el('div', 'jet-sky');
+  sky.dataset.depth = 'sky';
+  const stars = el('div', 'jet-stars');
+  stars.style.backgroundImage = starField(260, 11);
+  stars.style.backgroundSize = `${STAR_TILE.w}px ${STAR_TILE.h}px`;
+  sky.append(stars);
+  stage.append(sky);
+
+  // canopy glass: reflections only, no tint
   const glass = el('div', 'jet-glass');
   glass.dataset.depth = 'sky';
   stage.append(glass);
@@ -187,11 +200,41 @@ export function createJet(mount, model) {
   };
   const spawner = reduced ? null : setInterval(spawn, 11000);
 
+  // ── the hour, applied and then kept ─────────────────────────
+  const clock = el('div', 'jet-clock mono');
+  clock.dataset.depth = 'panel';
+  clock.title = 'Brasília time';
+  stage.append(clock);
+
+  function lightFor(hours) {
+    const g = sceneGrade(hours);
+    shell.style.filter =
+      `brightness(${g.brightness}) saturate(${g.saturate}) contrast(${g.contrast})`;
+    stage.style.setProperty('--wash', g.wash);
+    stage.style.setProperty('--wash-a', g.washAlpha);
+    stage.style.setProperty('--flood', g.flood);
+    stars.style.opacity = starOpacity(hours).toFixed(3);
+    stage.classList.toggle('is-night', g.flood > 0.5);
+    clock.textContent = clockText();
+  }
+  lightFor(model.timeOverride ?? hoursOf());
+
+  // A minute is finer than the sky can visibly move and coarse enough to cost
+  // nothing; without it the cockpit you left open at dusk is still at dusk at
+  // midnight.
+  const ticker = setInterval(() => {
+    if (document.hidden) return;
+    lightFor(model.timeOverride ?? hoursOf());
+  }, 60000);
+
   return {
     el: stage,
     look,
+    /** Exposed for the settings preview: drive the sky to any hour. */
+    setHour(h) { lightFor(h ?? hoursOf()); },
     destroy() {
       if (spawner) clearInterval(spawner);
+      clearInterval(ticker);
       look.destroy();
       stage.remove();
     },

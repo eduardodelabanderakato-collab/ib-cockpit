@@ -36,9 +36,52 @@ export const KEYFRAMES = [
 
 export const FIELDS = ['zenith', 'upper', 'horizon', 'glow', 'cloudTop', 'cloudShade', 'haze'];
 
-/** Local hour of day as a fraction, 0 <= h < 24. */
-export function hoursOf(d = new Date()) {
-  return d.getHours() + d.getMinutes() / 60 + d.getSeconds() / 3600;
+/**
+ * The clock the cockpit runs on.
+ *
+ * Brasília, not the device. You fly this from São Paulo, so the sun outside the
+ * canopy should be the sun outside your window — including when you open it on
+ * a laptop still set to another timezone, or a phone that has followed you
+ * abroad. Brazil dropped daylight saving in 2019, but the zone is named rather
+ * than hardcoded to −03:00 so it stays right if that ever changes again.
+ */
+export const ZONE = 'America/Sao_Paulo';
+
+/** Wall-clock parts in `zone`, or the device's own clock if the zone is unknown. */
+export function partsIn(d = new Date(), zone = ZONE) {
+  try {
+    const f = new Intl.DateTimeFormat('en-GB', {
+      timeZone: zone, hour12: false,
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+    });
+    const got = {};
+    for (const { type, value } of f.formatToParts(d)) got[type] = value;
+    // 24 is a legal formatToParts hour for midnight in some engines.
+    const hour = Number(got.hour) % 24;
+    return { hour, minute: Number(got.minute), second: Number(got.second) };
+  } catch {
+    return { hour: d.getHours(), minute: d.getMinutes(), second: d.getSeconds() };
+  }
+}
+
+/** Hour of day in `zone` as a fraction, 0 <= h < 24. */
+export function hoursOf(d = new Date(), zone = ZONE) {
+  const { hour, minute, second } = partsIn(d, zone);
+  return hour + minute / 60 + second / 3600;
+}
+
+/** HH:MM in `zone`, zero-padded, for anywhere the time is shown as text. */
+export function clockText(d = new Date(), zone = ZONE) {
+  const { hour, minute } = partsIn(d, zone);
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+}
+
+/**
+ * Night, for anything that has to switch rather than fade: instrument flood
+ * lighting, and the star field over the canopy.
+ */
+export function isNight(hours) {
+  return sunAltitude(hours) < -0.05;
 }
 
 const clamp01 = t => (t < 0 ? 0 : t > 1 ? 1 : t);
@@ -114,6 +157,41 @@ export function deckExposure(hours) {
     brightness: +(0.28 + 0.82 * clamp01((alt + 0.55) / 1.55)).toFixed(3),
     saturate: +(0.55 + 0.65 * clamp01((alt + 0.4) / 1.4)).toFixed(3),
     contrast: +(0.9 + 0.2 * clamp01((alt + 0.3) / 1.3)).toFixed(3),
+  };
+}
+
+/**
+ * How to light the cockpit photograph for this hour.
+ *
+ * The airframe is a single photograph with its own baked-in daylight, so the
+ * scene cannot be re-lit properly — what it can be is graded. Exposure pulls
+ * the whole frame down after sunset, and a wash in the hour's own sky colour
+ * carries the hue, warm at dusk and deep blue at night. The wash is kept off
+ * entirely in the middle of the day, where the photograph is already right and
+ * anything added only muddies it.
+ *
+ * `flood` is the instrument lighting: nought by day, and by night the warm
+ * panel glow you actually get in a dark cockpit.
+ */
+export function sceneGrade(hours) {
+  const alt = sunAltitude(hours);
+  const p = paletteFor(hours);
+
+  // Its own exposure curve rather than deckExposure's. That one grades a
+  // synthetic cloud layer that carries no light of its own; this one grades a
+  // photograph of a sunlit deck, which stays luminous well past sunset and only
+  // really goes dark once the sun is properly down.
+  const day = ease(clamp01((alt + 0.35) / 0.7));
+  const night = clamp01((-alt - 0.05) / 0.5);
+  const dusk = clamp01(1 - Math.abs(alt) / 0.4);
+
+  return {
+    brightness: +(0.32 + 0.78 * day).toFixed(3),
+    saturate: +(0.62 + 0.56 * day).toFixed(3),
+    contrast: +(0.94 + 0.16 * day).toFixed(3),
+    wash: night > dusk ? p.zenith : p.horizon,
+    washAlpha: +Math.max(night * 0.62, dusk * 0.5).toFixed(3),
+    flood: +night.toFixed(3),
   };
 }
 

@@ -331,3 +331,69 @@ body.jet-mode .topbar-hint kbd{border-color:rgba(180,210,230,.28)}
 .jann-nominal{color:#4ADE9A;border-color:#2C4A3C}
 .jann:hover{filter:brightness(1.35)}
 @media(max-width:900px){.jet-annun{display:none}}
+
+/* ── the hour ────────────────────────────────────────────────
+   The airframe photo is graded in JS (filter on .jet-shell); everything here
+   is the part that has to sit *over* it. */
+
+/* Sky wash + stars, clipped to the canopy aperture so they stay outside the
+   aircraft. Same polygon as .jet-glass — if one moves, both move. */
+.jet-sky{
+  pointer-events:none;z-index:2;
+  clip-path:polygon(0% 0%, 100% 0%, 100% 62%, 74% 62%, 71% 40%, 29% 40%, 26% 62%, 0% 62%);
+  background:var(--wash,transparent);
+  opacity:var(--wash-a,0);
+  mix-blend-mode:soft-light;
+  transition:opacity 2s linear,background-color 2s linear;
+}
+/* Faded off towards the canopy frame. The clip-path is a rectangle with a
+   notch, so on its own it puts stars on the metal of the bow as well as on the
+   glass; the mask keeps them in the middle of the bubble where the sky is. */
+.jet-stars{
+  position:absolute;inset:0;background-repeat:repeat;
+  opacity:0;transition:opacity 2s linear;mix-blend-mode:screen;
+  -webkit-mask-image:radial-gradient(ellipse 42% 52% at 50% 30%,
+    #000 46%, rgba(0,0,0,.45) 72%, transparent 92%);
+  mask-image:radial-gradient(ellipse 42% 52% at 50% 30%,
+    #000 46%, rgba(0,0,0,.45) 72%, transparent 92%);
+}
+
+/* Instrument flood. A dark cockpit is not a black one — the panel throws warm
+   light back onto the coaming, and the screens read brighter against it. */
+.stage::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:4;
+  opacity:var(--flood,0);transition:opacity 2s linear;
+  background:
+    radial-gradient(52% 30% at 50% 74%, rgba(255,176,86,.20), transparent 70%),
+    radial-gradient(80% 44% at 50% 96%, rgba(255,140,60,.14), transparent 72%);
+  mix-blend-mode:screen;
+}
+.stage.is-night .jet-mfd{filter:brightness(1.16) saturate(1.06)}
+.stage.is-night .jkey{box-shadow:0 0 0 1px rgba(255,180,90,.14),
+  inset 0 1px 0 rgba(255,210,150,.10),0 3px 8px -4px #000}
+.stage.is-night .jet-hud{--hud:#FFD37A}
+
+/* The clock. Brasília, on the glareshield where a real one sits.
+   Selected as a child of .stage because `.stage > *` sets inset:0 at a higher
+   specificity — a bare .jet-clock loses, and the box ends up full-width with
+   the time stranded on its left edge. */
+.stage > .jet-clock{
+  inset:37.2% 0 auto 0;text-align:center;
+  z-index:6;pointer-events:none;
+  font-size:clamp(10px,1.02vw,15px);letter-spacing:.16em;font-weight:700;
+  color:#FFC24D;
+  /* Amber over a bright cloud deck needs a hard dark edge or it disappears at
+     noon, the same reason the HUD symbology carries one. */
+  text-shadow:
+    0 0 2px rgba(20,10,0,.95), 0 1px 2px rgba(0,0,0,.95),
+    -1px 0 1px rgba(20,10,0,.8), 1px 0 1px rgba(20,10,0,.8),
+    0 0 9px rgba(255,170,40,.6);
+}
+.stage.is-night > .jet-clock{
+  color:#FFD891;
+  text-shadow:0 0 12px rgba(255,190,90,.85),0 1px 2px rgba(0,0,0,.9);
+}
+
+@media (prefers-reduced-motion:reduce){
+  .jet-sky,.jet-stars,.stage::after{transition:none}
+}
