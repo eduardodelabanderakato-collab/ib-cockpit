@@ -45,6 +45,8 @@ export const CONTROLS = [
   // Filled in at runtime from the subject registry.
 
   // ── SYSTEMS ────────────────────────────────────────────────
+  { id: 'hud',    code: 'HUD',   name: 'Windshield',  group: 'Systems', kind: 'sys',
+    tip: 'Choose what is projected onto the glass, and add your own lines' },
   { id: 'map',    code: 'MAP',   name: 'Territory',   group: 'Systems', kind: 'sys',
     tip: 'The whole IB as terrain you capture, subject by subject' },
   { id: 'quests', code: 'QST',   name: 'Missions',    group: 'Systems', kind: 'sys',

@@ -5,6 +5,7 @@ import { courseElapsed, paceRatio } from '../ui/pfd.js';
 import { examinedNodeIds, nodesFor } from '../syllabus.js';
 import { el, panel, esc, toast, subjectColor, heatmap } from '../ui/dom.js';
 import { commitSession } from './log.js';
+import { HUD_FIELDS, DEFAULT_HUD } from '../ui/jet.js';
 
 const DAY = 86400000;
 
@@ -447,4 +448,108 @@ function stat(pairs) {
   box.innerHTML = pairs.map(([label, value, tone]) =>
     `<span class="${tone ?? ''}"><b>${esc(value)}</b><i>${esc(label)}</i></span>`).join('');
   return box;
+}
+
+
+/* ─────────────────── windshield editor ─────────────────── */
+
+/**
+ * What is projected on the glass. Toggle the instrument readouts, and add
+ * your own lines — a target, a reminder, whatever you want in front of you.
+ */
+export function hudEntry(mount, ctx) {
+  const { state } = ctx;
+
+  const own = panel('Your lines on the glass', 'up to four');
+  own.insertAdjacentHTML('beforeend', `<p class="mfd-sub">
+    Anything you type here is projected under the reticle, every time you open
+    the cockpit.</p>`);
+
+  const list = el('div');
+  const row = el('div', 'row');
+  const input = el('input', 'chip field row-grow');
+  input.type = 'text';
+  input.maxLength = 42;
+  input.placeholder = 'TARGET 45 · NO ZERO DAYS · FIX PAPER 2';
+  const add = el('button', 'chip chip-primary', 'Project it');
+
+  const submit = () => {
+    const v = input.value.trim();
+    if (!v) return;
+    const cur = state.get('settings').hudCustom ?? [];
+    if (cur.length >= 4) { toast('The glass holds four lines. Remove one first.'); return; }
+    state.update('settings', st => { st.hudCustom = [...cur, v]; });
+    input.value = '';
+    drawLines();
+  };
+  add.onclick = submit;
+  input.onkeydown = e => { if (e.key === 'Enter') submit(); };
+  row.append(input, add);
+  own.append(row, list);
+
+  function drawLines() {
+    list.innerHTML = '';
+    const lines = state.get('settings').hudCustom ?? [];
+    if (!lines.length) {
+      list.append(el('p', 'empty', 'Nothing of your own on the glass yet.'));
+      return;
+    }
+    lines.forEach((line, i) => {
+      const r = el('div', 'node');
+      r.style.setProperty('--c', 'var(--accent)');
+      r.dataset.state = 'fresh';
+      r.style.cursor = 'default';
+      r.innerHTML = `<span class="node-pip"></span>
+        <span class="node-code">${i + 1}</span>
+        <span class="node-title mono">${esc(line)}</span>`;
+      const del = el('button', 'node-lvl', '×');
+      del.style.cursor = 'pointer';
+      del.title = 'Remove this line';
+      del.onclick = () => {
+        state.update('settings', st => {
+          st.hudCustom = (st.hudCustom ?? []).filter((_, j) => j !== i);
+        });
+        drawLines();
+      };
+      r.append(del);
+      list.append(r);
+    });
+  }
+  drawLines();
+
+  // ── instrument readouts ───────────────────────────────────
+  const inst = panel('Instrument readouts', 'toggle any');
+  const chosen = new Set(state.get('settings').hudFields ?? DEFAULT_HUD);
+  for (const [id, f] of Object.entries(HUD_FIELDS)) {
+    const r = el('button', 'node');
+    r.dataset.state = chosen.has(id) ? 'fresh' : 'untouched';
+    r.style.setProperty('--c', 'var(--accent)');
+    r.innerHTML = `<span class="node-pip"></span>
+      <span class="node-code">${esc(f.label)}</span>
+      <span class="node-title">${esc(f.name)}</span>
+      <span class="node-lvl">${chosen.has(id) ? 'on' : 'off'}</span>`;
+    r.onclick = () => {
+      if (chosen.has(id)) chosen.delete(id); else chosen.add(id);
+      state.update('settings', st => { st.hudFields = [...chosen]; });
+      mount.innerHTML = '';
+      hudEntry(mount, ctx);
+    };
+    inst.append(r);
+  }
+
+  const foot = el('div', 'row');
+  const reset = el('button', 'chip', 'Restore defaults');
+  reset.onclick = () => {
+    state.update('settings', st => { st.hudFields = [...DEFAULT_HUD]; st.hudCustom = []; });
+    toast('Glass cleared to defaults');
+    mount.innerHTML = '';
+    hudEntry(mount, ctx);
+  };
+  const apply = el('button', 'chip chip-primary', 'Apply to the glass');
+  apply.onclick = () => location.reload();
+  foot.append(apply, reset);
+  inst.append(foot);
+
+  mount.append(own, inst);
+  setTimeout(() => input.focus(), 60);
 }

@@ -1,158 +1,265 @@
-/* The jet. A photoreal cockpit shell with live data projected into it —
-   sky effects on the canopy, HUD on the combiner glass, real content in the
-   three MFDs, and labelled keys on the bezel rails. */
+/* The jet.
+   Full-viewport cockpit. The canopy is glass and symbology — nothing tints it.
+   Every key sits in a machined bezel rail; every screen is a real display. */
 
+html, body { height: 100%; }
+body.jet-mode { overflow: hidden; background: #05070A; }
+/* The stage mounts inside .app; `contents` removes the wrapper box
+   without removing the cockpit with it. */
+body.jet-mode .app { display: contents; }
+
+/* ── the cockpit fills the window ────────────────────────── */
 .stage{
-  position:relative;width:100%;aspect-ratio:2400/1018;overflow:hidden;
-  border-radius:18px;background:#0A0E14;
-  box-shadow:0 2px 4px rgba(8,12,20,.3), 0 34px 80px -26px rgba(8,12,20,.6);
-  border:1px solid #2C3846;
-  cursor:crosshair;
-  isolation:isolate;
+  position:fixed;inset:0;overflow:hidden;background:#05070A;
+  cursor:crosshair;isolation:isolate;z-index:1;
 }
 .stage > *{position:absolute;inset:0;will-change:transform}
 
-/* the airframe photograph, scaled slightly so parallax never reveals an edge */
+/* The airframe. `cover` so it always fills, scaled a touch so parallax
+   never exposes an edge. */
 .jet-shell{
-  background:url("../img/cockpit.jpg") center/cover no-repeat;
-  transform-origin:center;
-  scale:1.05;
+  background:url("../img/cockpit.jpg") center 44% / cover no-repeat;
+  scale:1.06;
 }
-
-/* ── canopy sky effects ──────────────────────────────────── */
-/* Clipped to the glass opening so the airframe stays untinted underneath. */
-.jet-sky{
-  /* Follows the canopy rail, then feathers out so no hard edge crosses the sky. */
-  clip-path:polygon(0% 0%, 100% 0%, 100% 71%, 73.5% 71%, 71% 43%, 29% 43%, 26.5% 71%, 0% 71%);
-  -webkit-mask-image:linear-gradient(to bottom,#000 0 52%,rgba(0,0,0,.55) 64%,transparent 71%);
-          mask-image:linear-gradient(to bottom,#000 0 52%,rgba(0,0,0,.55) 64%,transparent 71%);
+/* Cabin lighting: a soft vignette that sells depth without recolouring the sky. */
+.jet-vig{
   pointer-events:none;
+  background:radial-gradient(130% 90% at 50% 42%, transparent 44%, rgba(3,6,10,.55) 100%);
 }
-.jet-tint{position:absolute;inset:0;mix-blend-mode:multiply;
-  transition:background 3s linear,opacity 3s linear}
-.jet-glow{position:absolute;inset:0;mix-blend-mode:screen;
-  transition:background 3s linear,opacity 3s linear}
-.jet-stars{position:absolute;inset:0 0 40% 0;background-repeat:repeat;
-  background-size:420px 260px;transition:opacity 4s linear;mix-blend-mode:screen}
-.jet-sun{position:absolute;width:0;height:0;transition:opacity 4s linear}
-.jet-sun::before{
-  content:"";position:absolute;left:50%;top:50%;width:380px;height:380px;
-  transform:translate(-50%,-50%);border-radius:50%;mix-blend-mode:screen;
-  background:radial-gradient(circle,
-    color-mix(in srgb,var(--body-light,#FFE0A8) 70%,transparent) 0%,
-    color-mix(in srgb,var(--body-light,#FFE0A8) 20%,transparent) 36%, transparent 68%);
-}
-.jet-drift{
-  position:absolute;left:0;top:0;width:200%;height:64%;
-  background-repeat:repeat-x;background-size:50% 100%;opacity:.34;
-  animation:drift var(--drift,150s) linear infinite;mix-blend-mode:screen;
-}
-.jet-traffic{position:absolute;inset:0 0 40% 0;overflow:hidden}
 
-/* ── HUD on the combiner glass ───────────────────────────── */
-.jet-hud{pointer-events:none}
+/* ── canopy: glass artefacts only ────────────────────────── */
+.jet-glass{
+  pointer-events:none;
+  clip-path:polygon(0% 0%, 100% 0%, 100% 62%, 74% 62%, 71% 40%, 29% 40%, 26% 62%, 0% 62%);
+}
+/* a faint sweep of reflection across the canopy, the way perspex catches light */
+.jet-glass::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(104deg,
+    transparent 34%, rgba(255,255,255,.055) 44%, rgba(255,255,255,.11) 48%,
+    rgba(255,255,255,.04) 53%, transparent 62%);
+}
+
+/* ── HUD: projected symbology on the combiner ────────────── */
+.jet-hud{pointer-events:none;z-index:6}
 .jet-hud svg{
-  position:absolute;left:42.6%;top:14.4%;width:14.9%;height:16.2%;
-  overflow:visible;
+  position:absolute;left:34%;top:6%;width:32%;height:34%;overflow:visible;
 }
-.jet-hud text{font-family:ui-monospace,"SF Mono",Menlo,monospace;fill:#8CFFD0;
-  paint-order:stroke;stroke:rgba(0,26,14,.55);stroke-width:2.4px;
-  filter:drop-shadow(0 0 3px rgba(124,255,196,.7))}
-.jet-hud .s{stroke:#8CFFD0;fill:none;stroke-width:1.7;
-  filter:drop-shadow(0 0 4px rgba(124,255,196,1))}
-.jet-hud .t{stroke-width:.8;opacity:.75}
-.jet-hud .l{font-size:9px;letter-spacing:.1em;opacity:.9}
-.jet-hud .v{font-size:13px;font-weight:700}
-.jet-hud .w{fill:#FFC24D;stroke:#FFC24D}
+.jet-hud text{
+  font-family:ui-monospace,"SF Mono",Menlo,monospace;fill:#8DFFC8;
+  letter-spacing:.06em;
+  filter:drop-shadow(0 0 4px rgba(110,255,190,.9)) drop-shadow(0 0 12px rgba(60,255,170,.35));
+}
+.jet-hud .s{stroke:#8DFFC8;fill:none;stroke-width:1.6;stroke-linecap:round;
+  filter:drop-shadow(0 0 4px rgba(110,255,190,.9)) drop-shadow(0 0 12px rgba(60,255,170,.3))}
+.jet-hud .t{stroke-width:1;opacity:.7}
+.jet-hud .l{font-size:9.5px;opacity:.82}
+.jet-hud .v{font-size:14px;font-weight:700}
+.jet-hud .cust{font-size:11px;opacity:.9}
+.jet-hud .w{fill:#FFC24D;stroke:#FFC24D;
+  filter:drop-shadow(0 0 5px rgba(255,194,77,.9))}
 
-/* ── live MFD content over the blank screens ─────────────── */
+/* ── MFD screens ─────────────────────────────────────────── */
+.jet-panel{z-index:5}
 .jet-mfd{
-  position:absolute;overflow:hidden;border-radius:3px;cursor:pointer;
-  background:radial-gradient(120% 120% at 50% 0%,#0C1A22,#050B10);
-  box-shadow:inset 0 0 22px rgba(0,255,200,.07), inset 0 0 0 1px rgba(120,255,220,.09);
-  display:flex;flex-direction:column;padding:4% 5%;
+  position:absolute;overflow:hidden;cursor:pointer;border-radius:2px;
+  background:
+    radial-gradient(120% 130% at 50% -10%, rgba(20,90,70,.30), transparent 62%),
+    linear-gradient(180deg,#04120E,#020A08);
+  box-shadow:
+    inset 0 0 0 1px rgba(140,255,200,.14),
+    inset 0 0 26px rgba(0,255,180,.09),
+    inset 0 0 60px rgba(0,0,0,.75);
+  display:flex;flex-direction:column;padding:.9% 1.1%;
   font-family:ui-monospace,Menlo,monospace;color:#7CFFC4;
-  transition:box-shadow .16s;
+  transition:box-shadow .18s;
 }
-.jet-mfd:hover{box-shadow:inset 0 0 26px rgba(0,255,200,.16), 0 0 0 1px #7CFFC4}
-.jet-mfd::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px)}
-.mfd-l{left:34.2%;top:57.3%;width:8.8%;height:22.0%}
-.mfd-c{left:44.9%;top:57.3%;width:9.7%;height:22.0%}
-.mfd-r{left:56.7%;top:57.3%;width:9.4%;height:22.0%}
-.jet-mfd h4{margin:0 0 4%;font-size:clamp(5px,.62vw,9px);letter-spacing:.14em;
-  color:#4FBF95;font-weight:700}
-.jet-mfd .big{font-size:clamp(11px,1.7vw,26px);line-height:1;letter-spacing:-.02em;
-  color:#B9FFE2;text-shadow:0 0 8px rgba(124,255,196,.5)}
-.jet-mfd .sub{font-size:clamp(4.5px,.55vw,8px);color:#4FBF95;margin-top:3%;line-height:1.35}
-.jet-mfd .bars{margin-top:auto;display:grid;gap:8%}
-.jet-mfd .bar{height:clamp(2px,.28vw,4px);background:#123028;border-radius:9px;overflow:hidden}
-.jet-mfd .bar i{display:block;height:100%;background:var(--c,#7CFFC4);
-  box-shadow:0 0 5px var(--c,#7CFFC4)}
+.jet-mfd::after{ /* scanlines + glass curvature */
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(120% 120% at 50% 50%, transparent 58%, rgba(0,0,0,.5) 100%),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.26) 0 1px, transparent 1px 3px);
+}
+.jet-mfd:hover{box-shadow:
+  inset 0 0 0 1px rgba(140,255,200,.4),
+  inset 0 0 34px rgba(0,255,180,.2),
+  0 0 0 2px rgba(124,255,196,.5)}
+.mfd-l{left:34.15%;top:57.3%;width:8.75%;height:21.9%}
+.mfd-c{left:44.95%;top:57.3%;width:9.55%;height:21.9%}
+.mfd-r{left:56.70%;top:57.3%;width:9.35%;height:21.9%}
 
-/* ── bezel keys ──────────────────────────────────────────── */
-.jet-keys{pointer-events:none}
+.jet-mfd h4{margin:0;font-size:clamp(5px,.55vw,10px);letter-spacing:.2em;
+  color:#3FA57F;font-weight:700}
+.jet-mfd .big{font-size:clamp(13px,2.1vw,34px);line-height:1.05;letter-spacing:-.03em;
+  color:#CFFFEA;text-shadow:0 0 10px rgba(124,255,196,.65);margin-top:auto}
+.jet-mfd .big span{font-size:.46em;color:#5FD1A8;letter-spacing:0}
+.jet-mfd .sub{font-size:clamp(4.5px,.5vw,9px);color:#3FA57F;line-height:1.4;margin-top:.35em}
+.jet-mfd .bars{margin-top:auto;display:grid;gap:.32em;padding-top:.5em}
+.jet-mfd .bar{height:clamp(2px,.22vw,4px);background:rgba(120,255,200,.12);overflow:hidden}
+.jet-mfd .bar i{display:block;height:100%;background:var(--c,#7CFFC4);
+  box-shadow:0 0 6px var(--c,#7CFFC4)}
+
+/* ── bezel rails: machined metal strips holding the keys ─── */
+.jet-keys{pointer-events:none;z-index:7}
+.rail{
+  position:absolute;pointer-events:none;border-radius:2px;
+  background:linear-gradient(180deg,#2B3138 0%,#1B2026 42%,#14181D 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(0,0,0,.7),
+    0 1px 3px rgba(0,0,0,.6);
+  border:1px solid rgba(0,0,0,.55);
+}
+.rail::before,.rail::after{ /* fastener heads */
+  content:"";position:absolute;width:3px;height:3px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #6C7580, #23282E);
+  box-shadow:0 0 0 1px rgba(0,0,0,.6);
+}
+.rail.v::before{left:50%;top:2px;transform:translateX(-50%)}
+.rail.v::after{left:50%;bottom:2px;transform:translateX(-50%)}
+.rail.h::before{top:50%;left:2px;transform:translateY(-50%)}
+.rail.h::after{top:50%;right:2px;transform:translateY(-50%)}
+
+/* ── keys ────────────────────────────────────────────────── */
 .jkey{
   position:absolute;pointer-events:auto;cursor:pointer;font:inherit;
-  display:flex;align-items:center;justify-content:center;
-  font-family:ui-monospace,Menlo,monospace;font-weight:800;
-  font-size:clamp(4.5px,.53vw,8.5px);letter-spacing:.04em;
-  color:#C9D6E2;background:linear-gradient(180deg,rgba(72,84,96,.92),rgba(38,46,56,.92));
-  border:1px solid rgba(150,168,185,.32);border-radius:2px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 1px 2px rgba(0,0,0,.5);
-  transition:transform .06s,box-shadow .06s,background .12s,color .12s;
-  text-shadow:0 1px 0 rgba(0,0,0,.55);
+  display:flex;align-items:center;justify-content:center;border-radius:2px;
+  font-family:ui-monospace,Menlo,monospace;font-weight:700;
+  font-size:clamp(4.5px,.5vw,9px);letter-spacing:.06em;
+  color:#D8E2EC;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.14) 0 42%, rgba(255,255,255,0) 42%),
+    linear-gradient(180deg,#525C67 0%,#3A434D 45%,#2A323A 100%);
+  border:1px solid #12161B;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.30),
+    inset 0 -2px 3px rgba(0,0,0,.55),
+    0 2px 0 #0C1014,
+    0 3px 5px rgba(0,0,0,.55);
+  text-shadow:0 -1px 0 rgba(0,0,0,.75), 0 1px 0 rgba(255,255,255,.12);
+  transition:transform .05s ease, box-shadow .05s ease, background .14s, color .14s;
 }
-.jkey:hover{background:linear-gradient(180deg,rgba(96,112,126,.95),rgba(52,62,74,.95));
-  color:#fff;border-color:#7CFFC4}
+.jkey:hover{
+  color:#FFFFFF;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.18) 0 42%, rgba(255,255,255,0) 42%),
+    linear-gradient(180deg,#66727F 0%,#48535F 45%,#333C46 100%);
+}
 .jkey:active,.jkey.pressed{
-  transform:translateY(1.5px) scale(.97);
-  box-shadow:inset 0 2px 4px rgba(0,0,0,.6);
-  background:linear-gradient(180deg,rgba(28,34,42,.95),rgba(20,26,32,.95));
+  transform:translateY(2px);
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.8), 0 0 0 #0C1014;
+  background:linear-gradient(180deg,#232A32,#171D23);
+  color:#9FB0C2;
 }
-.jkey[aria-current="page"]{background:linear-gradient(180deg,#1BAF8C,#0E7D63);
-  color:#03150F;border-color:#7CFFC4;box-shadow:0 0 10px -1px rgba(124,255,196,.8)}
-.jkey .jled{
-  position:absolute;top:1px;right:1px;width:3px;height:3px;border-radius:50%;background:transparent;
+.jkey:focus-visible{outline:2px solid #7CFFC4;outline-offset:1px;z-index:9}
+.jkey[aria-current="page"]{
+  background:linear-gradient(180deg,#28E0B4 0%,#12A583 48%,#0B7A61 100%);
+  color:#02120D;border-color:#0A5F4B;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45), 0 0 14px rgba(40,224,180,.7),
+             0 2px 0 #063A2E;
+  text-shadow:0 1px 0 rgba(255,255,255,.25);
 }
-.jkey .jled.advisory{background:#6FE3FF;box-shadow:0 0 4px #6FE3FF}
-.jkey .jled.caution{background:#FFC24D;box-shadow:0 0 5px #FFC24D;animation:mc 2.4s ease-in-out infinite}
-.jkey .jled.warning{background:#FF6B7A;box-shadow:0 0 5px #FF6B7A;animation:mc 1.3s ease-in-out infinite}
+.jled{
+  position:absolute;top:1.5px;right:1.5px;width:3px;height:3px;border-radius:50%;
+  background:#171D23;box-shadow:inset 0 0 0 1px rgba(0,0,0,.8);
+}
+.jled.advisory{background:#6FE3FF;box-shadow:0 0 5px #6FE3FF}
+.jled.caution{background:#FFC24D;box-shadow:0 0 6px #FFC24D;animation:mc 2.4s ease-in-out infinite}
+.jled.warning{background:#FF6B7A;box-shadow:0 0 6px #FF6B7A;animation:mc 1.3s ease-in-out infinite}
 
 /* key tooltip */
 .jkey::after{
-  content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 7px);
+  content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 9px);
   transform:translateX(-50%) translateY(4px);
-  width:max-content;max-width:230px;padding:8px 10px;border-radius:8px;
-  background:#04070B;color:#C6D3E0;border:1px solid #38465A;
-  font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;font-weight:400;
+  width:max-content;max-width:250px;padding:9px 11px;border-radius:7px;
+  background:rgba(4,8,12,.97);color:#D6E2EE;border:1px solid #3B4B5C;
+  font-family:ui-sans-serif,system-ui,sans-serif;font-size:11.5px;font-weight:400;
   line-height:1.45;letter-spacing:0;text-shadow:none;text-align:left;
-  box-shadow:0 12px 28px -8px #000;opacity:0;pointer-events:none;
-  transition:opacity .13s,transform .13s;z-index:60;
+  box-shadow:0 14px 32px -10px #000;opacity:0;pointer-events:none;
+  transition:opacity .12s,transform .12s;z-index:70;
 }
 .jkey:hover::after,.jkey:focus-visible::after{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ── look-around hint + controls ─────────────────────────── */
+/* group legends etched into the panel beside each rail */
+.rail-legend{
+  position:absolute;pointer-events:none;
+  font-family:ui-monospace,Menlo,monospace;font-size:clamp(4px,.42vw,7.5px);
+  letter-spacing:.22em;color:rgba(196,214,230,.5);
+  text-shadow:0 1px 0 rgba(0,0,0,.85);white-space:nowrap;
+}
+
+/* ── the MCDU: a real display that grows out of the panel ── */
+.stage .mcdu{
+  position:absolute;left:50%;bottom:2.5%;transform:translateX(-50%);
+  inset:auto auto 2.5% 50%;
+  width:0;height:0;overflow:hidden;z-index:40;
+  border-radius:4px;
+  background:linear-gradient(180deg,#04120E,#020A08);
+  border:0;
+  box-shadow:
+    inset 0 0 0 1px rgba(140,255,200,.16),
+    inset 0 0 70px rgba(0,0,0,.8),
+    0 0 0 6px #1B2026,
+    0 0 0 7px #0A0D11,
+    0 26px 70px -14px rgba(0,0,0,.9);
+  transition:width .3s cubic-bezier(.2,.85,.25,1), height .3s cubic-bezier(.2,.85,.25,1);
+  display:flex;flex-direction:column;backdrop-filter:none;
+}
+.stage .mcdu.open{width:min(92%,1280px);height:88%}
+.stage .mcdu::before{ /* screen glass */
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:3;
+  background:
+    radial-gradient(130% 120% at 50% 0%, rgba(80,255,200,.05), transparent 60%),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.2) 0 1px, transparent 1px 3px);
+}
+.stage .mcdu-bar{
+  background:linear-gradient(180deg,rgba(10,32,26,.95),rgba(4,16,13,.95));
+  border-bottom:1px solid rgba(140,255,200,.18);
+}
+.stage .mcdu-code{color:#7CFFC4;border-color:rgba(124,255,196,.55);
+  background:rgba(124,255,196,.08)}
+.stage .mcdu-title{color:#CFFFEA}
+.stage .mcdu-tip{color:#4E8F77}
+.stage .mcdu-close{background:rgba(124,255,196,.08);border-color:rgba(124,255,196,.35);
+  color:#7CFFC4}
+.stage .mcdu-close:hover{background:rgba(124,255,196,.2);color:#CFFFEA}
+.stage .mcdu-screen{
+  --panel:rgba(8,26,21,.72); --panel-text:#D7FFEE; --panel-dim:#4E9E82;
+  --panel-line:rgba(124,255,196,.16); --track:rgba(124,255,196,.10);
+  --accent:#7CFFC4; --accent-2:#8CD9FF; --ok:#4ADE9A; --warn:#FFC24D; --bad:#FF6B7A;
+  --gs:8px; --elev-sm:none;
+  position:relative;z-index:2;
+}
+.stage .mcdu-screen .panel{backdrop-filter:blur(2px)}
+
+/* ── look hint ───────────────────────────────────────────── */
 .jet-hint{
-  position:absolute;left:50%;bottom:10px;transform:translateX(-50%);
-  font-family:ui-monospace,Menlo,monospace;font-size:9px;letter-spacing:.16em;
-  text-transform:uppercase;color:rgba(200,220,235,.45);pointer-events:none;
-  text-shadow:0 1px 3px rgba(0,0,0,.8);transition:opacity .4s;z-index:50;
+  position:absolute;left:50%;bottom:14px;transform:translateX(-50%);
+  font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(200,220,235,.4);pointer-events:none;
+  text-shadow:0 1px 4px rgba(0,0,0,.9);transition:opacity .5s;z-index:50;
 }
 .stage.touched .jet-hint{opacity:0}
 
-/* ── the MCDU opens on the lower display and grows ───────── */
-.stage .mcdu{
-  position:absolute;left:50%;bottom:0;transform:translateX(-50%);
-  width:0;height:0;inset:auto auto 0 50%;
-  border-radius:10px 10px 0 0;border-top:2px solid #7CFFC4;
-  transition:width .34s cubic-bezier(.2,.8,.2,1), height .34s cubic-bezier(.2,.8,.2,1);
+/* ── the brand strip floats over the canopy ──────────────── */
+body.jet-mode .topbar{
+  position:fixed;top:0;left:0;right:0;z-index:60;
+  background:linear-gradient(180deg,rgba(4,8,12,.82),transparent);
+  border-bottom:0;color:#DCE7F2;height:46px;
 }
-.stage .mcdu.open{width:min(96%,1180px);height:82%}
+body.jet-mode .topbar .brand{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.9)}
+body.jet-mode .topbar .countdown{
+  border-color:rgba(180,210,230,.28);color:#B9CBDA;background:rgba(4,10,16,.35);
+}
+body.jet-mode .topbar .countdown b{color:#7CFFC4}
+body.jet-mode .topbar-hint{color:rgba(200,220,235,.5)}
+body.jet-mode .topbar-hint kbd{border-color:rgba(180,210,230,.28)}
 
+/* ── narrow screens: the keys become a legible list ──────── */
 @media(max-width:900px){
-  .stage{cursor:default}
-  .jet-keys{display:none}
-  .jet-hint{display:none}
-  .stage .mcdu.open{width:100%;height:92%}
+  .stage{position:relative;inset:auto;height:52vh;cursor:default}
+  body.jet-mode{overflow:auto}
+  body.jet-mode .app{display:grid;padding:0 14px 90px}
+  .jet-keys,.rail,.rail-legend,.jet-hint{display:none}
+  .stage .mcdu.open{width:100%;height:94%}
 }

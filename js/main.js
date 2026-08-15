@@ -26,6 +26,7 @@ document.getElementById('countdown').innerHTML = `M28 · <b>${days} days</b>`;
 const ctx = { index, state };
 ensureQuests(ctx);
 
+document.body.classList.add('jet-mode');
 const view = document.getElementById('view');
 const controlId = () => location.hash.replace(/^#\/?/, '') || null;
 

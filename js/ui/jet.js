@@ -1,9 +1,6 @@
 import { el, esc } from './dom.js';
 import { createStage } from './stage.js';
-import {
-  hoursOf, paletteFor, sunPosition, moonPosition, starOpacity,
-  birdsActive, starField, cloudBand,
-} from './sky.js';
+import { hoursOf, birdsActive } from './sky.js';
 import { bankAngle, pitchOffset } from './pfd.js';
 
 /**
@@ -14,35 +11,53 @@ import { bankAngle, pitchOffset } from './pfd.js';
  * real data in the three MFDs, and labelled keys on the bezel rails.
  */
 
-/* Bezel key rails, measured against the shell image. Each rail is a column or
-   row of slots; controls are dealt into them in order. */
-export const RAILS = [
-  // left MFD — outer column, inner column
-  { x: 31.05, y: 57.8, w: 2.5, h: 3.3, gap: 0.42, n: 5, dir: 'v' },
-  { x: 43.35, y: 57.8, w: 2.5, h: 3.3, gap: 0.42, n: 5, dir: 'v' },
-  // centre MFD — outer columns
-  { x: 41.9,  y: 57.8, w: 2.5, h: 3.3, gap: 0.42, n: 5, dir: 'v', skip: true },
-  // right MFD
-  { x: 54.0,  y: 57.8, w: 2.5, h: 3.3, gap: 0.42, n: 5, dir: 'v' },
-  { x: 66.4,  y: 57.8, w: 2.5, h: 3.3, gap: 0.42, n: 5, dir: 'v' },
-  // top rail above the three screens
-  { x: 34.4,  y: 53.2, w: 3.0, h: 2.6, gap: 0.5,  n: 9, dir: 'h' },
-  // bottom rail beneath the three screens
-  { x: 34.4,  y: 80.2, w: 3.0, h: 2.6, gap: 0.5,  n: 9, dir: 'h' },
-];
+/* Bezel rails, measured against the shell image. The MFDs occupy
+   x 34.15–42.9 / 44.95–54.5 / 56.70–66.05 at y 57.3–79.2, so the rails
+   sit in the gaps between and above/below them. */
+export const RAILS = {
+  entry:    { x: 31.85, y: 57.6, w: 2.05, h: 3.8, gap: 0.5, n: 5, dir: 'v',
+              legend: 'ENTRY',  lx: 31.85, ly: 56.4 },
+  sysA:     { x: 42.95, y: 57.6, w: 1.9,  h: 3.8, gap: 0.5, n: 3, dir: 'v' },
+  sysB:     { x: 54.55, y: 57.6, w: 1.9,  h: 3.8, gap: 0.5, n: 3, dir: 'v' },
+  sysC:     { x: 66.15, y: 57.6, w: 2.05, h: 3.8, gap: 0.5, n: 3, dir: 'v',
+              legend: 'SYS',    lx: 66.15, ly: 56.4 },
+  readouts: { x: 34.15, y: 53.5, w: 3.64, h: 2.5, gap: 0.4, n: 8, dir: 'h',
+              legend: 'READOUTS', lx: 34.15, ly: 52.3 },
+  engines:  { x: 34.15, y: 80.0, w: 3.64, h: 2.5, gap: 0.4, n: 8, dir: 'h',
+              legend: 'ENGINES',  lx: 34.15, ly: 83.4 },
+};
 
-/** Deal controls into rail slots, left rails first. */
-export function slots() {
+/** Which rails each control group is dealt into, in order. */
+export const GROUP_RAILS = {
+  'Data entry': ['entry'],
+  'Readouts':   ['readouts'],
+  'Engines':    ['engines'],
+  'Systems':    ['sysA', 'sysB', 'sysC'],
+};
+
+function railSlots(r) {
   const out = [];
-  for (const r of RAILS) {
-    if (r.skip) continue;
-    for (let i = 0; i < r.n; i++) {
-      out.push(r.dir === 'v'
-        ? { x: r.x, y: r.y + i * (r.h + r.gap), w: r.w, h: r.h }
-        : { x: r.x + i * (r.w + r.gap), y: r.y, w: r.w, h: r.h });
-    }
+  for (let i = 0; i < r.n; i++) {
+    out.push(r.dir === 'v'
+      ? { x: r.x, y: r.y + i * (r.h + r.gap), w: r.w, h: r.h }
+      : { x: r.x + i * (r.w + r.gap), y: r.y, w: r.w, h: r.h });
   }
   return out;
+}
+
+/** Every slot on the panel, keyed by rail. */
+export function slots() {
+  return Object.values(RAILS).flatMap(railSlots);
+}
+
+/** The metal strip behind a rail, sized to enclose its keys with a margin. */
+export function railBox(r) {
+  const m = 0.35;
+  return r.dir === 'v'
+    ? { x: r.x - m, y: r.y - m, w: r.w + m * 2,
+        h: r.n * r.h + (r.n - 1) * r.gap + m * 2 }
+    : { x: r.x - m, y: r.y - m,
+        w: r.n * r.w + (r.n - 1) * r.gap + m * 2, h: r.h + m * 2 };
 }
 
 export function createJet(mount, model) {
@@ -53,30 +68,24 @@ export function createJet(mount, model) {
   shell.dataset.depth = 'shell';
   stage.append(shell);
 
-  // 2 · canopy sky effects
-  const sky = el('div', 'jet-sky');
-  sky.dataset.depth = 'sky';
-  sky.innerHTML = `
-    <div class="jet-tint"></div>
-    <div class="jet-glow"></div>
-    <div class="jet-stars"></div>
-    <div class="jet-sun"></div>
-    <div class="jet-drift" style="--drift:150s"></div>
-    <div class="jet-drift" style="--drift:64s;height:52%;opacity:.2"></div>
-    <div class="jet-traffic"></div>`;
-  stage.append(sky);
-  sky.querySelector('.jet-stars').style.backgroundImage = starField(240, 11);
-  sky.querySelectorAll('.jet-drift')[0].style.backgroundImage = cloudBand(5, 16, 0.5);
-  sky.querySelectorAll('.jet-drift')[1].style.backgroundImage = cloudBand(23, 10, 0.34);
+  // 2 · canopy glass. Deliberately no tint, no stars, no drifting bands —
+  //     the windshield is glass and symbology, nothing else.
+  const glass = el('div', 'jet-glass');
+  glass.dataset.depth = 'sky';
+  stage.append(glass);
+
+  const vig = el('div', 'jet-vig');
+  vig.dataset.depth = 'shell';
+  stage.append(vig);
 
   // 3 · HUD on the combiner glass
   const hud = el('div', 'jet-hud');
   hud.dataset.depth = 'hud';
-  hud.innerHTML = renderHUD(model.hud, model.hudFields);
+  hud.innerHTML = renderHUD(model.hud, model.hudFields, model.hudCustom);
   stage.append(hud);
 
   // 4 · live MFDs
-  const mfds = el('div');
+  const mfds = el('div', 'jet-panel');
   mfds.dataset.depth = 'panel';
   for (const s of model.screens) {
     const d = el('div', `jet-mfd mfd-${s.slot}`);
@@ -90,28 +99,43 @@ export function createJet(mount, model) {
   }
   stage.append(mfds);
 
-  // 5 · bezel keys
+  // 5 · bezel rails and keys
   const keys = el('div', 'jet-keys');
   keys.dataset.depth = 'panel';
-  const positions = slots();
-  model.controls.forEach((c, i) => {
-    const p = positions[i];
-    if (!p) return;
-    const st = model.status.get(c.id);
-    const b = el('button', 'jkey');
-    b.type = 'button';
-    b.style.cssText = `left:${p.x}%;top:${p.y}%;width:${p.w}%;height:${p.h}%`;
-    b.dataset.tip = st ? `${c.name} — ${c.tip} (${st.note})` : `${c.name} — ${c.tip}`;
-    b.setAttribute('aria-label', `${c.name}: ${c.tip}`);
-    b.dataset.control = c.id;
-    b.innerHTML = `${esc(c.code)}<span class="jled${st ? ' ' + st.level : ''}"></span>`;
-    b.onclick = () => {
-      b.classList.add('pressed');
-      setTimeout(() => b.classList.remove('pressed'), 130);
-      location.hash = `#/${c.id}`;
-    };
-    keys.append(b);
-  });
+
+  for (const [name, r] of Object.entries(RAILS)) {
+    const box = railBox(r);
+    const strip = el('div', `rail ${r.dir}`);
+    strip.style.cssText = `left:${box.x}%;top:${box.y}%;width:${box.w}%;height:${box.h}%`;
+    keys.append(strip);
+    if (r.legend) {
+      const lg = el('div', 'rail-legend', r.legend);
+      lg.style.cssText = `left:${r.lx}%;top:${r.ly}%`;
+      keys.append(lg);
+    }
+  }
+
+  for (const g of model.groups) {
+    const pool = (GROUP_RAILS[g.group] ?? []).flatMap(n => railSlots(RAILS[n]));
+    g.controls.forEach((c, i) => {
+      const p = pool[i];
+      if (!p) return;
+      const st = model.status.get(c.id);
+      const b = el('button', 'jkey');
+      b.type = 'button';
+      b.style.cssText = `left:${p.x}%;top:${p.y}%;width:${p.w}%;height:${p.h}%`;
+      b.dataset.tip = st ? `${c.name} — ${c.tip} (${st.note})` : `${c.name} — ${c.tip}`;
+      b.setAttribute('aria-label', `${c.name}: ${c.tip}`);
+      b.dataset.control = c.id;
+      b.innerHTML = `${esc(c.code)}<span class="jled${st ? ' ' + st.level : ''}"></span>`;
+      b.onclick = () => {
+        b.classList.add('pressed');
+        setTimeout(() => b.classList.remove('pressed'), 140);
+        location.hash = `#/${c.id}`;
+      };
+      keys.append(b);
+    });
+  }
   stage.append(keys);
 
   const hint = el('div', 'jet-hint', 'Move to look around · press a key');
@@ -125,13 +149,13 @@ export function createJet(mount, model) {
   stage.addEventListener('pointerdown', () => stage.classList.add('touched'), { once: true });
   stage.addEventListener('pointermove', () => stage.classList.add('touched'), { once: true });
 
-  const paint = () => paintSky(sky, model.timeOverride);
-  paint();
-  const timer = setInterval(paint, 15000);
+  const traffic = el('div', 'jet-traffic');
+  traffic.style.cssText = 'position:absolute;inset:0 0 42% 0;overflow:hidden;pointer-events:none';
+  glass.append(traffic);
 
   const spawn = () => {
     if (reduced || document.hidden) return;
-    const h = model.timeOverride ?? hoursOf();
+    const h = hoursOf();
     if (!birdsActive(h) || Math.random() > 0.5) return;
     const n = el('div', 'flyby bird');
     n.innerHTML = `<svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
@@ -144,50 +168,19 @@ export function createJet(mount, model) {
     n.style.setProperty('--dur', `${14 + Math.random() * 12}s`);
     n.style.setProperty('--rise', `${(Math.random() * 6 - 3).toFixed(1)}vh`);
     n.addEventListener('animationend', () => n.remove(), { once: true });
-    sky.querySelector('.jet-traffic').append(n);
+    traffic.append(n);
   };
   const spawner = reduced ? null : setInterval(spawn, 11000);
 
   return {
     el: stage,
     look,
-    repaintSky: paint,
     destroy() {
-      clearInterval(timer);
       if (spawner) clearInterval(spawner);
       look.destroy();
       stage.remove();
     },
   };
-}
-
-/** Recolour the photographic sky for the hour rather than replacing it. */
-function paintSky(sky, override) {
-  const h = override ?? hoursOf();
-  const p = paletteFor(h);
-  const sun = sunPosition(h);
-  const moon = moonPosition(h);
-  const body = sun.visible ? sun : moon;
-
-  // The photo already has a good sky. Tint it toward the hour rather than
-  // repainting it — heavy multiply turns midday into a bruise.
-  sky.querySelector('.jet-tint').style.background =
-    `linear-gradient(to bottom, ${p.zenith} 0%, ${p.upper} 45%, ${p.horizon} 100%)`;
-  sky.querySelector('.jet-tint').style.opacity =
-    (0.18 + 0.34 * (1 - Math.min(1, Math.max(0, (sun.alt + 1) / 2)))).toFixed(3);
-
-  sky.querySelector('.jet-glow').style.background =
-    `radial-gradient(90% 60% at ${(body.x * 100).toFixed(1)}% ${(body.y * 100).toFixed(1)}%,
-      color-mix(in srgb, ${p.glow} 60%, transparent) 0%, transparent 58%)`;
-  sky.querySelector('.jet-glow').style.opacity = body.visible ? '0.85' : '0.2';
-
-  sky.querySelector('.jet-stars').style.opacity = starOpacity(h).toFixed(3);
-
-  const sunEl = sky.querySelector('.jet-sun');
-  sunEl.style.left = `${(body.x * 100).toFixed(1)}%`;
-  sunEl.style.top = `${(body.y * 100).toFixed(1)}%`;
-  sunEl.style.opacity = body.visible ? '1' : '0';
-  sunEl.style.setProperty('--body-light', sun.visible ? p.glow : '#C8D8FF');
 }
 
 /* ── HUD symbology, only the fields you asked for ─────────── */
@@ -207,59 +200,70 @@ export const HUD_FIELDS = {
 
 export const DEFAULT_HUD = ['horizon', 'airspeed', 'altitude', 'eta', 'pace'];
 
-export function renderHUD(d, fields = DEFAULT_HUD) {
+/**
+ * HUD symbology. Glass and aiming marks — plus whatever lines you add yourself.
+ */
+export function renderHUD(d, fields = DEFAULT_HUD, custom = []) {
   const on = new Set(fields);
-  const W = 260, H = 200, CX = W / 2, CY = 104;
-  const parts = [];
+  const W = 300, H = 210, CX = W / 2, CY = 96;
+  const p = [];
+
+  // ── aiming reticle: always on the glass ──────────────────
+  p.push(`<circle class="s t" cx="${CX}" cy="${CY}" r="26"/>`);
+  p.push(`<circle class="s" cx="${CX}" cy="${CY}" r="2"/>`);
+  for (const [x1, y1, x2, y2] of [
+    [CX - 34, CY, CX - 20, CY], [CX + 20, CY, CX + 34, CY],
+    [CX, CY - 34, CX, CY - 20], [CX, CY + 20, CX, CY + 34],
+  ]) p.push(`<line class="s" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`);
 
   if (on.has('horizon')) {
     const bank = bankAngle(d.ratio || 0);
     const y = CY + pitchOffset(d.hoursPerWeek) * 0.5;
-    parts.push(`<g transform="rotate(${bank.toFixed(2)} ${CX} ${CY})">
-      <line class="s" x1="${CX - 82}" y1="${y}" x2="${CX - 26}" y2="${y}"/>
-      <line class="s" x1="${CX + 26}" y1="${y}" x2="${CX + 82}" y2="${y}"/>
-      ${[-34, -17, 17, 34].map(o => `<line class="s t" x1="${CX - 16}" y1="${y + o}"
-        x2="${CX + 16}" y2="${y + o}"/>`).join('')}
+    p.push(`<g transform="rotate(${bank.toFixed(2)} ${CX} ${CY})">
+      <line class="s" x1="${CX - 108}" y1="${y}" x2="${CX - 40}" y2="${y}"/>
+      <line class="s" x1="${CX + 40}" y1="${y}" x2="${CX + 108}" y2="${y}"/>
+      ${[-40, -20, 20, 40].map(o => `<line class="s t" x1="${CX - 22}" y1="${y + o}"
+        x2="${CX + 22}" y2="${y + o}"/>`).join('')}
     </g>`);
-    parts.push(`<path class="s" d="M${CX - 24} ${CY} h12 l12 10 l12 -10 h12" fill="none"/>`);
   }
 
-  // left column
+  const col = (items, x, anchor) => items.forEach(([v, l], i) => {
+    const y = 44 + i * 27;
+    p.push(`<text x="${x}" y="${y}" text-anchor="${anchor}" class="v">${esc(v)}</text>`);
+    p.push(`<text x="${x}" y="${y + 11}" text-anchor="${anchor}" class="l">${esc(l)}</text>`);
+  });
+
   const left = [];
   if (on.has('airspeed')) left.push([d.hoursPerWeek.toFixed(1), 'H/WK']);
   if (on.has('flightTime')) left.push([`${d.totalHours}`, 'HOURS']);
   if (on.has('level')) left.push([`${d.level}`, 'LEVEL']);
-  left.forEach(([v, l], i) => {
-    const y = 52 + i * 26;
-    parts.push(`<text x="6" y="${y}" class="v">${esc(v)}</text>`);
-    parts.push(`<text x="6" y="${y + 10}" class="l">${esc(l)}</text>`);
-  });
+  col(left, 4, 'start');
 
-  // right column
   const right = [];
   if (on.has('altitude')) right.push([`${Math.round(d.capturedPct)}%`, 'CAPT']);
   if (on.has('range')) right.push([`${d.nodesLeft}`, 'RANGE']);
   if (on.has('streak')) right.push([`${d.streak}D`, 'STREAK']);
-  right.forEach(([v, l], i) => {
-    const y = 52 + i * 26;
-    parts.push(`<text x="${W - 6}" y="${y}" text-anchor="end" class="v">${esc(v)}</text>`);
-    parts.push(`<text x="${W - 6}" y="${y + 10}" text-anchor="end" class="l">${esc(l)}</text>`);
-  });
+  col(right, W - 4, 'end');
 
-  // bottom row
   const bottom = [];
-  if (on.has('eta')) bottom.push([`${d.daysToExam}D`, 'ETA']);
-  if (on.has('pace')) bottom.push([d.ratio > 0 ? `${Math.round(d.ratio * 100)}%` : '---', 'PACE']);
-  if (on.has('caution') && d.cautionCount) bottom.push([`${d.cautionCount}`, 'CAUTION']);
-  bottom.forEach(([v, l], i) => {
-    const x = bottom.length === 1 ? CX : 30 + i * ((W - 60) / (bottom.length - 1));
-    const warn = l === 'PACE' && d.ratio > 0 && d.ratio < 0.85 || l === 'CAUTION';
-    parts.push(`<text x="${x}" y="${H - 30}" text-anchor="middle"
+  if (on.has('eta')) bottom.push([`${d.daysToExam}D`, 'ETA', false]);
+  if (on.has('pace')) bottom.push([d.ratio > 0 ? `${Math.round(d.ratio * 100)}%` : '---', 'PACE',
+    d.ratio > 0 && d.ratio < 0.85]);
+  if (on.has('caution') && d.cautionCount) bottom.push([`${d.cautionCount}`, 'CAUTION', true]);
+  bottom.forEach(([v, l, warn], i) => {
+    const x = bottom.length === 1 ? CX : 44 + i * ((W - 88) / (bottom.length - 1));
+    p.push(`<text x="${x}" y="${H - 34}" text-anchor="middle"
       class="v ${warn ? 'w' : ''}">${esc(v)}</text>`);
-    parts.push(`<text x="${x}" y="${H - 20}" text-anchor="middle" class="l">${esc(l)}</text>`);
+    p.push(`<text x="${x}" y="${H - 23}" text-anchor="middle" class="l">${esc(l)}</text>`);
   });
 
-  parts.push(`<text x="${CX}" y="18" text-anchor="middle" class="l">M28</text>`);
+  // ── your own lines, projected under the reticle ──────────
+  custom.filter(Boolean).slice(0, 4).forEach((line, i) => {
+    p.push(`<text x="${CX}" y="${CY + 46 + i * 14}" text-anchor="middle"
+      class="cust">${esc(line)}</text>`);
+  });
 
-  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">${parts.join('')}</svg>`;
+  p.push(`<text x="${CX}" y="14" text-anchor="middle" class="l">M28</text>`);
+
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">${p.join('')}</svg>`;
 }

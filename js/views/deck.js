@@ -6,7 +6,7 @@ import { courseElapsed, paceRatio } from '../ui/pfd.js';
 import { examinedNodeIds, nodesFor } from '../syllabus.js';
 import { el, esc, subjectColor, toast } from '../ui/dom.js';
 import { createJet, DEFAULT_HUD } from '../ui/jet.js';
-import { grouped, byId, allControls } from '../ui/controls.js';
+import { grouped, byId } from '../ui/controls.js';
 import { mountMCDU, open as openMCDU, close as closeMCDU } from '../ui/mcdu.js';
 import { commitSession } from './log.js';
 import * as quick from './quick.js';
@@ -33,6 +33,7 @@ const RENDERERS = {
   score:  quick.scoreEntry,
   due:    quick.dueEntry,
   note:   quick.noteEntry,
+  hud:    quick.hudEntry,
   heat:   quick.heatReadout,
   avg:    quick.avgReadout,
   proj:   gradesView,
@@ -96,8 +97,9 @@ export function deckView(mount, ctx, openId = null) {
   live = createJet(mount, {
     hud: hudData,
     hudFields: state.get('settings').hudFields ?? DEFAULT_HUD,
+    hudCustom: state.get('settings').hudCustom ?? [],
     screens: jetScreens(ctx, { records, captured, fading, x, lvl, ids, capturedNodes }),
-    controls: allControls(index),
+    groups: grouped(index),
     status: controlStatus(ctx, { records, sessions, fading, x, deadlines, ratio }),
     timeOverride: null,
   });
