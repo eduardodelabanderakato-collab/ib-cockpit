@@ -19,6 +19,7 @@ import { crewView } from './crew.js';
 import { resourcesView } from './resources.js';
 import { settingsView } from './settings.js';
 import { gradesView } from './grades.js';
+import { notebookView } from './notebook.js';
 
 const DAY = 86400000;
 let live = null;
@@ -33,6 +34,7 @@ const RENDERERS = {
   score:  quick.scoreEntry,
   due:    quick.dueEntry,
   note:   quick.noteEntry,
+  book:   notebookView,
   hud:    quick.hudEntry,
   heat:   quick.heatReadout,
   avg:    quick.avgReadout,

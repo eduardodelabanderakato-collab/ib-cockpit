@@ -25,7 +25,7 @@ const SUBJECTS = [
 // Mathematics: Analysis and Approaches HL
 // ─────────────────────────────────────────────────────────────────────────────
 const MATH_AA_HL = {
-  guide: 'Mathematics: Analysis and Approaches guide (first assessment 2021)',
+  guide: 'Mathematics: Analysis and Approaches guide (first assessment 2021). CONFIRMED current for May 2028 — the new AA guide is first taught Aug 2027, first assessed May 2029.',
   verified: false,
   topics: [
     ['1', 'Number and algebra', [
@@ -242,7 +242,7 @@ const CHEMISTRY_SL = {
 // Economics HL — 2020 guide (first assessment 2022)
 // ─────────────────────────────────────────────────────────────────────────────
 const ECONOMICS_HL = {
-  guide: 'Economics guide (first assessment 2022) — EDITION UNCONFIRMED for May 2028',
+  guide: 'Economics guide (first assessment 2022). No published revision found for May 2028, so this is most likely your edition — still worth confirming with your teacher.',
   verified: false,
   topics: [
     ['1', 'Introduction to economics', [
@@ -309,7 +309,7 @@ const ECONOMICS_HL = {
 // ─────────────────────────────────────────────────────────────────────────────
 function langAndLit(lang) {
   return {
-    guide: 'Language A: Language and Literature guide (first assessment 2021)',
+    guide: 'Language A: Language and Literature guide (first assessment 2021). No published revision found affecting May 2028.',
     verified: false,
     topics: [
       ['AOE', 'Areas of exploration', [
@@ -375,7 +375,7 @@ function langAndLit(lang) {
 // Core: TOK, EE, CAS
 // ─────────────────────────────────────────────────────────────────────────────
 const CORE = {
-  guide: 'Theory of Knowledge guide (first assessment 2022); EE and CAS guides',
+  guide: 'TOK guide (first assessment 2022); Extended Essay guide (first assessment 2027 — this is your edition); CAS guide',
   verified: false,
   topics: [
     ['TOK', 'Theory of Knowledge', [
@@ -397,15 +397,19 @@ const CORE = {
       'TOK.16|Essay: final submission|SL|2',
     ]],
     ['EE', 'Extended Essay', [
-      'EE.1|Choosing a subject and supervisor|SL|1',
-      'EE.2|Formulating the research question|SL|1',
-      'EE.3|Reflection session 1|SL|1',
+      'EE.1|Choose the pathway: subject-focused, or interdisciplinary|SL|1',
+      'EE.2|Choose the subject(s) and secure a supervisor|SL|1',
+      'EE.3|Formulate the research question|SL|1',
       'EE.4|Research and source gathering|SL|1',
-      'EE.5|Interim reflection session|SL|2',
-      'EE.6|First full draft|SL|2',
-      'EE.7|Revision and referencing|SL|2',
-      'EE.8|Viva voce and final reflection|SL|2',
-      'EE.9|Final submission|SL|2',
+      'EE.5|Criterion A — Framework for the essay (6 marks)|SL|2',
+      'EE.6|Criterion B — Knowledge and understanding (6 marks)|SL|2',
+      'EE.7|Criterion C — Analysis and line of argument (6 marks)|SL|2',
+      'EE.8|Criterion D — Discussion and evaluation (8 marks, highest weighted)|SL|2',
+      'EE.9|First full draft (4,000 words maximum)|SL|2',
+      'EE.10|Revision and referencing|SL|2',
+      'EE.11|Viva voce — the final supervisory meeting|SL|2',
+      'EE.12|Criterion E — 500-word Reflective Statement on the RPF (4 marks)|SL|2',
+      'EE.13|Final submission|SL|2',
     ]],
     ['CAS', 'Creativity, Activity, Service', [
       'CAS.1|LO1: identify own strengths and areas for growth|SL|1',

@@ -11,6 +11,18 @@ export const DEFAULT_BOUNDARIES = [0, 12, 25, 40, 53, 67, 82];
 
 export const ALPHA = 0.4;
 
+/**
+ * The representative percentage for an IB grade, used when you log the grade
+ * itself rather than a raw mark. Takes the midpoint of that grade's band so a
+ * reported 6 does not read as a bare-minimum 6.
+ */
+export function pctForGrade(grade, boundaries = DEFAULT_BOUNDARIES) {
+  const g = Math.min(7, Math.max(1, Math.round(grade)));
+  const lo = boundaries[g - 1];
+  const hi = g === 7 ? 100 : boundaries[g];
+  return +((lo + hi) / 2).toFixed(1);
+}
+
 export function gradeFor(pct, boundaries = DEFAULT_BOUNDARIES) {
   let g = 1;
   for (let i = 0; i < boundaries.length; i++) if (pct >= boundaries[i]) g = i + 1;

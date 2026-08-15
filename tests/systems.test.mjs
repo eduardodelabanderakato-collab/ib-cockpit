@@ -291,3 +291,28 @@ test('a brief for an untouched topic says so rather than inventing history', () 
   assert.match(b, /never studied/);
   assert.ok(!/NaN|Infinity|undefined/.test(b));
 });
+
+// ── IB 1–7 entry ─────────────────────────────────────────────
+test('a logged IB grade maps to the midpoint of its band, not its floor', () => {
+  for (let g = 1; g <= 7; g++) {
+    const pct = grades.pctForGrade(g);
+    assert.equal(grades.gradeFor(pct), g, `grade ${g} did not round-trip`);
+  }
+  assert.ok(grades.pctForGrade(6) > grades.DEFAULT_BOUNDARIES[5],
+    'a 6 should sit above the 6 boundary, not on it');
+});
+
+test('pctForGrade clamps nonsense input into 1-7', () => {
+  assert.equal(grades.pctForGrade(0), grades.pctForGrade(1));
+  assert.equal(grades.pctForGrade(99), grades.pctForGrade(7));
+  assert.equal(grades.pctForGrade(6.4), grades.pctForGrade(6));
+});
+
+test('grades entered as 1-7 and as raw marks predict together', () => {
+  const p = grades.predict([
+    { ts: '2027-01-01', raw: 30, max: 100 },
+    { ts: '2027-02-01', raw: grades.pctForGrade(7), max: 100 },
+  ]);
+  assert.equal(p.count, 2);
+  assert.ok(p.trend > 0);
+});

@@ -22,6 +22,8 @@ export const CONTROLS = [
     tip: 'Add an assignment, IA milestone or test date' },
   { id: 'note',   code: 'NOTE',  name: 'Quick note',   group: 'Data entry', kind: 'entry',
     tip: 'Write a note against any syllabus topic' },
+  { id: 'book',   code: 'BOOK',  name: 'Notebook',     group: 'Data entry', kind: 'entry',
+    tip: 'Everything you have written, searchable and in one place' },
 
   // ── READOUTS ───────────────────────────────────────────────
   { id: 'heat',   code: 'HEAT',  name: 'Heat map',      group: 'Readouts', kind: 'read',

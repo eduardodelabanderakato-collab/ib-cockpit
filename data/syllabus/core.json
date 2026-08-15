@@ -1,6 +1,6 @@
 {
   "subjectId": "core",
-  "guide": "Theory of Knowledge guide (first assessment 2022); EE and CAS guides",
+  "guide": "TOK guide (first assessment 2022); Extended Essay guide (first assessment 2027 — this is your edition); CAS guide",
   "verified": false,
   "topics": [
     {
@@ -111,19 +111,19 @@
       "nodes": [
         {
           "code": "EE.1",
-          "title": "Choosing a subject and supervisor",
+          "title": "Choose the pathway: subject-focused, or interdisciplinary",
           "tier": "SL",
           "phase": "DP1"
         },
         {
           "code": "EE.2",
-          "title": "Formulating the research question",
+          "title": "Choose the subject(s) and secure a supervisor",
           "tier": "SL",
           "phase": "DP1"
         },
         {
           "code": "EE.3",
-          "title": "Reflection session 1",
+          "title": "Formulate the research question",
           "tier": "SL",
           "phase": "DP1"
         },
@@ -135,30 +135,54 @@
         },
         {
           "code": "EE.5",
-          "title": "Interim reflection session",
+          "title": "Criterion A — Framework for the essay (6 marks)",
           "tier": "SL",
           "phase": "DP2"
         },
         {
           "code": "EE.6",
-          "title": "First full draft",
+          "title": "Criterion B — Knowledge and understanding (6 marks)",
           "tier": "SL",
           "phase": "DP2"
         },
         {
           "code": "EE.7",
-          "title": "Revision and referencing",
+          "title": "Criterion C — Analysis and line of argument (6 marks)",
           "tier": "SL",
           "phase": "DP2"
         },
         {
           "code": "EE.8",
-          "title": "Viva voce and final reflection",
+          "title": "Criterion D — Discussion and evaluation (8 marks, highest weighted)",
           "tier": "SL",
           "phase": "DP2"
         },
         {
           "code": "EE.9",
+          "title": "First full draft (4,000 words maximum)",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "EE.10",
+          "title": "Revision and referencing",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "EE.11",
+          "title": "Viva voce — the final supervisory meeting",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "EE.12",
+          "title": "Criterion E — 500-word Reflective Statement on the RPF (4 marks)",
+          "tier": "SL",
+          "phase": "DP2"
+        },
+        {
+          "code": "EE.13",
           "title": "Final submission",
           "tier": "SL",
           "phase": "DP2"

@@ -263,34 +263,116 @@ function recent(p, state, index) {
 export function scoreEntry(mount, ctx) {
   const { index, state } = ctx;
   const p = panel('Add a score', 'test, mock or paper');
+
   const pick = subjectSelect(index, true);
   const paper = textField('Paper 2', 120);
   const label = textField('End of unit test');
+
+  // ── two ways to log: a raw mark, or the IB grade itself ──
+  let mode = 'raw';
+  const modeRow = el('div', 'row');
+  const rawBtn = el('button', 'chip', 'Raw mark');
+  const ibBtn = el('button', 'chip', 'IB grade 1–7');
+  modeRow.append(rawBtn, ibBtn);
+
   const raw = numField('', 84, 'raw');
   const max = numField('', 84, 'max');
-  const go = el('button', 'chip chip-primary', 'Add score');
+  const rawWrap = el('div', 'row');
+  rawWrap.append(raw, el('span', 'mono', '/'), max);
 
+  const gradeWrap = el('div', 'row');
+  const gradeBtns = [];
+  let grade = null;
+  for (let g = 1; g <= 7; g++) {
+    const b = el('button', 'chip', String(g));
+    b.style.minWidth = '46px';
+    b.title = `IB grade ${g} — about ${G.pctForGrade(g)}%`;
+    b.onclick = () => {
+      grade = g;
+      gradeBtns.forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    };
+    gradeBtns.push(b);
+    gradeWrap.append(b);
+  }
+
+  const setMode = m => {
+    mode = m;
+    rawBtn.setAttribute('aria-pressed', String(m === 'raw'));
+    ibBtn.setAttribute('aria-pressed', String(m === 'ib'));
+    rawWrap.style.display = m === 'raw' ? '' : 'none';
+    gradeWrap.style.display = m === 'ib' ? '' : 'none';
+  };
+  rawBtn.onclick = () => setMode('raw');
+  ibBtn.onclick = () => setMode('ib');
+  setMode('raw');
+
+  const go = el('button', 'chip chip-primary', 'Add score');
   go.onclick = () => {
-    const r = Number(raw.value), m = Number(max.value);
-    if (!(m > 0) || !(r >= 0)) { raw.focus(); toast('Enter a raw mark and a maximum'); return; }
+    let entry;
+    if (mode === 'ib') {
+      if (!grade) { toast('Pick a grade from 1 to 7'); return; }
+      // Stored as the midpoint of that grade band so it feeds the prediction
+      // like any other result, with the reported grade kept alongside.
+      const pct = G.pctForGrade(grade);
+      entry = { raw: pct, max: 100, pct, reported: grade };
+    } else {
+      const r = Number(raw.value), m = Number(max.value);
+      if (!(m > 0) || !(r >= 0)) { raw.focus(); toast('Enter a raw mark and a maximum'); return; }
+      entry = { raw: r, max: m, pct: (r / m) * 100, reported: null };
+    }
+
     state.update('grades', list => {
       list.push({ id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         ts: new Date().toISOString(), subjectId: pick.value,
         label: label.value.trim() || 'Assessment', paper: paper.value.trim() || 'Overall',
-        raw: r, max: m, pct: (r / m) * 100 });
+        ...entry });
     });
     const earned = xp.award('gradeLog', {}, state.get('xp').streak.current);
     state.update('xp', v => { v.total += earned; });
-    toast(`${Math.round((r / m) * 100)}% · grade ${G.gradeFor((r / m) * 100)}/7 <b>+${earned} XP</b>`);
-    raw.value = ''; label.value = '';
-    avgReadout(mount, ctx);
+    const g = entry.reported ?? G.gradeFor(entry.pct);
+    toast(`Grade ${g}/7 logged <b>+${earned} XP</b>`);
+    raw.value = ''; max.value = ''; label.value = '';
+    grade = null; gradeBtns.forEach(x => x.removeAttribute('aria-pressed'));
+    mount.innerHTML = '';
+    scoreEntry(mount, ctx);
   };
 
   const row = el('div', 'row');
-  row.append(pick, paper, label, raw, max, go);
-  p.append(row);
+  row.append(pick, paper, label);
+  p.append(row, modeRow, rawWrap, gradeWrap, go);
+  p.insertAdjacentHTML('beforeend', `<p class="mfd-sub">
+    A raw mark is more precise; an IB grade is what your teacher actually reports.
+    Either one feeds the prediction and the projection out of 45.</p>`);
   mount.append(p);
-  setTimeout(() => raw.focus(), 60);
+
+  // recent scores, so you can see what you have logged
+  const entries = state.get('grades');
+  const hist = panel('Recent scores', `${entries.length}`);
+  if (!entries.length) hist.append(el('p', 'empty', 'Nothing logged yet.'));
+  for (const g of [...entries].reverse().slice(0, 10)) {
+    const sub = index.subjects.find(v => v.id === g.subjectId);
+    const pct = G.pctOf(g);
+    const shown = g.reported ?? G.gradeFor(pct);
+    const r = el('div', 'node');
+    r.style.setProperty('--c', sub ? subjectColor(sub) : 'var(--accent)');
+    r.dataset.state = shown >= 6 ? 'fresh' : shown >= 4 ? 'dimming' : 'fading';
+    r.style.cursor = 'default';
+    r.innerHTML = `<span class="node-pip"></span>
+      <span class="node-code">${esc(sub?.short ?? g.subjectId)}</span>
+      <span class="node-title">${esc(g.paper)} — ${esc(g.label)}
+        <span style="color:var(--panel-dim)">${g.reported
+          ? ' · reported grade' : ` · ${g.raw}/${g.max}`}</span></span>
+      <span class="node-lvl">${shown}/7</span>`;
+    const del = el('button', 'node-lvl', '×');
+    del.style.cursor = 'pointer';
+    del.onclick = () => {
+      state.update('grades', l => l.filter(z => z.id !== g.id));
+      mount.innerHTML = ''; scoreEntry(mount, ctx);
+    };
+    r.append(del);
+    hist.append(r);
+  }
+  mount.append(hist);
 }
 
 export function dueEntry(mount, ctx) {

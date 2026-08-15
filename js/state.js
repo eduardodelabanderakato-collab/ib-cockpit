@@ -5,6 +5,7 @@ export const DEFAULTS = {
   mastery:   {},
   sessions:  [],
   notes:     {},
+  notebook:  [],
   deadlines: [],
   grades:    [],
   quests:    { date: null, seed: 0, daily: [], weekly: [] },
