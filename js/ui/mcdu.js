@@ -60,18 +60,3 @@ export function onClose(fn) { onCloseCb = fn; }
 
 export function isOpen() { return host && !host.hidden; }
 
-/** The physical control itself: engraved label, LED, tooltip. */
-export function controlButton(control, status) {
-  const b = el('button', `ctl ctl-${control.kind}`);
-  b.type = 'button';
-  b.dataset.tip = status ? `${control.tip} — ${status.note}` : control.tip;
-  b.setAttribute('aria-label', `${control.name}: ${control.tip}`);
-  if (control.subject) b.style.setProperty('--c', `var(--${control.subject.colorKey === 'accent'
-    ? 'accent' : control.subject.colorKey})`);
-  b.innerHTML = `
-    <span class="ctl-led${status ? ' ' + status.level : ''}"></span>
-    <span class="ctl-code">${esc(control.code)}</span>
-    <span class="ctl-name">${esc(control.name)}</span>
-    ${status ? `<span class="ctl-note ${status.level}">${esc(status.note)}</span>` : ''}`;
-  return b;
-}

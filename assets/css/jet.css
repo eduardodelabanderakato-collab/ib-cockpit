@@ -304,3 +304,30 @@ body.jet-mode .topbar-hint kbd{border-color:rgba(180,210,230,.28)}
     text-transform:uppercase}
   .tp-note.advisory{color:#6FE3FF} .tp-note.caution{color:#FFC24D} .tp-note.warning{color:#FF6B7A}
 }
+
+/* ── annunciators on the glareshield ─────────────────────── */
+.jet-annun{
+  position:absolute;left:30.5%;top:45.4%;width:39%;height:5.4%;
+  display:flex;align-items:center;gap:4px;justify-content:center;
+  flex-wrap:nowrap;overflow:hidden;z-index:8;pointer-events:none;
+}
+.jet-annun > *{pointer-events:auto}
+.jmc,.jann{
+  font-family:ui-monospace,Menlo,monospace;font-weight:800;
+  font-size:clamp(4px,.42vw,7.5px);letter-spacing:.1em;white-space:nowrap;
+  padding:.32em .5em;border-radius:2px;border:1px solid;
+  background:rgba(6,9,14,.85);text-decoration:none;
+  text-shadow:0 1px 0 rgba(0,0,0,.7);
+}
+.jmc{color:#4A5462;border-color:#39434F}
+.jmc.lit{
+  background:#FFC24D;color:#140C00;border-color:#FFD98A;
+  box-shadow:0 0 10px -1px rgba(255,194,77,.9);
+  animation:mc 1.9s ease-in-out infinite;text-shadow:none;
+}
+.jann-warning{color:#FF7A6B;border-color:#FF7A6B;box-shadow:0 0 8px -3px #FF7A6B}
+.jann-caution{color:#FFC24D;border-color:#FFC24D;box-shadow:0 0 8px -3px #FFC24D}
+.jann-advisory{color:#6FE3FF;border-color:#3C5A6B}
+.jann-nominal{color:#4ADE9A;border-color:#2C4A3C}
+.jann:hover{filter:brightness(1.35)}
+@media(max-width:900px){.jet-annun{display:none}}

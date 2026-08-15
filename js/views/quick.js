@@ -74,29 +74,6 @@ export function avgReadout(mount, { index, state }) {
   mount.append(p);
 }
 
-export function projReadout(mount, { index, state }) {
-  const settings = state.get('settings');
-  const target = state.get('meta').targetPoints ?? 45;
-  const proj = G.project({
-    subjects: index.examined, grades: state.get('grades'),
-    tok: settings.tokGrade ?? null, ee: settings.eeGrade ?? null, target,
-    boundaries: B.table(settings, index.examined),
-  });
-  const p = panel('Projection', `target ${target}`);
-  p.append(stat([
-    ['Projected', `${proj.total}`, proj.total >= target ? 'good' : 'hot'],
-    ['Target', `${target}`],
-    ['Ceiling', `${proj.ceiling}`],
-    ['Core bonus', proj.bonus.known ? `+${proj.bonus.points}` : 'not set'],
-  ]));
-  const gap = target - proj.total;
-  p.insertAdjacentHTML('beforeend', `<p class="mfd-sub">${
-    proj.bonus.fail ? '<b style="color:var(--bad)">TOK/EE combination fails the diploma.</b>'
-    : proj.knownCount === 0 ? 'Nothing logged yet — press SCORE to start the projection.'
-    : gap > 0 ? `<b>${gap} short.</b> Weakest link: ${esc(proj.weakest.subject.short)} at ${
-        proj.weakest.grade}/7.` : '<b>On target.</b>'}</p>`);
-  mount.append(p);
-}
 
 export function paceReadout(mount, { index, state }) {
   const records = state.get('mastery');

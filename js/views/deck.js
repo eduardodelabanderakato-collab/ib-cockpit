@@ -110,6 +110,8 @@ export function deckView(mount, ctx, openId = null) {
     screens: jetScreens(ctx, { records, captured, fading, x, lvl, ids, capturedNodes,
                                sessions, deadlines, hl, expected }),
     groups: grouped(index),
+    annunciators: captions,
+    masterCaution: ann.masterCaution(captions),
     status: controlStatus(ctx, { records, sessions, fading, x, deadlines, ratio }),
     timeOverride: null,
   });

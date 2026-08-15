@@ -99,7 +99,22 @@ export function createJet(mount, model) {
   }
   stage.append(mfds);
 
-  // 5 · bezel rails and keys
+  // 5 · annunciators on the glareshield
+  if (model.annunciators?.length) {
+    const strip = el('div', 'jet-annun');
+    strip.dataset.depth = 'panel';
+    const mc = el('div', `jmc${model.masterCaution ? ' lit' : ''}`, 'MASTER CAUTION');
+    strip.append(mc);
+    for (const a of model.annunciators.slice(0, 4)) {
+      const b = el('a', `jann jann-${a.level}`, a.code);
+      b.href = a.href;
+      b.title = a.detail;
+      strip.append(b);
+    }
+    stage.append(strip);
+  }
+
+  // 6 · bezel rails and keys
   const keys = el('div', 'jet-keys');
   keys.dataset.depth = 'panel';
 

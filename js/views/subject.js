@@ -3,43 +3,7 @@ import * as xp from '../models/xp.js';
 import { nodesFor, topicsFor, subject as findSubject, phaseFilter, provenance } from '../syllabus.js';
 import { el, panel, esc, toast, subjectColor } from '../ui/dom.js';
 
-/** Six engine gauges plus the core. */
-export function subjectGauges(ctx) {
-  const { index, state } = ctx;
-  const records = state.get('mastery');
-  const grid = el('div', 'subs');
 
-  for (const s of index.subjects) {
-    const nodes = nodesFor(index, s.id);
-    const ids = nodes.map(n => n.id);
-    const pct = Math.round(mastery.subjectProgress(ids, records) * 100);
-    const captured = ids.filter(id => (records[id]?.level ?? 0) > 0).length;
-    const fading = mastery.rescueQueue(ids, records).length;
-    const lvl = xp.levelFromXp(state.get('xp').bySubject[s.id] ?? 0).level;
-
-    const card = el('a', 'sub');
-    card.href = `#/subject/${s.id}`;
-    card.style.setProperty('--c', subjectColor(s));
-    card.innerHTML = `
-      <div class="sub-top">
-        <span class="sub-dot"></span>
-        <span class="sub-name">${esc(s.short)}</span>
-        ${s.level === 'CORE' ? '' : `<span class="sub-hl">${esc(s.level)}</span>`}
-        <span class="sub-cs">${esc(s.callsign)} · LV${lvl}</span>
-      </div>
-      <div class="sub-track"><div class="sub-fill" style="width:${pct}%"></div></div>
-      <div class="sub-meta">
-        <span>${captured}/${ids.length} nodes${fading ? ` · <span class="sub-warn">${fading} fading</span>` : ''}</span>
-        <b>${pct}%</b>
-      </div>`;
-    grid.append(card);
-  }
-  return grid;
-}
-
-export function subjectListView(mount, ctx) {
-  mount.append(subjectGauges(ctx));
-}
 
 export function subjectDetailView(mount, ctx, { id }) {
   const { index, state } = ctx;
