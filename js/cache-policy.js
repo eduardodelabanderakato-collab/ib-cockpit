@@ -1,0 +1,114 @@
+/**
+ * What the service worker should do with each request.
+ *
+ * Pure and testable, deliberately separate from sw.js so the decision can be
+ * reasoned about without a browser.
+ *
+ * The default is network-first, not cache-first, because this app ships as
+ * unbundled ES modules: a cache-first policy hands you a stale module graph
+ * after every deploy, which is exactly the bug this exists to kill. Immutable
+ * things — the cockpit photograph, the cloud deck — are cache-first because
+ * they never change without also changing name.
+ */
+
+export const CACHE_VERSION = 'ibc-v1';
+
+/** Assets fetched on first load so the app opens with no network at all. */
+export const PRECACHE = [
+  './',
+  './index.html',
+  './manifest.webmanifest',
+  './assets/css/tokens.css',
+  './assets/css/base.css',
+  './assets/css/components.css',
+  './assets/css/sky.css',
+  './assets/css/cockpit.css',
+  './assets/css/jet.css',
+  './assets/img/cockpit.jpg',
+  './assets/img/icon.svg',
+  './data/subjects.json',
+  './data/resources.json',
+  './data/syllabus/math-aa-hl.json',
+  './data/syllabus/physics-hl.json',
+  './data/syllabus/economics-hl.json',
+  './data/syllabus/chemistry-sl.json',
+  './data/syllabus/portugues-lal-sl.json',
+  './data/syllabus/english-lal-sl.json',
+  './data/syllabus/core.json',
+  // Every module, so the very first offline load can still boot. A test keeps
+  // this list honest against what is actually on disk.
+    './js/cache-policy.js',
+    './js/gate.js',
+    './js/main.js',
+    './js/models/annunciators.js',
+    './js/models/boundaries.js',
+    './js/models/crew.js',
+    './js/models/grades.js',
+    './js/models/mastery.js',
+    './js/models/notebook.js',
+    './js/models/quests.js',
+    './js/models/recommend.js',
+    './js/models/xp.js',
+    './js/router.js',
+    './js/state.js',
+    './js/store.js',
+    './js/syllabus.js',
+    './js/ui/cockpit.js',
+    './js/ui/controls.js',
+    './js/ui/dom.js',
+    './js/ui/jet.js',
+    './js/ui/mcdu.js',
+    './js/ui/pfd.js',
+    './js/ui/sky.js',
+    './js/ui/stage.js',
+    './js/ui/windshield.js',
+    './js/views/crew.js',
+    './js/views/deadlines.js',
+    './js/views/deck.js',
+    './js/views/grades.js',
+    './js/views/log.js',
+    './js/views/notebook.js',
+    './js/views/planner.js',
+    './js/views/quests.js',
+    './js/views/quick.js',
+    './js/views/resources.js',
+    './js/views/settings.js',
+    './js/views/subject.js',
+    './js/views/territory.js',
+];
+
+const IMMUTABLE = /\.(jpg|jpeg|png|webp|avif|woff2?)$/i;
+const CODE = /\.(js|mjs|css|html|json)$/i;
+
+/**
+ * @returns {'network-first'|'cache-first'|'passthrough'}
+ */
+export function strategyFor(url, { origin } = {}) {
+  let u;
+  try {
+    // Parsed with no base on purpose. A fetch event's request.url is always
+    // absolute, so anything needing a base is not a real request and is left
+    // alone rather than being silently resolved onto our own origin.
+    u = new URL(url);
+  } catch {
+    return 'passthrough';
+  }
+
+  // Never touch anything we do not serve ourselves.
+  if (u.protocol !== 'http:' && u.protocol !== 'https:') return 'passthrough';
+  if (origin && u.origin !== new URL(origin).origin) return 'passthrough';
+
+  if (IMMUTABLE.test(u.pathname)) return 'cache-first';
+  if (CODE.test(u.pathname) || u.pathname.endsWith('/')) return 'network-first';
+  return 'network-first';
+}
+
+/** Caches from older deploys, safe to delete. */
+export function stale(names, current = CACHE_VERSION) {
+  return names.filter(n => n.startsWith('ibc-') && n !== current);
+}
+
+/** A response worth storing: same-origin, OK, and not a partial. */
+export function cacheable(res) {
+  return !!res && res.ok && res.status === 200 && res.type !== 'opaque';
+}

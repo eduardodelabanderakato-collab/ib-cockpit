@@ -27,6 +27,30 @@ const ctx = { index, state };
 ensureQuests(ctx);
 
 document.body.classList.add('jet-mode');
+
+/**
+ * Offline support, and an end to stale code.
+ *
+ * The worker is network-first for everything it serves, so a deploy always
+ * wins; the cache only steps in when the network does not answer. When a new
+ * version installs behind the running one, say so rather than silently
+ * leaving two versions in play.
+ */
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('sw.js', { type: 'module', scope: './' })
+    .then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const next = reg.installing;
+        if (!next) return;
+        next.addEventListener('statechange', () => {
+          if (next.state === 'installed' && navigator.serviceWorker.controller) {
+            toast('New version ready — <b>reload</b> to fly it');
+          }
+        });
+      });
+    })
+    .catch(() => { /* offline support is a bonus, never a requirement */ });
+}
 const view = document.getElementById('view');
 const controlId = () => location.hash.replace(/^#\/?/, '') || null;
 
