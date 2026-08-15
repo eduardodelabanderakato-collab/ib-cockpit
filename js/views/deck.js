@@ -22,6 +22,9 @@ import { settingsView } from './settings.js';
 import { gradesView } from './grades.js';
 import * as nudge from '../models/nudge.js';
 import { brief } from '../models/today.js';
+import { road, RANKS } from '../models/road.js';
+import { checkRank } from '../ui/celebrate.js';
+import * as B from '../models/boundaries.js';
 import * as store from '../store.js';
 import { notebookView } from './notebook.js';
 
@@ -43,6 +46,7 @@ const RENDERERS = {
   heat:   quick.heatReadout,
   avg:    quick.avgReadout,
   proj:   gradesView,
+  road:   quick.roadView,
   tests:  quick.testsReadout,
   assign: quick.assignReadout,
   fade:   quick.fadeReadout,
@@ -103,12 +107,14 @@ export function deckView(mount, ctx, openId = null) {
     nodesLeft: ids.length - capturedNodes, totalHours, cautionCount: cautions,
   };
 
+  const screens = jetScreens(ctx, { records, captured, fading, x, ids, capturedNodes,
+                                    sessions, deadlines, hl, expected });
+
   live = createJet(mount, {
     hud: hudData,
     hudFields: state.get('settings').hudFields ?? DEFAULT_HUD,
     hudCustom: state.get('settings').hudCustom ?? [],
-    screens: jetScreens(ctx, { records, captured, fading, x, lvl, ids, capturedNodes,
-                               sessions, deadlines, hl, expected }),
+    screens,
     groups: grouped(index),
     annunciators: captions,
     masterCaution: ann.masterCaution(captions),
@@ -122,6 +128,19 @@ export function deckView(mount, ctx, openId = null) {
     controlStatus(ctx, { records, sessions, fading, x, deadlines, ratio })));
 
   mountMCDU(live.el);
+
+  // A rank is the only thing here worth interrupting for, and only on the way
+  // up. Deferred a beat so it lands on a drawn cockpit, not a blank one.
+  const board = screens.board;
+  if (board) setTimeout(() => {
+    const name = checkRank({
+      rank: board.rank, held: board.held, ranks: RANKS,
+      lastRank: state.get('settings').lastRank ?? null,
+    });
+    if (name && name !== state.get('settings').lastRank) {
+      state.update('settings', st => { st.lastRank = name; });
+    }
+  }, 700);
   offerBackup(ctx, sessions);
   if (openId) press(ctx, openId);
 }
@@ -322,7 +341,7 @@ function clip(v, n) {
 
 function jetScreens(ctx, extra) {
   const { index } = ctx;
-  const { records, captured, fading, x, lvl, ids, capturedNodes } = extra;
+  const { records, captured, fading, x, ids, capturedNodes } = extra;
 
   const bars = index.examined.map(s2 => {
     const pct = Math.round(mastery.subjectProgress(
@@ -331,6 +350,16 @@ function jetScreens(ctx, extra) {
   }).join('');
 
   // The centre screen answers the only question that changes behaviour.
+  const settings = ctx.state.get('settings');
+  const r45 = road({
+    subjects: index.examined,
+    grades: ctx.state.get('grades'),
+    tok: settings.tokGrade ?? null,
+    ee: settings.eeGrade ?? null,
+    boundaries: B.table(settings, index.examined),
+    target: ctx.state.get('meta').targetPoints ?? 45,
+  });
+
   const today = brief({
     index, records, sessions: extra.sessions, deadlines: extra.deadlines,
     questState: ctx.state.get('quests'), checks: ctx.state.get('checks'),
@@ -338,7 +367,7 @@ function jetScreens(ctx, extra) {
     budget: ctx.state.get('settings').dailyBudget ?? 60,
   });
 
-  return [
+  const screens = [
     { slot: 'l', tag: 'ENG', title: 'Engines — subject capture', opens: 'pace',
       big: `${Math.round(captured * 100)}`, unit: '%',
       sub: `${fading.length} FADING`, bars },
@@ -346,12 +375,17 @@ function jetScreens(ctx, extra) {
       big: today.done ? '\u2713' : `${today.items.length}`,
       unit: today.done ? '' : 'TO DO',
       sub: `${clip(today.headline, 32)}<br>${today.minutes} MIN PLANNED` },
-    { slot: 'r', tag: 'SYS', title: 'Systems — level and streak', opens: 'xp',
-      big: `${lvl.level}`, unit: 'LV',
-      sub: `${x.total.toLocaleString()} XP<br>${x.streak.current}D STREAK`,
+    // The right screen is the game board: the score, and the rank it earns.
+    { slot: 'r', tag: 'ROAD', title: `Road to 45 — ${r45.rank.name}`, opens: 'road',
+      big: `${r45.held}`, unit: '/45',
+      sub: `${r45.rank.name.toUpperCase()}<br>${r45.rank.next
+        ? `+${r45.rank.toNext} FOR ${r45.rank.next.name.toUpperCase()}`
+        : `${x.streak.current}D STREAK`}`,
       bars: `<div class="bar" style="--c:#7CFFC4"><i style="width:${
-        ((lvl.into / lvl.need) * 100).toFixed(1)}%"></i></div>` },
+        ((r45.held / 45) * 100).toFixed(1)}%"></i></div>` },
   ];
+  screens.board = r45;
+  return screens;
 }
 
 

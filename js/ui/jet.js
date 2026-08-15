@@ -21,7 +21,7 @@ export const RAILS = {
   sysB:     { x: 54.55, y: 57.6, w: 1.9,  h: 3.8, gap: 0.5, n: 3, dir: 'v' },
   sysC:     { x: 66.15, y: 57.6, w: 2.05, h: 3.8, gap: 0.5, n: 3, dir: 'v',
               legend: 'SYS',    lx: 66.15, ly: 56.4 },
-  readouts: { x: 34.15, y: 53.5, w: 3.19, h: 2.5, gap: 0.4, n: 9, dir: 'h',
+  readouts: { x: 34.15, y: 53.5, w: 2.83, h: 2.5, gap: 0.36, n: 10, dir: 'h',
               legend: 'READOUTS', lx: 34.15, ly: 52.3 },
   engines:  { x: 34.15, y: 80.0, w: 3.64, h: 2.5, gap: 0.4, n: 8, dir: 'h',
               legend: 'ENGINES',  lx: 34.15, ly: 83.4 },

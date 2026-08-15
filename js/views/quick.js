@@ -11,6 +11,7 @@ import { HUD_FIELDS, DEFAULT_HUD } from '../ui/jet.js';
 import * as R from '../models/recall.js';
 import { curveFor } from '../models/curve.js';
 import { brief } from '../models/today.js';
+import * as R45 from '../models/road.js';
 
 const DAY = 86400000;
 
@@ -862,4 +863,110 @@ export async function termsReadout(mount) {
       `<p class="mfd-sub" style="margin-top:12px"><b>${esc(o.note)}</b></p>`);
     mount.append(p);
   }
+}
+
+/* ─────────────────── the road to 45 ─────────────────── */
+
+/**
+ * The board. Forty-five points, where each one lives, and what the next one
+ * costs. This is the game — rank moves only when the diploma score moves.
+ */
+export function roadView(mount, ctx) {
+  const { index, state } = ctx;
+  const settings = state.get('settings');
+  const r = R45.road({
+    subjects: index.examined,
+    grades: state.get('grades'),
+    tok: settings.tokGrade ?? null,
+    ee: settings.eeGrade ?? null,
+    boundaries: B.table(settings, index.examined),
+    target: state.get('meta').targetPoints ?? 45,
+  });
+
+  // ── the score ───────────────────────────────────────────
+  const head = panel(r.rank.name.toUpperCase(), `${r.held} / 45`);
+  head.insertAdjacentHTML('beforeend', `
+    <div class="road-score">${r.held}<small>/ 45</small></div>
+    <p class="mfd-sub">${esc(r.rank.note)}${r.rank.next
+      ? ` · <b>${r.rank.toNext} more for ${esc(r.rank.next.name)}</b>` : ''}</p>
+    <div class="road-bar">${
+      Array.from({ length: 45 }, (_, i) =>
+        `<i class="${i < r.held ? 'on' : ''}${i === r.held ? ' next' : ''}"></i>`).join('')}
+    </div>`);
+  head.append(stat([
+    ['Held', `${r.held}`, r.held >= r.target ? 'good' : ''],
+    ['Missing', `${r.missing}`, r.missing ? 'hot' : 'good'],
+    ['Target', `${r.target}`],
+    ['Not on the board', `${r.unknown}`, r.unknown ? 'hot' : 'good'],
+  ]));
+  mount.append(head);
+
+  // ── the cheapest point available ────────────────────────
+  if (r.cheapest) {
+    const c = panel('Cheapest point on the board', 'go here first');
+    c.style.setProperty('--c', subjectColor(r.cheapest.subject));
+    c.insertAdjacentHTML('beforeend', `
+      <div style="font-size:16px;font-weight:640;margin-bottom:4px">${
+        esc(r.cheapest.subject.short)} — ${esc(r.cheapest.next)}</div>
+      <p class="mfd-sub">You are <b>${r.cheapest.gap.toFixed(1)} percentage points</b>
+        off the next grade here. That is the least work any single point on this
+        board costs you right now.</p>`);
+    mount.append(c);
+  }
+
+  // ── where every point lives ─────────────────────────────
+  const board = panel('Where the points are', `${r.segments.length} subjects + core`);
+  for (const s of r.segments) {
+    const row = el('a', 'node');
+    row.href = `#/subject:${s.subject.id}`;
+    row.style.textDecoration = 'none';
+    row.style.setProperty('--c', subjectColor(s.subject));
+    row.dataset.state = !s.known ? 'untouched' : s.grade >= 6 ? 'fresh'
+      : s.grade >= 4 ? 'dimming' : 'fading';
+    row.innerHTML = `
+      <span class="node-pip"></span>
+      <span class="node-code">${esc(s.subject.short)}</span>
+      <span class="node-title">
+        <span class="road-pips">${Array.from({ length: 7 }, (_, i) =>
+          `<i class="${i < s.held ? 'on' : ''}"></i>`).join('')}</span>
+        <span style="display:block;color:var(--panel-dim);font-size:11.5px;margin-top:3px">
+          ${esc(s.next)}</span></span>
+      <span class="node-lvl">${s.known ? `${s.grade}/7` : '—'}</span>`;
+    board.append(row);
+  }
+
+  const core = el('a', 'node');
+  core.href = '#/proj';
+  core.style.textDecoration = 'none';
+  core.style.setProperty('--c', 'var(--accent)');
+  core.dataset.state = r.bonus.known ? (r.bonus.points >= 2 ? 'fresh' : 'dimming') : 'untouched';
+  core.innerHTML = `
+    <span class="node-pip"></span>
+    <span class="node-code">CORE</span>
+    <span class="node-title">
+      <span class="road-pips">${Array.from({ length: 3 }, (_, i) =>
+        `<i class="${i < r.bonus.points ? 'on' : ''}"></i>`).join('')}</span>
+      <span style="display:block;color:var(--panel-dim);font-size:11.5px;margin-top:3px">${
+        r.bonus.fail ? 'An E in TOK or the EE fails the diploma'
+        : r.bonus.known ? 'TOK and EE grades set'
+        : 'Set your TOK and EE grades to claim up to 3'}</span></span>
+    <span class="node-lvl">${r.bonus.known ? `+${r.bonus.points}` : '—'}</span>`;
+  board.append(core);
+  mount.append(board);
+
+  // ── the ladder ──────────────────────────────────────────
+  const ladder = panel('Ranks', 'tied to the score, not to hours');
+  for (const rank of R45.RANKS) {
+    const row = el('div', 'node');
+    row.style.cursor = 'default';
+    row.style.setProperty('--c', 'var(--accent)');
+    row.dataset.state = r.held >= rank.at ? 'fresh' : 'untouched';
+    row.innerHTML = `<span class="node-pip"></span>
+      <span class="node-code">${rank.at}</span>
+      <span class="node-title"><b>${esc(rank.name)}</b>
+        <span style="color:var(--panel-dim)"> · ${esc(rank.note)}</span></span>
+      ${r.held >= rank.at ? '<span class="node-lvl">reached</span>' : ''}`;
+    ladder.append(row);
+  }
+  mount.append(ladder);
 }

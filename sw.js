@@ -44,7 +44,12 @@ self.addEventListener('fetch', event => {
 async function networkFirst(request) {
   const cache = await caches.open(CACHE_VERSION);
   try {
-    const fresh = await fetch(request);
+    // `no-store` on purpose. A plain fetch() here still goes through the HTTP
+    // cache, and GitHub Pages serves index.html with max-age=600 — so for ten
+    // minutes after a deploy "network-first" would quietly hand back the old
+    // shell and, with it, the old module graph. This is the whole point of the
+    // strategy, so it has to actually reach the network.
+    const fresh = await fetch(request, { cache: 'no-store' });
     if (cacheable(fresh)) cache.put(request, fresh.clone());
     return fresh;
   } catch {

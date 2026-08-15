@@ -105,7 +105,7 @@ body.jet-mode .app { display: contents; }
   box-shadow:0 0 6px var(--c,#7CFFC4)}
 
 /* ── bezel rails: machined metal strips holding the keys ─── */
-.jet-keys{pointer-events:none;z-index:7}
+.jet-keys{pointer-events:none;z-index:12}
 .rail{
   position:absolute;pointer-events:none;border-radius:2px;
   background:linear-gradient(180deg,#2B3138 0%,#1B2026 42%,#14181D 100%);
@@ -309,7 +309,7 @@ body.jet-mode .topbar-hint kbd{border-color:rgba(180,210,230,.28)}
 .jet-annun{
   position:absolute;left:30.5%;top:45.4%;width:39%;height:5.4%;
   display:flex;align-items:center;gap:4px;justify-content:center;
-  flex-wrap:nowrap;overflow:hidden;z-index:8;pointer-events:none;
+  flex-wrap:nowrap;overflow:visible;z-index:8;pointer-events:none;
 }
 .jet-annun > *{pointer-events:auto}
 .jmc,.jann{
