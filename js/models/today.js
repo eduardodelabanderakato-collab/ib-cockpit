@@ -18,12 +18,18 @@ import { gradeFor } from './grades.js';
 
 const DAY = 86400000;
 
+/**
+ * Weights are ordered so retrieval leads whenever there is anything to
+ * retrieve. Testing yourself is the highest-yield activity available, so it
+ * outranks opening new ground — but a subject that has gone cold still sits
+ * well above generic study, because six subjects all count.
+ */
 export const KINDS = {
   deadline:   { label: 'Deadline',   weight: 100, principle: 'coursework' },
-  recall:     { label: 'Recall',     weight: 80,  principle: 'retrieval' },
+  recall:     { label: 'Recall',     weight: 95,  principle: 'retrieval' },
   errors:     { label: 'Fix errors', weight: 74,  principle: 'errors' },
   coursework: { label: 'Coursework', weight: 70,  principle: 'coursework' },
-  cold:       { label: 'Cold',       weight: 66,  principle: 'noCold' },
+  cold:       { label: 'Cold',       weight: 58,  principle: 'noCold' },
   papers:     { label: 'Past paper', weight: 62,  principle: 'pastPapers' },
   quest:      { label: 'Mission',    weight: 60,  principle: 'consistency' },
   study:      { label: 'Study',      weight: 40,  principle: 'weakest' },
@@ -153,7 +159,7 @@ export function brief({
   const cold = pb.contact({ subjects, nodesBySubject, records, sessions, now })[0];
   if (cold && cold.days >= 7) {
     push('cold', {
-      urgency: KINDS.cold.weight * W.noCold + Math.min(30, cold.days),
+      urgency: KINDS.cold.weight * W.noCold + Math.min(18, cold.days),
       title: `${cold.subject.short} has gone cold`,
       detail: cold.ever
         ? `${Math.round(cold.days)} days untouched`

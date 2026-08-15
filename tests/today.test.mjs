@@ -148,13 +148,21 @@ test('the fitted curve changes what today asks for', () => {
 });
 
 
-test('a subject nobody has opened outranks a single fading topic', () => {
+test('retrieval always leads when there is anything to retrieve', () => {
   const b = brief({
     ...base,
     records: { 'math-aa-hl:1.1': { level: 3, lastTouched: ago(60), touches: 1 } },
   });
-  assert.equal(b.items[0].kind, 'cold',
-    'six subjects all count — the untouched one is the 40-to-45 gap');
+  assert.equal(b.items[0].kind, 'recall',
+    'testing yourself is the highest-yield activity there is');
+});
+
+test('a cold subject still outranks generic study, just not retrieval', () => {
+  const b = brief({ ...base, budget: 240 });
+  const kinds = b.all.map(i => i.kind);
+  assert.ok(kinds.includes('cold'));
+  assert.ok(kinds.indexOf('cold') < kinds.indexOf('study'),
+    'six subjects all count — an untouched one beats covering new ground');
 });
 
 test('every objective explains the principle behind it', () => {
