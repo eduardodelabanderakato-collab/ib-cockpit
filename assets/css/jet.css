@@ -268,3 +268,39 @@ body.jet-mode .topbar-hint kbd{border-color:rgba(180,210,230,.28)}
   .jet-keys,.rail,.rail-legend,.jet-hint{display:none}
   .stage .mcdu.open{width:100%;height:94%}
 }
+
+/* ── touch panel: shown instead of the bezel on narrow screens ── */
+.touchpanel{display:none}
+
+@media(max-width:900px){
+  .touchpanel{
+    display:grid;gap:14px;padding:16px 0 40px;position:relative;z-index:2;
+  }
+  .tp-group{
+    background:linear-gradient(180deg,#12181F,#0A0E14);
+    border:1px solid #222C38;border-radius:14px;padding:13px 14px 15px;
+  }
+  .tp-label{
+    margin:0 0 11px;font-family:ui-monospace,Menlo,monospace;font-size:9px;
+    letter-spacing:.24em;text-transform:uppercase;color:#5D6C7D;
+    display:flex;align-items:center;gap:9px;
+  }
+  .tp-label::after{content:"";flex:1;height:1px;background:#1C2733}
+  .tp-keys{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:9px}
+  .tp-key{
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    /* 56px minimum so it is a real touch target, not a shrunken bezel key */
+    min-height:56px;padding:11px 8px;border-radius:11px;cursor:pointer;font:inherit;
+    background:linear-gradient(180deg,#212B36,#161D26);
+    border:1px solid #2E3A48;border-bottom-color:#0E141B;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.09), 0 2px 0 #0B0F14;
+    color:#D8E2EC;transition:transform .06s,box-shadow .06s;
+  }
+  .tp-key:active{transform:translateY(2px);box-shadow:inset 0 2px 5px rgba(0,0,0,.7)}
+  .tp-code{font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:800;
+    letter-spacing:.08em;color:var(--c,#CBD7E4)}
+  .tp-name{font-size:10px;color:#7C8B9E;text-align:center;line-height:1.2}
+  .tp-note{font-family:ui-monospace,Menlo,monospace;font-size:8px;letter-spacing:.06em;
+    text-transform:uppercase}
+  .tp-note.advisory{color:#6FE3FF} .tp-note.caution{color:#FFC24D} .tp-note.warning{color:#FF6B7A}
+}

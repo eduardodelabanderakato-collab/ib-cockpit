@@ -6,7 +6,10 @@ import { courseElapsed, paceRatio } from '../ui/pfd.js';
 import { examinedNodeIds, nodesFor } from '../syllabus.js';
 import { el, panel, esc, toast, subjectColor, heatmap } from '../ui/dom.js';
 import { commitSession } from './log.js';
+import { halfLivesFor } from '../models/curve.js';
 import { HUD_FIELDS, DEFAULT_HUD } from '../ui/jet.js';
+import * as R from '../models/recall.js';
+import { curveFor } from '../models/curve.js';
 
 const DAY = 86400000;
 
@@ -155,28 +158,100 @@ export function xpReadout(mount, { index, state }) {
   mount.append(p);
 }
 
-export function fadeReadout(mount, { index, state }) {
-  const records = state.get('mastery');
-  const q = mastery.rescueQueue(examinedNodeIds(index), records);
-  const p = panel('Fading topics', `${q.length}`);
-  if (!q.length) {
-    p.append(el('p', 'empty', 'Nothing is fading. Everything you have captured is still fresh.'));
+export function fadeReadout(mount, ctx) {
+  const { index, state } = ctx;
+
+  const wrap = el('div');
+  wrap.style.display = 'grid';
+  wrap.style.gap = '14px';
+  mount.append(wrap);
+
+  function draw() {
+    wrap.innerHTML = '';
+    const records = state.get('mastery');
+    const checks = state.get('checks');
+    const curve = curveFor(checks);
+    const q = mastery.rescueQueue(examinedNodeIds(index), records, Date.now(), curve.halfLives);
+
+    // ── how well you are actually holding things ───────────
+    const head = panel('Recall', q.length ? `${q.length} to check` : 'all clear');
+    const acc = curve.accuracy;
+    head.append(stat([
+      ['Fading now', `${q.length}`, q.length ? 'hot' : 'good'],
+      ['Recent recall', acc ? `${acc.pct}%` : '—', acc && acc.pct >= 70 ? 'good' : acc ? 'hot' : ''],
+      ['Checks done', `${checks.length}`],
+      ['Curve', curve.drift.moved ? 'yours' : 'default'],
+    ]));
+    head.insertAdjacentHTML('beforeend', `<p class="mfd-sub">${
+      checks.length < R.MIN_OBSERVATIONS
+        ? `Answering these honestly is what makes the rest of the cockpit true. After
+           ${R.MIN_OBSERVATIONS} checks at a level the app stops using my estimate of how
+           fast you forget and starts fitting your own.`
+        : curve.drift.moved
+          ? `Fitted from your ${checks.length} checks: ${curve.drift.faster} level${
+              curve.drift.faster === 1 ? '' : 's'} decaying faster than shipped, ${
+              curve.drift.slower} slower.`
+          : 'Your checks so far match the shipped curve.'}</p>`);
+    wrap.append(head);
+
+    if (!q.length) {
+      const p = panel('Nothing fading');
+      p.append(el('p', 'empty',
+        'Everything you have captured is still fresh. Come back when something fades.'));
+      wrap.append(p);
+      return;
+    }
+
+    // ── the drill ──────────────────────────────────────────
+    for (const item of q.slice(0, 12)) {
+      const n = index.byId.get(item.id);
+      const s = index.subjects.find(v => v.id === n.subjectId);
+      const p = panel(`${s.short} · ${n.code}`, `${Math.round(item.days)}d ago`);
+      p.style.setProperty('--c', subjectColor(s));
+      p.insertAdjacentHTML('beforeend', `
+        <div style="font-size:14px;font-weight:600;margin-bottom:4px">${esc(n.title)}</div>
+        <p class="mfd-sub">${esc(n.topicCode)} ${esc(n.topicTitle)} ·
+          currently ${mastery.LEVELS[item.level]} ·
+          ${Math.round(item.freshness * 100)}% retained</p>
+        <p class="mfd-sub" style="margin-top:10px"><b>Could you do this cold, right now?</b></p>`);
+
+      const row = el('div', 'row');
+      for (const key of ['yes', 'partly', 'no']) {
+        const o = R.OUTCOMES[key];
+        const b = el('button', 'chip' + (key === 'yes' ? ' chip-primary' : ''), o.label);
+        b.title = o.note;
+        b.onclick = () => {
+          const before = item.level;
+          const after = R.applyOutcome(before, key);
+          state.set('checks', R.record(state.get('checks'),
+            { nodeId: n.id, level: before, days: item.days, outcome: key }));
+          state.update('mastery', mm => {
+            mm[n.id] = { level: after, lastTouched: new Date().toISOString(),
+                         touches: (mm[n.id]?.touches ?? 0) + 1 };
+          });
+          if (key !== 'no') {
+            const earned = xp.award('rescue', {}, state.get('xp').streak.current);
+            state.update('xp', v => {
+              v.total += earned;
+              v.bySubject[n.subjectId] = (v.bySubject[n.subjectId] ?? 0) + earned;
+            });
+            toast(`${esc(o.note)} <b>+${earned} XP</b>`);
+          } else {
+            toast(esc(o.note));
+          }
+          draw();
+        };
+        row.append(b);
+      }
+      const skip = el('a', 'chip', 'Open topic');
+      skip.href = `#/subject:${n.subjectId}`;
+      row.append(skip);
+      p.append(row);
+      wrap.append(p);
+    }
   }
-  for (const item of q.slice(0, 25)) {
-    const n = index.byId.get(item.id);
-    const s = index.subjects.find(v => v.id === n.subjectId);
-    const a = el('a', 'node');
-    a.href = `#/subject:${n.subjectId}`;
-    a.style.textDecoration = 'none';
-    a.style.setProperty('--c', subjectColor(s));
-    a.dataset.state = 'fading';
-    a.innerHTML = `<span class="node-pip"></span>
-      <span class="node-code">${esc(n.code)}</span>
-      <span class="node-title">${esc(s.short)} · ${esc(n.title)}</span>
-      <span class="node-lvl">${Math.round(item.days)}d · ${Math.round(item.freshness * 100)}%</span>`;
-    p.append(a);
-  }
-  mount.append(p);
+
+  draw();
 }
 
 /** Deadlines filtered to the two kinds you asked to see separately. */

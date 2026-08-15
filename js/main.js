@@ -1,10 +1,13 @@
 import { loadIndex } from './syllabus.js';
 import { createState } from './state.js';
 import * as mastery from './models/mastery.js';
+import { halfLivesFor } from './models/curve.js';
 import { requireUnlock } from './gate.js';
 import { ensureQuests } from './views/quests.js';
 import { deckView, press } from './views/deck.js';
 import { close as closeMCDU } from './ui/mcdu.js';
+import { attach as attachKeys, legend } from './ui/keys.js';
+import { el, toast } from './ui/dom.js';
 
 const DAY = 86400000;
 
@@ -16,7 +19,7 @@ await requireUnlock(state.get('settings').passHash);
 const index = await loadIndex('.');
 
 // Run decay once per boot so a long absence is reflected the moment you return.
-state.set('mastery', mastery.decayAll(state.get('mastery')));
+state.set('mastery', mastery.decayAll(state.get('mastery'), Date.now(), halfLivesFor(state.get('checks'))));
 
 document.documentElement.dataset.theme = state.get('settings').theme ?? 'glass';
 
@@ -57,6 +60,26 @@ const controlId = () => location.hash.replace(/^#\/?/, '') || null;
 // The deck is built once. The hash only decides which control is pressed, so
 // the windshield, HUD and annunciators never rebuild underneath you.
 deckView(view, ctx, controlId());
+
+// Keyboard: single letters open controls, digits open subjects, ? shows the map.
+attachKeys(index, {
+  onControl: id => { location.hash = `#/${id}`; },
+  onClose:   () => { location.hash = '#/'; },
+  onHelp:    () => showKeyMap(index),
+});
+
+function showKeyMap(idx) {
+  document.querySelector('.keymap')?.remove();
+  const box = el('div', 'keymap');
+  box.innerHTML = `<div class="keymap-in">
+    <p class="keymap-h">Keyboard</p>
+    <div class="keymap-grid">${legend(idx).map(r =>
+      `<span><kbd>${r.key}</kbd>${r.control.code} · ${r.control.name}</span>`).join('')}
+      <span><kbd>esc</kbd>close</span><span><kbd>?</kbd>this card</span>
+    </div></div>`;
+  box.onclick = () => box.remove();
+  document.body.append(box);
+}
 
 addEventListener('hashchange', () => {
   const id = controlId();

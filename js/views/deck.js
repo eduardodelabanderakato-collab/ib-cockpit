@@ -1,4 +1,5 @@
 import * as mastery from '../models/mastery.js';
+import { halfLivesFor } from '../models/curve.js';
 import * as xp from '../models/xp.js';
 import * as ann from '../models/annunciators.js';
 import * as quests from '../models/quests.js';
@@ -19,6 +20,8 @@ import { crewView } from './crew.js';
 import { resourcesView } from './resources.js';
 import { settingsView } from './settings.js';
 import { gradesView } from './grades.js';
+import * as nudge from '../models/nudge.js';
+import * as store from '../store.js';
 import { notebookView } from './notebook.js';
 
 const DAY = 86400000;
@@ -65,8 +68,9 @@ export function deckView(mount, ctx, openId = null) {
   const deadlines = state.get('deadlines');
   const x = state.get('xp');
 
+  const hl = halfLivesFor(state.get('checks'));
   const ids = examinedNodeIds(index);
-  const captured = mastery.subjectProgress(ids, records);
+  const captured = mastery.subjectProgress(ids, records, Date.now(), hl);
   const expected = courseElapsed(index.dpStart, index.examStart);
   const ratio = paceRatio(captured, expected);
   const daysToExam = Math.max(0, Math.ceil((Date.parse(index.examStart) - Date.now()) / DAY));
@@ -86,7 +90,7 @@ export function deckView(mount, ctx, openId = null) {
   const cautions = captions.filter(a => a.level === 'warning' || a.level === 'caution').length;
   const lvl = xp.levelFromXp(x.total);
   const capturedNodes = ids.filter(id => (records[id]?.level ?? 0) > 0).length;
-  const fading = mastery.rescueQueue(ids, records);
+  const fading = mastery.rescueQueue(ids, records, Date.now(), hl);
 
   disposeDeck();
 
@@ -106,8 +110,82 @@ export function deckView(mount, ctx, openId = null) {
     timeOverride: null,
   });
 
+  // Below the cockpit, a real control surface for narrow screens. The bezel
+  // keys are 8mm on a phone; hiding them left no way to log after a lesson.
+  mount.append(buildTouchPanel(ctx,
+    controlStatus(ctx, { records, sessions, fading, x, deadlines, ratio })));
+
   mountMCDU(live.el);
+  offerBackup(ctx, sessions);
   if (openId) press(ctx, openId);
+}
+
+/**
+ * A backup offer, on a schedule rather than a permanent nag. An amber LED is a
+ * reminder; this is the thing that actually saves two years of work.
+ */
+function offerBackup(ctx, sessions) {
+  const { state } = ctx;
+  const settings = state.get('settings');
+  if (!nudge.backupDue({ backupLastAt: settings.backupLastAt,
+                         sessionCount: sessions.length })) return;
+  if (settings.backupDismissedDay === xp.localDay()) return;
+
+  const age = nudge.backupAge({ backupLastAt: settings.backupLastAt });
+  const bar = el('div', 'backup-offer');
+  bar.innerHTML = `<span><b>Back up your data.</b> ${
+    age === null
+      ? `Nothing has ever been exported, and ${sessions.length} sessions live only in this browser.`
+      : `Last export was ${age} days ago.`}</span>`;
+
+  const go = el('button', 'chip chip-primary', 'Download backup');
+  go.onclick = () => {
+    const blob = new Blob([store.exportAll()], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `ib-cockpit-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    state.update('settings', st => { st.backupLastAt = new Date().toISOString(); });
+    toast('Backup downloaded');
+    bar.remove();
+  };
+  const later = el('button', 'chip', 'Not now');
+  later.onclick = () => {
+    state.update('settings', st => { st.backupDismissedDay = xp.localDay(); });
+    bar.remove();
+  };
+  bar.append(go, later);
+  document.body.append(bar);
+}
+
+/* ── touch panel: the phone's version of the bezel ─────────── */
+
+function buildTouchPanel(ctx, status) {
+  const { index } = ctx;
+  const bank = el('div', 'touchpanel');
+
+  for (const g of grouped(index)) {
+    const box = el('div', 'tp-group');
+    box.append(el('p', 'tp-label', g.group));
+    const row = el('div', 'tp-keys');
+    for (const c of g.controls) {
+      const st = status.get(c.id);
+      const b = el('button', 'tp-key');
+      b.type = 'button';
+      b.dataset.control = c.id;
+      if (c.subject) b.style.setProperty('--c',
+        c.subject.colorKey === 'accent' ? 'var(--accent)' : `var(--${c.subject.colorKey})`);
+      b.innerHTML = `<span class="tp-code">${esc(c.code)}</span>
+        <span class="tp-name">${esc(c.name)}</span>
+        ${st ? `<span class="tp-note ${st.level}">${esc(st.note)}</span>` : ''}`;
+      b.onclick = () => { location.hash = `#/${c.id}`; };
+      row.append(b);
+    }
+    box.append(row);
+    bank.append(box);
+  }
+  return bank;
 }
 
 /* ── the control panel ────────────────────────────────────── */

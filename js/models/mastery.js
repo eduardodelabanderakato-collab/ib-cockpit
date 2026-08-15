@@ -13,16 +13,20 @@ export function daysSince(lastTouched, now = Date.now()) {
   return (now - Date.parse(lastTouched)) / DAY;
 }
 
-/** Ebbinghaus-style retention: halves once per half-life. */
-export function freshness(level, days) {
+/**
+ * Ebbinghaus-style retention: halves once per half-life.
+ * `halfLives` is injectable so a curve fitted from real recall checks can
+ * replace the shipped estimate. See models/recall.js.
+ */
+export function freshness(level, days, halfLives = HALF_LIVES) {
   if (level <= 0) return 0;
   if (!isFinite(days)) return 0;
-  return Math.pow(2, -days / HALF_LIVES[level]);
+  return Math.pow(2, -days / halfLives[level]);
 }
 
-export function stateOf(level, days) {
+export function stateOf(level, days, halfLives = HALF_LIVES) {
   if (level <= 0) return 'untouched';
-  const f = freshness(level, days);
+  const f = freshness(level, days, halfLives);
   if (f >= THRESHOLDS.fresh) return 'fresh';
   if (f >= THRESHOLDS.dimming) return 'dimming';
   if (f >= THRESHOLDS.fading) return 'fading';
@@ -30,9 +34,9 @@ export function stateOf(level, days) {
 }
 
 /** Continuous 0..4 mastery, so progress reflects decay rather than checkbox count. */
-export function effectiveMastery(level, days) {
+export function effectiveMastery(level, days, halfLives = HALF_LIVES) {
   if (level <= 0) return 0;
-  return level - 1 + freshness(level, days);
+  return level - 1 + freshness(level, days, halfLives);
 }
 
 export function emptyRecord() {
@@ -52,10 +56,10 @@ export function capture(record, now = Date.now()) {
  * Demote a lapsed node by exactly one level. lastTouched is reset so a long
  * absence costs one level, not one per elapsed half-life.
  */
-export function decay(record, now = Date.now()) {
+export function decay(record, now = Date.now(), halfLives = HALF_LIVES) {
   const r = record ?? emptyRecord();
   if (r.level <= 0) return r;
-  if (stateOf(r.level, daysSince(r.lastTouched, now)) !== 'lapsed') return r;
+  if (stateOf(r.level, daysSince(r.lastTouched, now), halfLives) !== 'lapsed') return r;
   return {
     level: r.level - 1,
     lastTouched: new Date(now).toISOString(),
@@ -63,31 +67,31 @@ export function decay(record, now = Date.now()) {
   };
 }
 
-export function decayAll(records, now = Date.now()) {
+export function decayAll(records, now = Date.now(), halfLives = HALF_LIVES) {
   const out = {};
-  for (const [id, rec] of Object.entries(records)) out[id] = decay(rec, now);
+  for (const [id, rec] of Object.entries(records)) out[id] = decay(rec, now, halfLives);
   return out;
 }
 
-export function subjectProgress(nodeIds, records, now = Date.now()) {
+export function subjectProgress(nodeIds, records, now = Date.now(), halfLives = HALF_LIVES) {
   if (!nodeIds.length) return 0;
   let sum = 0;
   for (const id of nodeIds) {
     const r = records[id];
-    sum += r ? effectiveMastery(r.level, daysSince(r.lastTouched, now)) : 0;
+    sum += r ? effectiveMastery(r.level, daysSince(r.lastTouched, now), halfLives) : 0;
   }
   return sum / (MAX_LEVEL * nodeIds.length);
 }
 
 /** Fading nodes, worst freshness first — the "rescue" work queue. */
-export function rescueQueue(nodeIds, records, now = Date.now()) {
+export function rescueQueue(nodeIds, records, now = Date.now(), halfLives = HALF_LIVES) {
   return nodeIds
     .map(id => {
       const r = records[id];
       if (!r || r.level <= 0) return null;
       const d = daysSince(r.lastTouched, now);
-      if (stateOf(r.level, d) !== 'fading') return null;
-      return { id, level: r.level, days: d, freshness: freshness(r.level, d) };
+      if (stateOf(r.level, d, halfLives) !== 'fading') return null;
+      return { id, level: r.level, days: d, freshness: freshness(r.level, d, halfLives) };
     })
     .filter(Boolean)
     .sort((a, b) => a.freshness - b.freshness);
