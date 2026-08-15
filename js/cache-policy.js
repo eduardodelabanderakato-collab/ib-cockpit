@@ -50,6 +50,7 @@ export const PRECACHE = [
   './js/models/mastery.js',
   './js/models/notebook.js',
   './js/models/nudge.js',
+  './js/models/playbook.js',
   './js/models/quests.js',
   './js/models/recall.js',
   './js/models/recommend.js',

@@ -2,6 +2,8 @@ import * as mastery from './mastery.js';
 import * as quests from './quests.js';
 import { rank } from './recommend.js';
 import { localDay } from './xp.js';
+import * as pb from './playbook.js';
+import { gradeFor } from './grades.js';
 
 /**
  * Today.
@@ -17,11 +19,15 @@ import { localDay } from './xp.js';
 const DAY = 86400000;
 
 export const KINDS = {
-  deadline: { label: 'Deadline', weight: 100 },
-  recall:   { label: 'Recall',   weight: 80 },
-  quest:    { label: 'Mission',  weight: 60 },
-  study:    { label: 'Study',    weight: 40 },
-  streak:   { label: 'Streak',   weight: 20 },
+  deadline:   { label: 'Deadline',   weight: 100, principle: 'coursework' },
+  recall:     { label: 'Recall',     weight: 80,  principle: 'retrieval' },
+  errors:     { label: 'Fix errors', weight: 74,  principle: 'errors' },
+  coursework: { label: 'Coursework', weight: 70,  principle: 'coursework' },
+  cold:       { label: 'Cold',       weight: 66,  principle: 'noCold' },
+  papers:     { label: 'Past paper', weight: 62,  principle: 'pastPapers' },
+  quest:      { label: 'Mission',    weight: 60,  principle: 'consistency' },
+  study:      { label: 'Study',      weight: 40,  principle: 'weakest' },
+  streak:     { label: 'Streak',     weight: 20,  principle: 'consistency' },
 };
 
 /**
@@ -30,7 +36,8 @@ export const KINDS = {
  */
 export function brief({
   index, records = {}, sessions = [], deadlines = [], questState = {},
-  checks = [], halfLives, expected = 0, budget = 60, now = Date.now(),
+  checks = [], grades = [], halfLives, expected = 0, budget = 60,
+  weeklyHours = 12, targetGrade = 6, now = Date.now(),
 }) {
   const items = [];
   const today = localDay(new Date(now));
@@ -42,15 +49,24 @@ export function brief({
     .filter(s => localDay(new Date(s.ts)) === today)
     .reduce((a, s) => a + s.minutes, 0);
 
+  // Priorities differ sharply across the two-year arc.
+  const { phase, daysLeft } = pb.phaseOf({
+    dpStart: index.dpStart, examStart: index.examStart, now });
+  const W = pb.WEIGHTS[phase];
+  const push = (kind, o) => items.push({
+    kind, principle: KINDS[kind].principle,
+    why: pb.PRINCIPLES[KINDS[kind].principle].why,
+    urgency: KINDS[kind].weight * (W[KINDS[kind].principle] ?? 1), ...o,
+  });
+
   // ── 1 · dated things, soonest first ─────────────────────
   for (const d of deadlines) {
     if (d.status === 'done') continue;
     const days = Math.ceil((Date.parse(d.due) - now) / DAY);
     if (days > 7) continue;
     const s = d.subjectId ? index.subjects.find(v => v.id === d.subjectId) : null;
-    items.push({
-      kind: 'deadline',
-      urgency: KINDS.deadline.weight + (7 - Math.max(0, days)) * 5,
+    push('deadline', {
+      urgency: KINDS.deadline.weight * W.coursework + (7 - Math.max(0, days)) * 5,
       title: d.title,
       detail: days < 0 ? `${Math.abs(days)} days overdue`
             : days === 0 ? 'Due today' : `Due in ${days} day${days === 1 ? '' : 's'}`,
@@ -66,9 +82,8 @@ export function brief({
   const fading = mastery.rescueQueue(ids, records, now, halfLives);
   if (fading.length) {
     const worst = index.byId.get(fading[0].id);
-    items.push({
-      kind: 'recall',
-      urgency: KINDS.recall.weight + Math.min(20, fading.length * 2),
+    push('recall', {
+      urgency: KINDS.recall.weight * W.retrieval + Math.min(20, fading.length * 2),
       title: `${fading.length} recall check${fading.length === 1 ? '' : 's'}`,
       detail: `Worst: ${worst.code} ${worst.title}, ${Math.round(fading[0].days)} days cold`,
       subject: index.subjects.find(v => v.id === worst.subjectId),
@@ -81,8 +96,7 @@ export function brief({
   const open = [...(questState.daily ?? []), ...(questState.weekly ?? [])]
     .filter(q => !quests.isComplete(q, { sessions, records, now }));
   if (open.length) {
-    items.push({
-      kind: 'quest',
+    push('quest', {
       urgency: KINDS.quest.weight + open.length,
       title: `${open.length} mission${open.length === 1 ? '' : 's'} open`,
       detail: open.slice(0, 2).map(q => q.label).join(' · '),
@@ -100,9 +114,8 @@ export function brief({
   for (const p of picks) {
     if (used.has(p.subject.id)) continue;
     used.add(p.subject.id);
-    items.push({
-      kind: 'study',
-      urgency: KINDS.study.weight + p.score,
+    push('study', {
+      urgency: KINDS.study.weight * W.weakest + p.score,
       title: `${p.subject.short} · ${p.node.code} ${p.node.title}`,
       detail: p.reason,
       subject: p.subject,
@@ -114,13 +127,52 @@ export function brief({
 
   // ── 5 · the cheapest win, if nothing has been logged ─────
   if (!loggedToday) {
-    items.push({
-      kind: 'streak',
+    push('streak', {
       urgency: KINDS.streak.weight,
       title: 'Log anything today',
       detail: 'Fifteen minutes keeps the streak and the pace honest',
       minutes: 15,
       href: '#/log',
+    });
+  }
+
+  // ── errors you have never gone back and fixed ───────────
+  const unfixed = pb.unfixedErrors({ grades, sessions, targetGrade, gradeFor, now });
+  if (unfixed.length) {
+    const worst = unfixed[0];
+    const s = index.subjects.find(v => v.id === worst.g.subjectId);
+    push('errors', {
+      urgency: KINDS.errors.weight * W.errors + (targetGrade - worst.grade) * 6,
+      title: `Fix ${s?.short ?? worst.g.subjectId} · ${worst.g.paper}`,
+      detail: `Scored ${worst.grade}/7 and never revisited. ${unfixed.length} unfixed in total.`,
+      subject: s, minutes: 20, href: '#/proj',
+    });
+  }
+
+  // ── a subject that has gone cold ────────────────────────
+  const cold = pb.contact({ subjects, nodesBySubject, records, sessions, now })[0];
+  if (cold && cold.days >= 7) {
+    push('cold', {
+      urgency: KINDS.cold.weight * W.noCold + Math.min(30, cold.days),
+      title: `${cold.subject.short} has gone cold`,
+      detail: cold.ever
+        ? `${Math.round(cold.days)} days untouched`
+        : 'Never opened',
+      subject: cold.subject, minutes: 25, href: `#/subject:${cold.subject.id}`,
+    });
+  }
+
+  // ── timed practice, once it is the thing that matters ────
+  if (phase !== 'dp1') {
+    const behind = pb.underServed({ subjects, sessions, weeklyHours, now })[0];
+    const s = behind?.subject ?? subjects[0];
+    push('papers', {
+      urgency: KINDS.papers.weight * W.pastPapers,
+      title: `Timed past paper · ${s.short}`,
+      detail: daysLeft <= 60
+        ? `${daysLeft} days out. Full paper, clock running, markscheme after.`
+        : 'One question under exam timing beats an hour of notes.',
+      subject: s, minutes: 45, href: '#/lib',
     });
   }
 
@@ -136,11 +188,18 @@ export function brief({
     }
   }
 
+  const spread = pb.spreadToday({ sessions, today, localDay });
   return {
     items: planned,
     all: items,
     minutes: spent,
     loggedToday,
+    phase,
+    daysLeft,
+    spread,
+    rationale: planned.length
+      ? pb.rationale(phase, planned[0].principle)
+      : pb.rationale(phase, 'consistency'),
     done: planned.length === 0,
     ...summarise(planned, loggedToday, budget),
   };

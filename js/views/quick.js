@@ -733,6 +733,8 @@ export function todayView(mount, ctx) {
       deadlines: state.get('deadlines'),
       questState: state.get('quests'),
       checks: state.get('checks'),
+      grades: state.get('grades'),
+      targetGrade: Math.max(4, Math.round((state.get('meta').targetPoints ?? 45) / 6)),
       halfLives: curve.halfLives,
       expected: courseElapsed(index.dpStart, index.examStart),
       budget,
@@ -746,8 +748,11 @@ export function todayView(mount, ctx) {
     head.append(stat([
       ['Planned', `${b.minutes}m`],
       ['Logged today', `${b.loggedToday}m`, b.loggedToday ? 'good' : 'hot'],
-      ['Items', `${b.items.length}`],
+      ['Subjects today', `${b.spread}`, b.spread >= 2 ? 'good' : 'hot'],
+      ['Phase', b.phase.toUpperCase()],
     ]));
+    head.insertAdjacentHTML('beforeend',
+      `<p class="mfd-sub" style="margin-top:12px"><b>${esc(b.rationale)}</b></p>`);
     wrap.append(head);
 
     if (b.done) {
@@ -772,7 +777,9 @@ export function todayView(mount, ctx) {
         <span class="node-code">${i + 1}</span>
         <span class="node-title"><b>${esc(item.title)}</b>
           <span style="display:block;color:var(--panel-dim);font-size:11.5px;margin-top:2px">
-            ${esc(item.detail)}</span></span>
+            ${esc(item.detail)}</span>
+          <span style="display:block;color:var(--panel-dim);font-size:10.5px;margin-top:4px;
+                       opacity:.75">${esc(item.why ?? '')}</span></span>
         <span class="node-lvl">${item.minutes ? `${item.minutes}m` : '—'}</span>`;
       list.append(a);
     });
