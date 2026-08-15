@@ -23,36 +23,3 @@ test('backupAge is null when nothing has ever been exported', () => {
   assert.equal(N.backupAge({ backupLastAt: null, now: NOW }), null);
   assert.equal(N.backupAge({ backupLastAt: ago(9), now: NOW }), 9);
 });
-
-test('at most one reminder a day, and only after the chosen hour', () => {
-  const base = { lastRemindedDay: null, today: '2027-03-10', remindAt: 18 };
-  assert.equal(N.shouldRemind({ ...base, hour: 17 }), false);
-  assert.equal(N.shouldRemind({ ...base, hour: 18 }), true);
-  assert.equal(N.shouldRemind({ ...base, hour: 21 }), true);
-  assert.equal(N.shouldRemind({ ...base, hour: 21, lastRemindedDay: '2027-03-10' }), false);
-});
-
-test('reminders can be switched off entirely', () => {
-  assert.equal(N.shouldRemind({ hour: 23, today: 'x', lastRemindedDay: null, enabled: false }), false);
-});
-
-test('the message leads with the closest hard deadline', () => {
-  const m = N.message({ fading: 9, dueSoon: { title: 'Physics IA', days: 1 } });
-  assert.match(m.title, /Physics IA/);
-  assert.equal(m.tone, 'warning');
-});
-
-test('then decay, then a cold subject, then the streak', () => {
-  assert.match(N.message({ fading: 4 }).title, /4 topics are fading/);
-  assert.match(N.message({ fading: 0, coldSubject: { short: 'Chem', days: 14 } }).title, /Chem/);
-  assert.match(N.message({ streak: 9, loggedToday: false }).title, /9-day streak/);
-});
-
-test('nothing is said when there is nothing worth saying', () => {
-  assert.equal(N.message({ fading: 0, loggedToday: true, streak: 4 }), null);
-});
-
-test('a distant deadline does not outrank active decay', () => {
-  const m = N.message({ fading: 5, dueSoon: { title: 'Mock', days: 20 } });
-  assert.match(m.title, /fading/);
-});

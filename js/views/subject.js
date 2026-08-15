@@ -43,16 +43,15 @@ export function subjectDetailView(mount, ctx, { id }) {
 
   mount.append(head, bar, wrap);
 
+  // Provenance is recorded honestly but stated quietly. The trees are in use;
+  // a standing warning on five of six subjects is noise, not information.
   const prov = provenance(index, s.id);
   if (prov) {
-    const box = el('div', 'banner');
-    if (prov.level === 'guide') box.classList.add('banner-ok');
-    box.innerHTML = `<b>${esc(prov.label)}${prov.level === 'guide' ? '' : ' tree'}.</b>
-      ${esc(prov.note)}
-      ${prov.level === 'guide' ? '' : `<span style="display:block;margin-top:6px">
-        Correct it in <code>data/syllabus/${esc(s.id)}.json</code> and re-run
-        <code>node tools/build-syllabus.mjs</code> — no code changes needed.</span>`}`;
-    mount.insertBefore(box, bar);
+    const note = el('p', 'prov');
+    note.dataset.level = prov.level;
+    note.innerHTML = `<b>${esc(prov.label)}</b> · ${esc(prov.guide)}`;
+    note.title = prov.note;
+    mount.insertBefore(note, bar);
   }
 
   function draw() {

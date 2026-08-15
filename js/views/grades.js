@@ -110,14 +110,14 @@ function subjectsPanel(p) {
 function boundariesPanel(ctx, settings, draw) {
   const { index, state } = ctx;
   const custom = index.examined.filter(s => B.isCustom(settings, s.id)).length;
-  const box = panel('Grade boundaries', `${custom}/${index.examined.length} set`);
+  const box = panel('Mark thresholds — what % is a 7', `${custom}/${index.examined.length} set`);
 
   box.insertAdjacentHTML('beforeend', `<p class="mfd-sub">
-    Boundaries decide every grade above, and they differ a lot by subject — a 7 in
-    Mathematics AA HL has historically sat far lower than a 7 in a Language A course.
-    Until you enter the real ones, every subject is on the same placeholder table and
-    the projection is only indicative. Your school receives the real boundaries after
-    each session; ask a teacher for your subjects.</p>`);
+    Grades are always 1–7. These are the <b>percentages that earn each grade</b>, and
+    they are not the same across subjects: the same 66% has historically been a 7 in
+    Mathematics AA HL and a 5 in a Language A course. Every subject here is on one
+    placeholder table, so the projection is indicative until you replace it. Your
+    school receives the real thresholds from the IB after each session.</p>`);
 
   for (const s of index.examined) {
     const b = B.forSubject(settings, s.id);
