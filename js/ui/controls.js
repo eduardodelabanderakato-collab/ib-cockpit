@@ -14,6 +14,8 @@ export const CONTROLS = [
   // ── DATA ENTRY ─────────────────────────────────────────────
   { id: 'log',    code: 'LOG',   name: 'Log study',    group: 'Data entry', kind: 'entry',
     tip: 'Record a study session — subject, minutes, what you learned' },
+  { id: 'fly',    code: 'FLY',   name: 'Fly a sortie', group: 'Data entry', kind: 'entry',
+    tip: 'A timed run over what you are forgetting — the clock can beat you' },
   { id: 'timer',  code: 'TIMER', name: 'Focus timer',  group: 'Data entry', kind: 'entry',
     tip: 'Start the clock now and log the minutes automatically when you stop' },
   { id: 'score',  code: 'SCORE', name: 'Add score',    group: 'Data entry', kind: 'entry',

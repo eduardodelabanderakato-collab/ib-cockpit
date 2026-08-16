@@ -16,7 +16,7 @@ import { bankAngle, pitchOffset } from './pfd.js';
    x 34.15–42.9 / 44.95–54.5 / 56.70–66.05 at y 57.3–79.2, so the rails
    sit in the gaps between and above/below them. */
 export const RAILS = {
-  entry:    { x: 31.85, y: 57.6, w: 2.05, h: 2.65, gap: 0.4, n: 7, dir: 'v',
+  entry:    { x: 31.85, y: 56.0, w: 2.05, h: 2.42, gap: 0.34, n: 8, dir: 'v',
               legend: 'ENTRY',  lx: 31.85, ly: 56.4 },
   sysA:     { x: 42.95, y: 57.6, w: 1.9,  h: 3.8, gap: 0.5, n: 3, dir: 'v' },
   sysB:     { x: 54.55, y: 57.6, w: 1.9,  h: 3.8, gap: 0.5, n: 3, dir: 'v' },

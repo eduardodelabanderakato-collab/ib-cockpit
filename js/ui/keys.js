@@ -12,7 +12,7 @@ export const SHORTCUTS = {
   n: 'note',   b: 'book',   f: 'fade',   h: 'heat',
   a: 'avg',    p: 'plan',   m: 'map',    q: 'quests',
   g: 'proj',   c: 'crew',   r: 'lib',    ',': 'cfg',
-  w: 'road',
+  w: 'road',   x: 'fly',
   k: 'terms',
 };
 

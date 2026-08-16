@@ -56,6 +56,7 @@ export const PRECACHE = [
   './js/models/recall.js',
   './js/models/recommend.js',
   './js/models/road.js',
+  './js/models/sortie.js',
   './js/models/streak.js',
   './js/models/today.js',
   './js/state.js',
@@ -83,6 +84,7 @@ export const PRECACHE = [
   './js/views/quick.js',
   './js/views/resources.js',
   './js/views/settings.js',
+  './js/views/sortie.js',
   './js/views/subject.js',
   './js/views/territory.js',
 ];

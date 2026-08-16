@@ -88,13 +88,15 @@ export function brief({
   const fading = mastery.rescueQueue(ids, records, now, halfLives);
   if (fading.length) {
     const worst = index.byId.get(fading[0].id);
+    // Points at the sortie, not the static list. The list lets you read a title
+    // and tell yourself you knew it; the run puts a clock on it.
     push('recall', {
       urgency: KINDS.recall.weight * W.retrieval + Math.min(20, fading.length * 2),
-      title: `${fading.length} recall check${fading.length === 1 ? '' : 's'}`,
+      title: `Fly a sortie · ${fading.length} target${fading.length === 1 ? '' : 's'}`,
       detail: `Worst: ${worst.code} ${worst.title}, ${Math.round(fading[0].days)} days cold`,
       subject: index.subjects.find(v => v.id === worst.subjectId),
       minutes: Math.min(25, 4 + fading.length * 2),
-      href: '#/fade',
+      href: '#/fly',
     });
   }
 

@@ -32,8 +32,33 @@ export function mountMCDU(deck) {
   return host;
 }
 
+/**
+ * Teardown for the view currently on screen.
+ *
+ * `close()` empties the body's children but keeps the body element itself, so a
+ * view cannot detect its own removal by watching the DOM — `isConnected` stays
+ * true forever. Without a real hook, anything a view starts outlives it: the
+ * sortie's clock kept counting after the panel shut and would have expired
+ * targets, and written to your mastery records, while you were on another
+ * screen.
+ */
+let disposers = [];
+
+export function onDispose(fn) {
+  if (typeof fn === 'function') disposers.push(fn);
+}
+
+function dispose() {
+  const fns = disposers;
+  disposers = [];
+  for (const fn of fns) {
+    try { fn(); } catch { /* one bad teardown must not strand the others */ }
+  }
+}
+
 export function open(control, render) {
   if (!host) return;
+  dispose();
   host.querySelector('[data-code]').textContent = control.code;
   host.querySelector('[data-title]').textContent = control.name;
   host.querySelector('[data-tip]').textContent = control.tip ?? '';
@@ -51,6 +76,7 @@ export function open(control, render) {
 
 export function close() {
   if (!host || host.hidden) return;
+  dispose();
   host.classList.remove('open');
   setTimeout(() => { host.hidden = true; host.querySelector('[data-body]').innerHTML = ''; }, 300);
   if (onCloseCb) onCloseCb();

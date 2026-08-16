@@ -11,6 +11,7 @@ export const DEFAULTS = {
   grades:    [],
   quests:    { date: null, seed: 0, daily: [], weekly: [] },
   streak:    { current: 0, longest: 0, lastDay: null },
+  runs:      [],
   crew:      {},
   settings:  { theme: 'glass', colorOverrides: {}, coachTone: 'honest', backupLastAt: null, phase: null },
 };

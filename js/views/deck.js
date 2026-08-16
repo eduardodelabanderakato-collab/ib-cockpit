@@ -27,6 +27,7 @@ import { boardFor } from '../board.js';
 import { checkRank } from '../ui/celebrate.js';
 import * as store from '../store.js';
 import { notebookView } from './notebook.js';
+import { sortieView } from './sortie.js';
 
 const DAY = 86400000;
 let live = null;
@@ -37,6 +38,7 @@ export function disposeDeck() {
 
 /** Which control opens which screen. Everything renders inside the MCDU. */
 const RENDERERS = {
+  fly:    sortieView,
   log:    quick.logEntry,
   score:  quick.scoreEntry,
   due:    quick.dueEntry,
@@ -367,7 +369,8 @@ function jetScreens(ctx, extra) {
     { slot: 'l', tag: 'ENG', title: 'Engines — subject capture', opens: 'pace',
       big: `${Math.round(captured * 100)}`, unit: '%',
       sub: `${fading.length} FADING`, bars },
-    { slot: 'c', tag: 'TODAY', title: today.headline, opens: 'today',
+    { slot: 'c', tag: 'TODAY', title: today.headline,
+      opens: today.items[0]?.href === '#/fly' ? 'fly' : 'today',
       big: today.done ? '\u2713' : `${today.items.length}`,
       unit: today.done ? '' : 'TO DO',
       sub: `${clip(today.headline, 32)}<br>${today.minutes} MIN PLANNED` },
